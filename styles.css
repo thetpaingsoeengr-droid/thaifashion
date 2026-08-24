@@ -527,3 +527,77 @@ html[lang="my"] .eyebrow,
 html[lang="my"] .filter-title{
   letter-spacing:.02em;
 }
+
+
+/* ===== V10: STOCK / PRE-ORDER ===== */
+.stock-scroller{
+  display:flex;
+  gap:10px;
+  overflow:auto;
+  padding:12px 0 14px;
+  scrollbar-width:none;
+}
+.stock-scroller::-webkit-scrollbar{display:none}
+.stock-chip{
+  flex:none;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:9px 14px;
+  font-size:12px;
+  font-weight:800;
+  color:#554f4a;
+}
+.stock-chip.active{
+  background:#171717;
+  border-color:#171717;
+  color:#fff;
+}
+.stock-status{
+  position:absolute;
+  right:12px;
+  top:12px;
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.03em;
+  background:#171717;
+  color:#fff;
+}
+.stock-status.preorder{
+  background:#fff;
+  color:#171717;
+  border:1px solid var(--line);
+}
+.preorder-note{
+  margin-top:7px;
+  font-size:11px;
+  font-weight:700;
+  color:var(--muted);
+}
+.modal-stock-info{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap;
+  margin:6px 0 12px;
+}
+.modal-stock-pill{
+  display:inline-flex;
+  padding:7px 10px;
+  border-radius:999px;
+  background:#171717;
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
+}
+.modal-stock-pill.preorder{
+  background:var(--soft);
+  color:#171717;
+}
+.modal-waiting{
+  font-size:12px;
+  font-weight:700;
+  color:var(--muted);
+}

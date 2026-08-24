@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=9" />
+  <link rel="stylesheet" href="styles.css?v=10" />
 </head>
 <body>
   <div class="announcement">
@@ -90,6 +90,14 @@
 
       <div class="filter-block">
         <div class="filter-title-row">
+          <span class="filter-title" id="stockFilterTitle">Availability</span>
+          <button type="button" class="clear-filter-btn" id="clearStockBtn">Clear</button>
+        </div>
+        <div class="stock-scroller" id="stockFilters"></div>
+      </div>
+
+      <div class="filter-block">
+        <div class="filter-title-row">
           <span class="filter-title" id="colorFilterTitle">Shop by color</span>
           <button type="button" class="clear-filter-btn" id="clearColorBtn">Clear</button>
         </div>
@@ -138,6 +146,7 @@
         <p class="product-category" id="modalCategory"></p>
         <h2 id="modalName"></h2>
         <p class="modal-price" id="modalPrice"></p>
+        <div class="modal-stock-info" id="modalStockInfo"></div>
         <p class="modal-desc" id="modalDescription"></p>
 
         <div id="powerWrap">
@@ -234,6 +243,6 @@
 
   <div class="toast hidden" id="toast">Added to bag</div>
 
-  <script src="script.js?v=9"></script>
+  <script src="script.js?v=10"></script>
 </body>
 </html>

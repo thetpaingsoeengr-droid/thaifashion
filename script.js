@@ -1,24 +1,25 @@
 const WHATSAPP_NUMBER = "971544608059";
 
 const products = [
-  {id:1,name:"Venice Gray",colorKey:"gray",category:"Contact Lenses",price:15,badge:"Best Seller",color:"#8f9a9a",desc:"Soft gray fashion lens for a clean everyday look.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:2,name:"Taylor Brown",colorKey:"brown",category:"Contact Lenses",price:15,badge:"In Stock",color:"#9b765f",desc:"Warm brown tone designed for a natural, softly defined finish.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:3,name:"Pattaya Green",colorKey:"green",category:"Contact Lenses",price:15,badge:"New Arrival",color:"#708979",desc:"Muted green lens with a fashion-forward but wearable tone.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:4,name:"Mocha Hazel",colorKey:"brown",category:"Contact Lenses",price:20,badge:"Power Lens",color:"#a58662",desc:"Hazel-brown fashion lens with multiple power choices.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:5,name:"Daily Clear 10 pcs",colorKey:"clear",category:"Contact Lenses",price:25,badge:"Daily",color:"#b7c0c4",desc:"Daily disposable clear lenses, packed for convenient everyday use.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:6,name:"Lens Travel Case",colorKey:"pink",category:"Accessories",price:10,badge:"In Stock",color:"#c99d9e",type:"bag",desc:"Compact lens case for your handbag or travel pouch.",powers:null},
-  {id:7,name:"Mini Fashion Pouch",colorKey:"brown",category:"Accessories",price:20,badge:"New Arrival",color:"#a98d7b",type:"bag",desc:"Small everyday pouch for lenses, makeup or accessories.",powers:null},
-  {id:8,name:"Soft Pink Lip Tint",colorKey:"pink",category:"Beauty",price:18,badge:"Best Seller",color:"#bd7378",type:"beauty",desc:"Easy everyday lip tint with a soft pink finish.",powers:null}
+  {id:1,name:"Venice Gray",stockStatus:"instock",colorKey:"gray",category:"Contact Lenses",price:15,badge:"Best Seller",color:"#8f9a9a",desc:"Soft gray fashion lens for a clean everyday look.",powers:["0.00","-1.00","-2.00","-4.50"]},
+  {id:2,name:"Taylor Brown",stockStatus:"instock",colorKey:"brown",category:"Contact Lenses",price:15,badge:"In Stock",color:"#9b765f",desc:"Warm brown tone designed for a natural, softly defined finish.",powers:["0.00","-1.00","-2.00","-4.50"]},
+  {id:3,name:"Pattaya Green",stockStatus:"preorder",colorKey:"green",category:"Contact Lenses",price:15,badge:"New Arrival",color:"#708979",desc:"Muted green lens with a fashion-forward but wearable tone.",powers:["0.00","-1.00","-2.00","-4.50"]},
+  {id:4,name:"Mocha Hazel",stockStatus:"preorder",colorKey:"brown",category:"Contact Lenses",price:20,badge:"Power Lens",color:"#a58662",desc:"Hazel-brown fashion lens with multiple power choices.",powers:["0.00","-1.00","-2.00","-4.50"]},
+  {id:5,name:"Daily Clear 10 pcs",stockStatus:"instock",colorKey:"clear",category:"Contact Lenses",price:25,badge:"Daily",color:"#b7c0c4",desc:"Daily disposable clear lenses, packed for convenient everyday use.",powers:["0.00","-1.00","-2.00","-4.50"]},
+  {id:6,name:"Lens Travel Case",stockStatus:"instock",colorKey:"pink",category:"Accessories",price:10,badge:"In Stock",color:"#c99d9e",type:"bag",desc:"Compact lens case for your handbag or travel pouch.",powers:null},
+  {id:7,name:"Mini Fashion Pouch",stockStatus:"preorder",colorKey:"brown",category:"Accessories",price:20,badge:"New Arrival",color:"#a98d7b",type:"bag",desc:"Small everyday pouch for lenses, makeup or accessories.",powers:null},
+  {id:8,name:"Soft Pink Lip Tint",stockStatus:"instock",colorKey:"pink",category:"Beauty",price:18,badge:"Best Seller",color:"#bd7378",type:"beauty",desc:"Easy everyday lip tint with a soft pink finish.",powers:null}
 ,
-  {id:9,name:"Ocean Blue",colorKey:"blue",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#6d8fac",desc:"Cool blue fashion lens for a brighter look.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:10,name:"Ruby Red",colorKey:"red",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#a65353",desc:"Bold red fashion lens for special looks.",powers:["0.00","-1.00","-2.00"]},
-  {id:11,name:"Honey Gold",colorKey:"yellow",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#c5a64f",desc:"Warm golden-yellow lens with a glowing finish.",powers:["0.00","-1.00","-2.00"]},
-  {id:12,name:"Violet Dream",colorKey:"purple",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#8973a5",desc:"Soft violet fashion lens with a dreamy tone.",powers:["0.00","-1.00","-2.00"]},
-  {id:13,name:"Midnight Black",colorKey:"black",category:"Contact Lenses",price:20,badge:"Best Seller",color:"#333333",desc:"Deep black lens for stronger eye definition.",powers:["0.00","-1.00","-2.00"]},
-  {id:14,name:"Blush Pink",colorKey:"pink",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#c990a0",desc:"Soft pink fashion lens for a playful look.",powers:["0.00","-1.00","-2.00"]}];
+  {id:9,name:"Ocean Blue",stockStatus:"preorder",colorKey:"blue",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#6d8fac",desc:"Cool blue fashion lens for a brighter look.",powers:["0.00","-1.00","-2.00","-4.50"]},
+  {id:10,name:"Ruby Red",stockStatus:"preorder",colorKey:"red",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#a65353",desc:"Bold red fashion lens for special looks.",powers:["0.00","-1.00","-2.00"]},
+  {id:11,name:"Honey Gold",stockStatus:"instock",colorKey:"yellow",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#c5a64f",desc:"Warm golden-yellow lens with a glowing finish.",powers:["0.00","-1.00","-2.00"]},
+  {id:12,name:"Violet Dream",stockStatus:"preorder",colorKey:"purple",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#8973a5",desc:"Soft violet fashion lens with a dreamy tone.",powers:["0.00","-1.00","-2.00"]},
+  {id:13,name:"Midnight Black",stockStatus:"instock",colorKey:"black",category:"Contact Lenses",price:20,badge:"Best Seller",color:"#333333",desc:"Deep black lens for stronger eye definition.",powers:["0.00","-1.00","-2.00"]},
+  {id:14,name:"Blush Pink",stockStatus:"preorder",colorKey:"pink",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#c990a0",desc:"Soft pink fashion lens for a playful look.",powers:["0.00","-1.00","-2.00"]}];
 
 let currentCategory = "All";
 let currentColor = "all";
+let currentStock = "all";
 let cart = JSON.parse(localStorage.getItem("tfl_cart") || "[]");
 let selectedProduct = null;
 
@@ -41,7 +42,7 @@ renderCategories(); renderProducts();
 
 function filteredProducts(){
   const q = searchInput.value.trim().toLowerCase();
-  let list = products.filter(p => (currentCategory==="All" || p.category===currentCategory) && (currentColor==="all" || p.colorKey===currentColor) && p.name.toLowerCase().includes(q));
+  let list = products.filter(p => (currentCategory==="All" || p.category===currentCategory) && (currentColor==="all" || p.colorKey===currentColor) && (currentStock==="all" || p.stockStatus===currentStock) && p.name.toLowerCase().includes(q));
   const s=sortSelect.value;
   if(s==="low") list.sort((a,b)=>a.price-b.price);
   if(s==="high") list.sort((a,b)=>b.price-a.price);
@@ -57,12 +58,14 @@ function renderProducts(){
     <article class="product-card" data-id="${p.id}">
       <div class="product-image ${p.type||""}" style="--iris:${p.color}">
         <span class="badge">${localizedBadge(p.badge)}</span>
+        <span class="stock-status ${p.stockStatus==="preorder"?"preorder":""}">${p.stockStatus==="preorder"?tr().stockPre:tr().stockIn}</span>
         <button class="quick-add" aria-label="View ${p.name}" data-id="${p.id}">+</button>
       </div>
       <div class="product-info">
         <div class="product-category">${localizedCategory(p.category)}</div>
         <div class="product-title">${p.name}</div>
         <div class="product-price">${money(p.price)}</div>
+        ${p.stockStatus==="preorder"?`<div class="preorder-note">${tr().waitTwoWeeks}</div>`:""}
       </div>
     </article>`).join("");
   productGrid.querySelectorAll(".product-card").forEach(card=>card.addEventListener("click",()=>openProduct(Number(card.dataset.id))));
@@ -73,6 +76,9 @@ function openProduct(id){
   $("#modalName").textContent=selectedProduct.name;
   $("#modalCategory").textContent=localizedCategory(selectedProduct.category);
   $("#modalPrice").textContent=money(selectedProduct.price);
+  const stockText = selectedProduct.stockStatus==="preorder" ? tr().stockPre : tr().stockIn;
+  const waitText = selectedProduct.stockStatus==="preorder" ? `<span class="modal-waiting">${tr().waitTwoWeeks}</span>` : "";
+  $("#modalStockInfo").innerHTML = `<span class="modal-stock-pill ${selectedProduct.stockStatus==="preorder"?"preorder":""}">${stockText}</span>${waitText}`;
   $("#modalDescription").textContent=selectedProduct.desc;
   $("#modalImage").style.setProperty("--iris",selectedProduct.color);
   $("#powerWrap").classList.toggle("hidden", !selectedProduct.powers);
@@ -232,6 +238,12 @@ const i18n = {
     shopEyebrow:"SHOP",
     latestProductsTitle:"Latest products",
     productsWord:"products",
+    stockFilterTitle:"Availability",
+    clearStockBtn:"Clear",
+    stockAll:"All",
+    stockIn:"In Stock",
+    stockPre:"Pre-order",
+    waitTwoWeeks:"Waiting period: 2 weeks",
     colorFilterTitle:"Shop by color",
     clearColorBtn:"Clear",
     categoryFilterTitle:"Categories",
@@ -279,7 +291,7 @@ const i18n = {
     sortName:"Name: A–Z",
     categoryAll:"All",
     categoryLenses:"Contact Lenses",
-    categoryAccessories:"Accessories",
+    categoryAccessories:"Lens Accessories",
     categoryBeauty:"Beauty",
     bagItems:n=>`Items in your bag (${n})`,
     cartEmpty:"Your bag is empty.",
@@ -295,7 +307,7 @@ const i18n = {
     annCod:"ပစ္စည်းရောက်ငွေချေ",
     annWhatsapp:"WhatsApp မှ မှာယူနိုင်သည်",
     heroEyebrow:"နေ့စဉ်အလှအပအတွက် လွယ်ကူစွာရွေးချယ်ပါ",
-    heroTitle:"သင့်စတိုင်။<br>သင့်မျက်ကပ်မှန်။",
+    heroTitle:"Thai Fashion Lens မှ<br>နွေးထွေးစွာ ကြိုဆိုပါ၏",
     heroText:"နေ့စဉ်လှပတဲ့စတိုင်အတွက် Fashion Contact Lenses များကို အရောင်၊ Power နဲ့ Collection အလိုက် လွယ်ကူစွာရွေးချယ်နိုင်ပါတယ်။",
     shopLatest:"အသစ်ရောက်ပစ္စည်းများ ကြည့်ရန်",
     benefit1Title:"UAE အတွင်း မြန်ဆန်စွာ ပို့ဆောင်ပေးသည်",
@@ -307,6 +319,12 @@ const i18n = {
     shopEyebrow:"ဆိုင်",
     latestProductsTitle:"နောက်ဆုံးရောက် ပစ္စည်းများ",
     productsWord:"ပစ္စည်း",
+    stockFilterTitle:"ပစ္စည်းအခြေအနေ",
+    clearStockBtn:"ရှင်းမည်",
+    stockAll:"အားလုံး",
+    stockIn:"ပစ္စည်းအသင့်ရှိ",
+    stockPre:"ကြိုတင်မှာယူ",
+    waitTwoWeeks:"စောင့်ဆိုင်းချိန် ၂ ပတ်",
     colorFilterTitle:"အရောင်အလိုက် ရွေးရန်",
     clearColorBtn:"ရှင်းမည်",
     categoryFilterTitle:"အမျိုးအစားများ",
@@ -354,7 +372,7 @@ const i18n = {
     sortName:"အမည် A–Z",
     categoryAll:"အားလုံး",
     categoryLenses:"မျက်ကပ်မှန်များ",
-    categoryAccessories:"အပိုပစ္စည်းများ",
+    categoryAccessories:"မျက်ကပ်မှန် အပိုပစ္စည်းများ",
     categoryBeauty:"အလှကုန်",
     bagItems:n=>`Bag ထဲရှိ ပစ္စည်း (${n})`,
     cartEmpty:"သင့် Bag ထဲမှာ ပစ္စည်းမရှိသေးပါ။",
@@ -390,6 +408,29 @@ function localizedBadge(raw){
     "Daily":t.badgeDaily
   };
   return map[raw] || raw;
+}
+
+
+function renderStockFilters(){
+  const t=tr();
+  const defs=[
+    {key:"all",label:t.stockAll},
+    {key:"instock",label:t.stockIn},
+    {key:"preorder",label:t.stockPre}
+  ];
+  const wrap=document.getElementById("stockFilters");
+  if(!wrap) return;
+  wrap.innerHTML=defs.map(s=>`
+    <button type="button" class="stock-chip ${currentStock===s.key?"active":""}" data-stock="${s.key}">
+      ${s.label}
+    </button>`).join("");
+  wrap.querySelectorAll(".stock-chip").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      currentStock=btn.dataset.stock;
+      renderStockFilters();
+      renderProducts();
+    });
+  });
 }
 
 function renderColorFilters(){
@@ -433,7 +474,7 @@ function setSiteLanguage(lang){
   const ids=[
     "annDelivery","annCod","annWhatsapp","heroEyebrow","heroTitle","heroText","shopLatest",
     "benefit1Title","benefit1Text","benefit2Title","benefit2Text","benefit3Title","benefit3Text",
-    "shopEyebrow","latestProductsTitle","productsWord","colorFilterTitle","clearColorBtn","categoryFilterTitle",
+    "shopEyebrow","latestProductsTitle","productsWord","stockFilterTitle","clearStockBtn","colorFilterTitle","clearColorBtn","categoryFilterTitle",
     "howEyebrow","howTitle","step1Title","step1Text","step2Title","step2Text","step3Title","step3Text",
     "emptyTitle","emptyText","yourOrderLabel","shoppingBagTitle","subtotalLabel","deliveryInstruction",
     "fullNameLabel","phoneLabel","emirateLabel","areaLabel","buildingLabel","streetLabel","landmarkLabel",
@@ -471,6 +512,7 @@ function setSiteLanguage(lang){
     btn.classList.toggle("active",btn.dataset.lang===siteLang);
   });
 
+  renderStockFilters();
   renderColorFilters();
   renderCategories();
   renderProducts();
@@ -480,6 +522,16 @@ function setSiteLanguage(lang){
 document.querySelectorAll(".lang-btn").forEach(btn=>{
   btn.addEventListener("click",()=>setSiteLanguage(btn.dataset.lang));
 });
+
+
+const clearStockBtn=document.getElementById("clearStockBtn");
+if(clearStockBtn){
+  clearStockBtn.addEventListener("click",()=>{
+    currentStock="all";
+    renderStockFilters();
+    renderProducts();
+  });
+}
 
 const clearColorBtn=document.getElementById("clearColorBtn");
 if(clearColorBtn){
