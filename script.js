@@ -125,6 +125,52 @@ function showToast(message="Added to bag"){
   setTimeout(()=>$("#toast").classList.add("hidden"),1800);
 }
 
+function orderWhatsApp(){
+  if(!cart.length) return;
+
+  const name = $("#customerName").value.trim();
+  const phone = $("#customerPhone").value.trim();
+  const emirate = $("#customerEmirate").value.trim();
+  const area = $("#customerArea").value.trim();
+  const building = $("#customerBuilding").value.trim();
+  const street = $("#customerStreet").value.trim();
+  const landmark = $("#customerLandmark").value.trim();
+  const notes = $("#customerNotes").value.trim();
+
+  const requiredMissing = !name || !phone || !emirate || !area || !building;
+  $("#addressError").classList.toggle("hidden", !requiredMissing);
+
+  if(requiredMissing){
+    const firstMissing = !name ? $("#customerName")
+      : !phone ? $("#customerPhone")
+      : !emirate ? $("#customerEmirate")
+      : !area ? $("#customerArea")
+      : $("#customerBuilding");
+    firstMissing.focus();
+    return;
+  }
+
+  const lines = cart.map((x,i) =>
+    `${i+1}. ${x.name}${x.power ? ` | Power ${x.power}` : ""} | Qty ${x.qty} | ${money(x.price*x.qty)}`
+  );
+  const total = money(cart.reduce((a,x)=>a+x.price*x.qty,0));
+
+  const addressLines = [
+    `Name: ${name}`,
+    `Phone: ${phone}`,
+    `Emirate: ${emirate}`,
+    `Area / Community: ${area}`,
+    `Building / Villa: ${building}`,
+    street ? `Street / Apartment: ${street}` : "",
+    landmark ? `Landmark: ${landmark}` : "",
+    notes ? `Delivery Notes: ${notes}` : ""
+  ].filter(Boolean);
+
+  const message = `Hi Thai Fashion Lenses UAE! I would like to order:\n\n${lines.join("\n")}\n\nSubtotal: ${total}\n\nDELIVERY DETAILS\n${addressLines.join("\n")}\n\nPlease confirm delivery fee and final total.`;
+
+  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`, "_blank");
+}
+
 searchInput.addEventListener("input",renderProducts);
 sortSelect.addEventListener("change",renderProducts);
 $("#searchFocusBtn").addEventListener("click",()=>{ location.hash="shop"; setTimeout(()=>searchInput.focus(),300); });
