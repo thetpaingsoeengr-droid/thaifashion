@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Thai Fashion Lenses UAE</title>
+  <meta name="description" content="Shop fashion contact lenses and accessories in the UAE. Order easily via WhatsApp." />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="announcement">
+    <span>UAE Delivery</span>
+    <span>•</span>
+    <span>Cash on Delivery</span>
+    <span>•</span>
+    <span>Order via WhatsApp</span>
+  </div>
+
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="brand" href="#">
+        <div class="brand-mark">TF</div>
+        <div>
+          <div class="brand-name">Thai Fashion Lenses</div>
+          <div class="brand-sub">UAE</div>
+        </div>
+      </a>
+
+      <div class="header-actions">
+        <button class="icon-btn" id="searchFocusBtn" aria-label="Search">⌕</button>
+        <button class="cart-btn" id="openCartBtn">
+          Bag <span id="cartCount">0</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">EVERYDAY BEAUTY, MADE EASY</p>
+        <h1>Your look.<br>Your lenses.</h1>
+        <p class="hero-text">Fashion contact lenses selected for effortless everyday style. Shop by color, power and collection.</p>
+        <a href="#shop" class="primary-btn">Shop latest</a>
+      </div>
+      <div class="hero-visual">
+        <div class="hero-orb orb-one"></div>
+        <div class="hero-orb orb-two"></div>
+        <div class="lens-disc">
+          <div class="lens-ring"></div>
+        </div>
+        <p>NEW DROP<br><strong>2026</strong></p>
+      </div>
+    </section>
+
+    <section class="benefits">
+      <div><strong>Fast UAE delivery</strong><span>Simple ordering through WhatsApp</span></div>
+      <div><strong>Power options</strong><span>Choose your lens power before adding</span></div>
+      <div><strong>Easy support</strong><span>Chat with us before you order</span></div>
+    </section>
+
+    <section class="shop-section" id="shop">
+      <div class="section-heading">
+        <div>
+          <p class="eyebrow">SHOP</p>
+          <h2>Latest products</h2>
+        </div>
+        <p class="results-text"><span id="resultCount">0</span> products</p>
+      </div>
+
+      <div class="shop-tools">
+        <label class="search-box">
+          <span>⌕</span>
+          <input id="searchInput" type="search" placeholder="Search products…" autocomplete="off" />
+        </label>
+        <select id="sortSelect" aria-label="Sort products">
+          <option value="featured">Featured</option>
+          <option value="low">Price: low to high</option>
+          <option value="high">Price: high to low</option>
+          <option value="name">Name: A–Z</option>
+        </select>
+      </div>
+
+      <div class="category-scroller" id="categoryFilters"></div>
+
+      <div class="product-grid" id="productGrid"></div>
+      <div class="empty-state hidden" id="emptyState">
+        <h3>No products found</h3>
+        <p>Try another search or category.</p>
+      </div>
+    </section>
+
+    <section class="how-order">
+      <p class="eyebrow">HOW TO ORDER</p>
+      <h2>Three easy steps</h2>
+      <div class="steps">
+        <div><span>01</span><h3>Choose</h3><p>Select product, power and quantity.</p></div>
+        <div><span>02</span><h3>Add to bag</h3><p>Review your order and total.</p></div>
+        <div><span>03</span><h3>WhatsApp us</h3><p>Send the prepared order message instantly.</p></div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div>
+      <div class="brand-name">Thai Fashion Lenses UAE</div>
+      <p>Fashion lenses & beauty finds.</p>
+    </div>
+    <div class="footer-note">
+      <p>WhatsApp: +971 54 460 8059</p>
+      <p>© <span id="year"></span> Thai Fashion Lenses UAE</p>
+    </div>
+  </footer>
+
+  <div class="modal-backdrop hidden" id="productModal">
+    <div class="modal product-modal-card">
+      <button class="close-btn" data-close="productModal">×</button>
+      <div class="modal-product-image" id="modalImage"></div>
+      <div class="modal-content">
+        <p class="product-category" id="modalCategory"></p>
+        <h2 id="modalName"></h2>
+        <p class="modal-price" id="modalPrice"></p>
+        <p class="modal-desc" id="modalDescription"></p>
+
+        <div id="powerWrap">
+          <label class="field-label" for="powerSelect">Power</label>
+          <select id="powerSelect"></select>
+        </div>
+
+        <label class="field-label" for="qtyInput">Quantity</label>
+        <div class="qty-control">
+          <button id="qtyMinus">−</button>
+          <input id="qtyInput" value="1" inputmode="numeric" />
+          <button id="qtyPlus">+</button>
+        </div>
+
+        <button class="primary-btn full" id="addToCartBtn">Add to bag</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="cart-drawer" id="cartDrawer" aria-hidden="true">
+    <div class="cart-header">
+      <div>
+        <p class="eyebrow">YOUR ORDER</p>
+        <h2>Shopping bag</h2>
+      </div>
+      <button class="close-btn" id="closeCartBtn">×</button>
+    </div>
+    <div class="cart-items" id="cartItems"></div>
+    <div class="cart-empty" id="cartEmpty">
+      <p>Your bag is empty.</p>
+      <button class="secondary-btn" id="continueShoppingBtn">Continue shopping</button>
+    </div>
+    <div class="cart-summary hidden" id="cartSummary">
+      <div class="summary-row"><span>Subtotal</span><strong id="cartSubtotal">AED 0</strong></div>
+      <p class="shipping-note">Delivery fee can be confirmed on WhatsApp.</p>
+      <button class="whatsapp-btn" id="whatsappOrderBtn">Order via WhatsApp</button>
+    </div>
+  </div>
+  <div class="drawer-backdrop hidden" id="drawerBackdrop"></div>
+
+  <div class="toast hidden" id="toast">Added to bag</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
