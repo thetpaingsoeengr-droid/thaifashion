@@ -436,3 +436,94 @@ html[lang="my"] h1{
   .lang-btn{padding:7px 7px;font-size:9px}
   .header-actions{gap:5px}
 }
+
+
+/* ===== V9: DEFAULT MYANMAR FONT + COLOR FILTERS ===== */
+body,
+button,
+input,
+select,
+textarea{
+  font-family:"Noto Sans Myanmar","DM Sans",sans-serif;
+}
+
+h1,h2,h3{
+  font-family:"Noto Sans Myanmar","Playfair Display",serif;
+}
+
+.filter-block{
+  margin-top:18px;
+}
+.filter-title-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin-top:18px;
+}
+.category-title-row{
+  margin-top:2px;
+}
+.filter-title{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+.clear-filter-btn{
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-size:12px;
+  font-weight:700;
+}
+.color-scroller{
+  display:flex;
+  gap:10px;
+  overflow:auto;
+  padding:12px 0 14px;
+  scrollbar-width:none;
+}
+.color-scroller::-webkit-scrollbar{display:none}
+.color-chip{
+  flex:none;
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:8px 12px 8px 9px;
+  display:inline-flex;
+  align-items:center;
+  gap:7px;
+  color:#554f4a;
+  font-size:12px;
+  font-weight:700;
+}
+.color-chip.active{
+  border-color:#171717;
+  box-shadow:inset 0 0 0 1px #171717;
+}
+.color-dot{
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  border:1px solid rgba(0,0,0,.13);
+  background:var(--dot);
+}
+.color-chip[data-color="clear"] .color-dot{
+  background:linear-gradient(135deg,#fff 0 45%,#d7e6ed 46% 54%,#fff 55%);
+}
+.color-chip[data-color="yellow"] .color-dot{background:#d8bd52}
+.color-chip[data-color="black"] .color-dot{background:#171717}
+.color-chip[data-color="pink"] .color-dot{background:#d79aaa}
+.color-chip[data-color="purple"] .color-dot{background:#8e76a8}
+.color-chip[data-color="red"] .color-dot{background:#a65252}
+.color-chip[data-color="blue"] .color-dot{background:#6989a8}
+.color-chip[data-color="green"] .color-dot{background:#718a76}
+.color-chip[data-color="brown"] .color-dot{background:#92705b}
+.color-chip[data-color="gray"] .color-dot{background:#8e969a}
+
+html[lang="my"] .eyebrow,
+html[lang="my"] .filter-title{
+  letter-spacing:.02em;
+}

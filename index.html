@@ -8,7 +8,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=7" />
+  <link rel="stylesheet" href="styles.css?v=9" />
 </head>
 <body>
   <div class="announcement">
@@ -61,9 +61,9 @@
     </section>
 
     <section class="benefits">
-      <div><strong>Fast UAE delivery</strong><span>Simple ordering through WhatsApp</span></div>
-      <div><strong>Power options</strong><span>Choose your lens power before adding</span></div>
-      <div><strong>Easy support</strong><span>Chat with us before you order</span></div>
+      <div><strong id="benefit1Title">Fast UAE delivery</strong><span id="benefit1Text">Simple ordering through WhatsApp</span></div>
+      <div><strong id="benefit2Title">Power options</strong><span id="benefit2Text">Choose your lens power before adding</span></div>
+      <div><strong id="benefit3Title">Easy support</strong><span id="benefit3Text">Chat with us before you order</span></div>
     </section>
 
     <section class="shop-section" id="shop">
@@ -72,7 +72,7 @@
           <p class="eyebrow" id="shopEyebrow">SHOP</p>
           <h2 id="latestProductsTitle">Latest products</h2>
         </div>
-        <p class="results-text"><span id="resultCount">0</span> products</p>
+        <p class="results-text"><span id="resultCount">0</span> <span id="productsWord">products</span></p>
       </div>
 
       <div class="shop-tools">
@@ -81,29 +81,40 @@
           <input id="searchInput" type="search" placeholder="Search products…" autocomplete="off" />
         </label>
         <select id="sortSelect" aria-label="Sort products">
-          <option value="featured">Featured</option>
-          <option value="low">Price: low to high</option>
-          <option value="high">Price: high to low</option>
-          <option value="name">Name: A–Z</option>
+          <option id="sortFeatured" value="featured">Featured</option>
+          <option id="sortLow" value="low">Price: low to high</option>
+          <option id="sortHigh" value="high">Price: high to low</option>
+          <option id="sortName" value="name">Name: A–Z</option>
         </select>
       </div>
 
+      <div class="filter-block">
+        <div class="filter-title-row">
+          <span class="filter-title" id="colorFilterTitle">Shop by color</span>
+          <button type="button" class="clear-filter-btn" id="clearColorBtn">Clear</button>
+        </div>
+        <div class="color-scroller" id="colorFilters"></div>
+      </div>
+
+      <div class="filter-title-row category-title-row">
+        <span class="filter-title" id="categoryFilterTitle">Categories</span>
+      </div>
       <div class="category-scroller" id="categoryFilters"></div>
 
       <div class="product-grid" id="productGrid"></div>
       <div class="empty-state hidden" id="emptyState">
-        <h3>No products found</h3>
-        <p>Try another search or category.</p>
+        <h3 id="emptyTitle">No products found</h3>
+        <p id="emptyText">Try another search, color or category.</p>
       </div>
     </section>
 
     <section class="how-order">
-      <p class="eyebrow">HOW TO ORDER</p>
-      <h2>Three easy steps</h2>
+      <p class="eyebrow" id="howEyebrow">HOW TO ORDER</p>
+      <h2 id="howTitle">Three easy steps</h2>
       <div class="steps">
-        <div><span>01</span><h3>Choose</h3><p>Select product, power and quantity.</p></div>
-        <div><span>02</span><h3>Add to bag</h3><p>Review your order and total.</p></div>
-        <div><span>03</span><h3>WhatsApp us</h3><p>Send the prepared order message instantly.</p></div>
+        <div><span>01</span><h3 id="step1Title">Choose</h3><p id="step1Text">Select product, power and quantity.</p></div>
+        <div><span>02</span><h3 id="step2Title">Add to bag</h3><p id="step2Text">Review your order and total.</p></div>
+        <div><span>03</span><h3 id="step3Title">WhatsApp us</h3><p id="step3Text">Send the prepared order message instantly.</p></div>
       </div>
     </section>
   </main>
@@ -111,10 +122,10 @@
   <footer>
     <div>
       <div class="brand-name">Thai Fashion Lenses UAE</div>
-      <p>Fashion lenses & beauty finds.</p>
+      <p id="footerTagline">Fashion lenses & beauty finds.</p>
     </div>
     <div class="footer-note">
-      <p>WhatsApp: +971 54 460 8059</p>
+      <p id="footerWhatsapp">WhatsApp: +971 54 460 8059</p>
       <p>© <span id="year"></span> Thai Fashion Lenses UAE</p>
     </div>
   </footer>
@@ -130,18 +141,18 @@
         <p class="modal-desc" id="modalDescription"></p>
 
         <div id="powerWrap">
-          <label class="field-label" for="powerSelect">Power</label>
+          <label class="field-label" for="powerSelect" id="powerLabel">Power</label>
           <select id="powerSelect"></select>
         </div>
 
-        <label class="field-label" for="qtyInput">Quantity</label>
+        <label class="field-label" for="qtyInput" id="quantityLabel">Quantity</label>
         <div class="qty-control">
           <button id="qtyMinus">−</button>
           <input id="qtyInput" value="1" inputmode="numeric" />
           <button id="qtyPlus">+</button>
         </div>
 
-        <button class="primary-btn full" id="addToCartBtn">Add to bag</button>
+        <button class="primary-btn full" id="addToCartBtn"><span id="addToCartText">Add to bag</span></button>
       </div>
     </div>
   </div>
@@ -156,8 +167,8 @@
     </div>
     <div class="cart-items" id="cartItems"></div>
     <div class="cart-empty" id="cartEmpty">
-      <p>Your bag is empty.</p>
-      <button class="secondary-btn" id="continueShoppingBtn">Continue shopping</button>
+      <p id="cartEmptyText">Your bag is empty.</p>
+      <button class="secondary-btn" id="continueShoppingBtn"><span id="continueShoppingText">Continue shopping</span></button>
     </div>
     <div class="cart-summary hidden" id="cartSummary">
       <div class="summary-row"><span id="subtotalLabel">Subtotal</span><strong id="cartSubtotal">AED 0</strong></div>
@@ -177,7 +188,7 @@
         <label>
           <span id="emirateLabel">Emirate *</span>
           <select id="customerEmirate">
-            <option value="">Select emirate</option>
+            <option id="selectEmirateOption" value="">Select emirate</option>
             <option>Dubai</option>
             <option>Sharjah</option>
             <option>Ajman</option>
@@ -223,6 +234,6 @@
 
   <div class="toast hidden" id="toast">Added to bag</div>
 
-  <script src="script.js?v=7"></script>
+  <script src="script.js?v=9"></script>
 </body>
 </html>
