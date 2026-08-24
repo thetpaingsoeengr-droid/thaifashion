@@ -159,14 +159,12 @@ function orderWhatsApp(){
   const message =
 `Hi Thai Fashion Lenses UAE! I would like to order:
 
-${lines.join("
-")}
+${lines.join("\n")}
 
 Subtotal: ${total}
 
 DELIVERY DETAILS
-${addressLines.join("
-")}
+${addressLines.join("\n")}
 
 Please confirm delivery fee and final total.`;
 
