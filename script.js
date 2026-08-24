@@ -86,7 +86,9 @@ function addToCart(){
   const existing=cart.find(x=>x.key===key);
   if(existing) existing.qty+=qty;
   else cart.push({key,id:selectedProduct.id,name:selectedProduct.name,price:selectedProduct.price,qty,power,color:selectedProduct.color});
-  saveCart(); closeModal(); showToast(); openCart();
+  saveCart();
+  closeModal();
+  showToast("Added to bag — tap Bag to review");
 }
 
 function saveCart(){ localStorage.setItem("tfl_cart",JSON.stringify(cart)); renderCart(); }
@@ -97,13 +99,17 @@ function renderCart(){
   $("#cartItems").innerHTML=cart.map((x,i)=>`
     <div class="cart-item">
       <div class="cart-thumb" style="--iris:${x.color}"></div>
-      <div>
+      <div class="cart-item-main">
         <h4>${x.name}</h4>
-        <p>${x.power?`Power: ${x.power} · `:""}Qty: ${x.qty}</p>
-        <strong>${money(x.price*x.qty)}</strong><br>
-        <button class="remove-item" data-i="${i}">Remove</button>
+        <div class="cart-meta">
+          ${x.power ? `<span>Power ${x.power}</span>` : ""}
+          <span>Qty ${x.qty}</span>
+        </div>
+        <div class="cart-item-bottom">
+          <strong>${money(x.price*x.qty)}</strong>
+          <button class="remove-item" data-i="${i}">Remove</button>
+        </div>
       </div>
-      <strong>${money(x.price*x.qty)}</strong>
     </div>`).join("");
   $("#cartItems").querySelectorAll(".remove-item").forEach(b=>b.addEventListener("click",()=>{
     cart.splice(Number(b.dataset.i),1); saveCart();
@@ -113,62 +119,10 @@ function renderCart(){
 
 function openCart(){ $("#cartDrawer").classList.add("open"); $("#drawerBackdrop").classList.remove("hidden"); $("#cartDrawer").setAttribute("aria-hidden","false"); document.body.style.overflow="hidden"; }
 function closeCart(){ $("#cartDrawer").classList.remove("open"); $("#drawerBackdrop").classList.add("hidden"); $("#cartDrawer").setAttribute("aria-hidden","true"); document.body.style.overflow=""; }
-function showToast(){ $("#toast").classList.remove("hidden"); setTimeout(()=>$("#toast").classList.add("hidden"),1300); }
-
-function orderWhatsApp(){
-  if(!cart.length) return;
-
-  const name = $("#customerName").value.trim();
-  const phone = $("#customerPhone").value.trim();
-  const emirate = $("#customerEmirate").value.trim();
-  const area = $("#customerArea").value.trim();
-  const building = $("#customerBuilding").value.trim();
-  const street = $("#customerStreet").value.trim();
-  const landmark = $("#customerLandmark").value.trim();
-  const notes = $("#customerNotes").value.trim();
-
-  const requiredMissing = !name || !phone || !emirate || !area || !building;
-  $("#addressError").classList.toggle("hidden", !requiredMissing);
-
-  if(requiredMissing){
-    const firstMissing = !name ? $("#customerName")
-      : !phone ? $("#customerPhone")
-      : !emirate ? $("#customerEmirate")
-      : !area ? $("#customerArea")
-      : $("#customerBuilding");
-    firstMissing.focus();
-    return;
-  }
-
-  const lines = cart.map((x,i) =>
-    `${i+1}. ${x.name}${x.power ? ` | Power ${x.power}` : ""} | Qty ${x.qty} | ${money(x.price*x.qty)}`
-  );
-  const total = money(cart.reduce((a,x)=>a+x.price*x.qty,0));
-
-  const addressLines = [
-    `Name: ${name}`,
-    `Phone: ${phone}`,
-    `Emirate: ${emirate}`,
-    `Area / Community: ${area}`,
-    `Building / Villa: ${building}`,
-    street ? `Street / Apartment: ${street}` : "",
-    landmark ? `Landmark: ${landmark}` : "",
-    notes ? `Delivery Notes: ${notes}` : ""
-  ].filter(Boolean);
-
-  const message =
-`Hi Thai Fashion Lenses UAE! I would like to order:
-
-${lines.join("\n")}
-
-Subtotal: ${total}
-
-DELIVERY DETAILS
-${addressLines.join("\n")}
-
-Please confirm delivery fee and final total.`;
-
-  window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,"_blank");
+function showToast(message="Added to bag"){
+  $("#toast").textContent=message;
+  $("#toast").classList.remove("hidden");
+  setTimeout(()=>$("#toast").classList.add("hidden"),1800);
 }
 
 searchInput.addEventListener("input",renderProducts);
