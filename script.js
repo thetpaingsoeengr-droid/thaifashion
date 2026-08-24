@@ -96,7 +96,7 @@ function renderCart(){
   $("#cartCount").textContent=cart.reduce((a,x)=>a+x.qty,0);
   $("#cartEmpty").classList.toggle("hidden",cart.length>0);
   $("#cartSummary").classList.toggle("hidden",cart.length===0);
-  $("#cartItems").innerHTML=cart.map((x,i)=>`
+  $("#cartItems").innerHTML=(cart.length ? `<div class="bag-items-label">Items in your bag (${cart.reduce((a,x)=>a+x.qty,0)})</div>` : "") + cart.map((x,i)=>`
     <div class="cart-item">
       <div class="cart-thumb" style="--iris:${x.color}"></div>
       <div class="cart-item-main">

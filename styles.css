@@ -252,3 +252,140 @@ footer .brand-name{color:var(--ink)}
   text-align:center;
   box-shadow:0 10px 30px rgba(0,0,0,.18);
 }
+
+
+/* ===== CART VISIBILITY FIX =====
+   Let the whole drawer scroll so the long address form
+   never squeezes the product list into a tiny strip.
+*/
+.cart-drawer{
+  overflow-y:auto;
+  overflow-x:hidden;
+  display:block;
+  padding:26px;
+}
+
+.cart-header{
+  position:sticky;
+  top:-26px;
+  z-index:4;
+  background:var(--bg);
+  padding-top:26px;
+  margin-top:-26px;
+}
+
+.cart-items{
+  overflow:visible;
+  flex:none;
+  display:block;
+  padding:14px 0 20px;
+  min-height:auto;
+}
+
+.cart-item{
+  display:grid;
+  grid-template-columns:86px minmax(0,1fr);
+  gap:14px;
+  width:100%;
+  padding:14px;
+  margin:10px 0;
+  border:1px solid var(--line);
+  border-radius:18px;
+  background:#fff;
+  box-shadow:0 6px 20px rgba(0,0,0,.05);
+  overflow:visible;
+}
+
+.cart-thumb{
+  width:86px;
+  height:100px;
+  flex:none;
+}
+
+.cart-item-main{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+}
+
+.cart-item-main h4{
+  display:block;
+  margin:0 0 9px;
+  font-size:16px;
+  line-height:1.3;
+  color:var(--ink);
+  white-space:normal;
+  overflow:visible;
+}
+
+.cart-meta{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:12px;
+}
+
+.cart-meta span{
+  display:inline-flex;
+  padding:5px 9px;
+  border-radius:999px;
+  background:var(--soft);
+  color:#5f5954;
+  font-size:11px;
+  font-weight:700;
+}
+
+.cart-item-bottom{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+}
+
+.cart-item-bottom strong{
+  font-size:16px;
+  color:var(--ink);
+}
+
+.remove-item{
+  color:#a13d3d;
+  font-weight:700;
+}
+
+.cart-summary{
+  border-top:1px solid var(--line);
+  padding-top:22px;
+  padding-bottom:34px;
+}
+
+@media (max-width:600px){
+  .cart-drawer{
+    padding:18px;
+  }
+
+  .cart-header{
+    top:-18px;
+    padding-top:18px;
+    margin-top:-18px;
+  }
+
+  .cart-item{
+    grid-template-columns:78px minmax(0,1fr);
+    padding:12px;
+  }
+
+  .cart-thumb{
+    width:78px;
+    height:92px;
+  }
+}
+
+.bag-items-label{
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--muted);
+  padding:4px 2px 8px;
+}
