@@ -6,7 +6,9 @@ const products = [
   {id:3,name:"Pattaya Green",category:"Contact Lenses",price:15,badge:"New Arrival",color:"#708979",desc:"Muted green lens with a fashion-forward but wearable tone.",powers:["0.00","-1.00","-2.00","-4.50"]},
   {id:4,name:"Mocha Hazel",category:"Contact Lenses",price:20,badge:"Power Lens",color:"#a58662",desc:"Hazel-brown fashion lens with multiple power choices.",powers:["0.00","-1.00","-2.00","-4.50"]},
   {id:5,name:"Daily Clear 10 pcs",category:"Contact Lenses",price:25,badge:"Daily",color:"#b7c0c4",desc:"Daily disposable clear lenses, packed for convenient everyday use.",powers:["0.00","-1.00","-2.00","-4.50"]},
-
+  {id:6,name:"Lens Travel Case",category:"Accessories",price:10,badge:"In Stock",color:"#c99d9e",type:"bag",desc:"Compact lens case for your handbag or travel pouch.",powers:null},
+  {id:7,name:"Mini Fashion Pouch",category:"Accessories",price:20,badge:"New Arrival",color:"#a98d7b",type:"bag",desc:"Small everyday pouch for lenses, makeup or accessories.",powers:null},
+  {id:8,name:"Soft Pink Lip Tint",category:"Beauty",price:18,badge:"Best Seller",color:"#bd7378",type:"beauty",desc:"Easy everyday lip tint with a soft pink finish.",powers:null}
 ];
 
 let currentCategory = "All";
@@ -115,9 +117,59 @@ function showToast(){ $("#toast").classList.remove("hidden"); setTimeout(()=>$("
 
 function orderWhatsApp(){
   if(!cart.length) return;
-  const lines=cart.map((x,i)=>`${i+1}. ${x.name}${x.power?` | Power ${x.power}`:""} | Qty ${x.qty} | ${money(x.price*x.qty)}`);
-  const total=money(cart.reduce((a,x)=>a+x.price*x.qty,0));
-  const message=`Hi Thai Fashion Lenses UAE! I would like to order:\n\n${lines.join("\n")}\n\nSubtotal: ${total}\n\nName:\nArea / Emirate:\nDelivery address:\nPreferred delivery time:`;
+
+  const name = $("#customerName").value.trim();
+  const phone = $("#customerPhone").value.trim();
+  const emirate = $("#customerEmirate").value.trim();
+  const area = $("#customerArea").value.trim();
+  const building = $("#customerBuilding").value.trim();
+  const street = $("#customerStreet").value.trim();
+  const landmark = $("#customerLandmark").value.trim();
+  const notes = $("#customerNotes").value.trim();
+
+  const requiredMissing = !name || !phone || !emirate || !area || !building;
+  $("#addressError").classList.toggle("hidden", !requiredMissing);
+
+  if(requiredMissing){
+    const firstMissing = !name ? $("#customerName")
+      : !phone ? $("#customerPhone")
+      : !emirate ? $("#customerEmirate")
+      : !area ? $("#customerArea")
+      : $("#customerBuilding");
+    firstMissing.focus();
+    return;
+  }
+
+  const lines = cart.map((x,i) =>
+    `${i+1}. ${x.name}${x.power ? ` | Power ${x.power}` : ""} | Qty ${x.qty} | ${money(x.price*x.qty)}`
+  );
+  const total = money(cart.reduce((a,x)=>a+x.price*x.qty,0));
+
+  const addressLines = [
+    `Name: ${name}`,
+    `Phone: ${phone}`,
+    `Emirate: ${emirate}`,
+    `Area / Community: ${area}`,
+    `Building / Villa: ${building}`,
+    street ? `Street / Apartment: ${street}` : "",
+    landmark ? `Landmark: ${landmark}` : "",
+    notes ? `Delivery Notes: ${notes}` : ""
+  ].filter(Boolean);
+
+  const message =
+`Hi Thai Fashion Lenses UAE! I would like to order:
+
+${lines.join("
+")}
+
+Subtotal: ${total}
+
+DELIVERY DETAILS
+${addressLines.join("
+")}
+
+Please confirm delivery fee and final total.`;
+
   window.open(`https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,"_blank");
 }
 

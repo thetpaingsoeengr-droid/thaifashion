@@ -157,7 +157,61 @@
     </div>
     <div class="cart-summary hidden" id="cartSummary">
       <div class="summary-row"><span>Subtotal</span><strong id="cartSubtotal">AED 0</strong></div>
-      <p class="shipping-note">Delivery fee can be confirmed on WhatsApp.</p>
+      <p class="shipping-note">Please add your delivery details before ordering.</p>
+
+      <div class="delivery-form">
+        <label>
+          <span>Full Name *</span>
+          <input id="customerName" type="text" placeholder="Your full name" />
+        </label>
+
+        <label>
+          <span>Phone Number *</span>
+          <input id="customerPhone" type="tel" placeholder="05X XXX XXXX" />
+        </label>
+
+        <label>
+          <span>Emirate *</span>
+          <select id="customerEmirate">
+            <option value="">Select emirate</option>
+            <option>Dubai</option>
+            <option>Sharjah</option>
+            <option>Ajman</option>
+            <option>Abu Dhabi</option>
+            <option>Umm Al Quwain</option>
+            <option>Ras Al Khaimah</option>
+            <option>Fujairah</option>
+          </select>
+        </label>
+
+        <label>
+          <span>Area / Community *</span>
+          <input id="customerArea" type="text" placeholder="e.g. Muwaileh, Al Nahda" />
+        </label>
+
+        <label>
+          <span>Building / Villa *</span>
+          <input id="customerBuilding" type="text" placeholder="Building name / Villa no." />
+        </label>
+
+        <label>
+          <span>Street / Apartment</span>
+          <input id="customerStreet" type="text" placeholder="Street, apartment or room no." />
+        </label>
+
+        <label>
+          <span>Landmark</span>
+          <input id="customerLandmark" type="text" placeholder="Nearby landmark" />
+        </label>
+
+        <label>
+          <span>Delivery Notes</span>
+          <textarea id="customerNotes" rows="3" placeholder="Any special delivery instructions"></textarea>
+        </label>
+
+        <p class="form-error hidden" id="addressError">Please complete all required (*) delivery fields.</p>
+      </div>
+
       <button class="whatsapp-btn" id="whatsappOrderBtn">Order via WhatsApp</button>
     </div>
   </div>
