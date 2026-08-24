@@ -7,16 +7,16 @@
   <meta name="description" content="Shop fashion contact lenses and accessories in the UAE. Order easily via WhatsApp." />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css?v=7" />
 </head>
 <body>
   <div class="announcement">
-    <span>UAE Delivery</span>
+    <span id="annDelivery">UAE Delivery</span>
     <span>•</span>
-    <span>Cash on Delivery</span>
+    <span id="annCod">Cash on Delivery</span>
     <span>•</span>
-    <span>Order via WhatsApp</span>
+    <span id="annWhatsapp">Order via WhatsApp</span>
   </div>
 
   <header class="site-header">
@@ -30,6 +30,10 @@
       </a>
 
       <div class="header-actions">
+        <div class="lang-switch" aria-label="Language selector">
+          <button type="button" class="lang-btn active" data-lang="en">EN</button>
+          <button type="button" class="lang-btn" data-lang="mm">မြန်မာ</button>
+        </div>
         <button class="icon-btn" id="searchFocusBtn" aria-label="Search">⌕</button>
         <button class="cart-btn" id="openCartBtn">
           Bag <span id="cartCount">0</span>
@@ -41,10 +45,10 @@
   <main>
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">EVERYDAY BEAUTY, MADE EASY</p>
-        <h1>Your look.<br>Your lenses.</h1>
-        <p class="hero-text">Fashion contact lenses selected for effortless everyday style. Shop by color, power and collection.</p>
-        <a href="#shop" class="primary-btn">Shop latest</a>
+        <p class="eyebrow" id="heroEyebrow">EVERYDAY BEAUTY, MADE EASY</p>
+        <h1 id="heroTitle">Your look.<br>Your lenses.</h1>
+        <p class="hero-text" id="heroText">Fashion contact lenses selected for effortless everyday style. Shop by color, power and collection.</p>
+        <a href="#shop" class="primary-btn" id="shopLatest">Shop latest</a>
       </div>
       <div class="hero-visual">
         <div class="hero-orb orb-one"></div>
@@ -65,8 +69,8 @@
     <section class="shop-section" id="shop">
       <div class="section-heading">
         <div>
-          <p class="eyebrow">SHOP</p>
-          <h2>Latest products</h2>
+          <p class="eyebrow" id="shopEyebrow">SHOP</p>
+          <h2 id="latestProductsTitle">Latest products</h2>
         </div>
         <p class="results-text"><span id="resultCount">0</span> products</p>
       </div>
@@ -145,8 +149,8 @@
   <div class="cart-drawer" id="cartDrawer" aria-hidden="true">
     <div class="cart-header">
       <div>
-        <p class="eyebrow">YOUR ORDER</p>
-        <h2>Shopping bag</h2>
+        <p class="eyebrow" id="yourOrderLabel">YOUR ORDER</p>
+        <h2 id="shoppingBagTitle">Shopping bag</h2>
       </div>
       <button class="close-btn" id="closeCartBtn">×</button>
     </div>
@@ -156,22 +160,22 @@
       <button class="secondary-btn" id="continueShoppingBtn">Continue shopping</button>
     </div>
     <div class="cart-summary hidden" id="cartSummary">
-      <div class="summary-row"><span>Subtotal</span><strong id="cartSubtotal">AED 0</strong></div>
-      <p class="shipping-note">Please add your delivery details before ordering.</p>
+      <div class="summary-row"><span id="subtotalLabel">Subtotal</span><strong id="cartSubtotal">AED 0</strong></div>
+      <p class="shipping-note" id="deliveryInstruction">Please add your delivery details before ordering.</p>
 
       <div class="delivery-form">
         <label>
-          <span>Full Name *</span>
+          <span id="fullNameLabel">Full Name *</span>
           <input id="customerName" type="text" placeholder="Your full name" />
         </label>
 
         <label>
-          <span>Phone Number *</span>
+          <span id="phoneLabel">Phone Number *</span>
           <input id="customerPhone" type="tel" placeholder="05X XXX XXXX" />
         </label>
 
         <label>
-          <span>Emirate *</span>
+          <span id="emirateLabel">Emirate *</span>
           <select id="customerEmirate">
             <option value="">Select emirate</option>
             <option>Dubai</option>
@@ -185,40 +189,40 @@
         </label>
 
         <label>
-          <span>Area / Community *</span>
+          <span id="areaLabel">Area / Community *</span>
           <input id="customerArea" type="text" placeholder="e.g. Muwaileh, Al Nahda" />
         </label>
 
         <label>
-          <span>Building / Villa *</span>
+          <span id="buildingLabel">Building / Villa *</span>
           <input id="customerBuilding" type="text" placeholder="Building name / Villa no." />
         </label>
 
         <label>
-          <span>Street / Apartment</span>
+          <span id="streetLabel">Street / Apartment</span>
           <input id="customerStreet" type="text" placeholder="Street, apartment or room no." />
         </label>
 
         <label>
-          <span>Landmark</span>
+          <span id="landmarkLabel">Landmark</span>
           <input id="customerLandmark" type="text" placeholder="Nearby landmark" />
         </label>
 
         <label>
-          <span>Delivery Notes</span>
+          <span id="notesLabel">Delivery Notes</span>
           <textarea id="customerNotes" rows="3" placeholder="Any special delivery instructions"></textarea>
         </label>
 
         <p class="form-error hidden" id="addressError">Please complete all required (*) delivery fields.</p>
       </div>
 
-      <button class="whatsapp-btn" id="whatsappOrderBtn">Order via WhatsApp</button>
+      <button class="whatsapp-btn" id="whatsappOrderBtn"><span id="whatsappBtnText">Order via WhatsApp</span></button>
     </div>
   </div>
   <div class="drawer-backdrop hidden" id="drawerBackdrop"></div>
 
   <div class="toast hidden" id="toast">Added to bag</div>
 
-  <script src="script.js"></script>
+  <script src="script.js?v=7"></script>
 </body>
 </html>

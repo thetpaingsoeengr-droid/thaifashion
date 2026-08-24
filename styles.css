@@ -389,3 +389,50 @@ footer .brand-name{color:var(--ink)}
   color:var(--muted);
   padding:4px 2px 8px;
 }
+
+
+/* ===== LANGUAGE SWITCH: EN / MYANMAR ===== */
+.lang-switch{
+  display:flex;
+  align-items:center;
+  padding:3px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+  flex:none;
+}
+.lang-btn{
+  border:0;
+  background:transparent;
+  border-radius:999px;
+  padding:8px 10px;
+  font-size:11px;
+  line-height:1;
+  font-weight:800;
+  color:var(--muted);
+}
+.lang-btn.active{
+  background:#171717;
+  color:#fff;
+}
+html[lang="my"] body,
+html[lang="my"] button,
+html[lang="my"] input,
+html[lang="my"] select,
+html[lang="my"] textarea{
+  font-family:"Noto Sans Myanmar","DM Sans",sans-serif;
+}
+html[lang="my"] h1,
+html[lang="my"] h2,
+html[lang="my"] h3{
+  font-family:"Noto Sans Myanmar",sans-serif;
+  letter-spacing:0;
+}
+html[lang="my"] h1{
+  line-height:1.35;
+}
+@media (max-width:600px){
+  .lang-switch{padding:2px}
+  .lang-btn{padding:7px 7px;font-size:9px}
+  .header-actions{gap:5px}
+}

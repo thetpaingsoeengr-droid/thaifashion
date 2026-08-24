@@ -27,7 +27,122 @@ function categories(){ return ["All", ...new Set(products.map(p=>p.category))]; 
 function renderCategories(){
   categoryFilters.innerHTML = categories().map(c => `<button class="category-chip ${c===currentCategory?"active":""}" data-category="${c}">${c}</button>`).join("");
   categoryFilters.querySelectorAll("button").forEach(b=>b.addEventListener("click",()=>{
-    currentCategory=b.dataset.category; renderCategories(); renderProducts();
+    currentCategory=b.dataset.category; 
+/* ===== EN / MYANMAR LANGUAGE SWITCH ===== */
+const uiTranslations = {
+  en: {
+    annDelivery: "UAE Delivery",
+    annCod: "Cash on Delivery",
+    annWhatsapp: "Order via WhatsApp",
+    heroEyebrow: "EVERYDAY BEAUTY, MADE EASY",
+    heroTitle: "Your look.<br>Your lenses.",
+    heroText: "Fashion contact lenses selected for effortless everyday style. Shop by color, power and collection.",
+    shopLatest: "Shop latest",
+    shopEyebrow: "SHOP",
+    latestProductsTitle: "Latest products",
+    yourOrderLabel: "YOUR ORDER",
+    shoppingBagTitle: "Shopping bag",
+    subtotalLabel: "Subtotal",
+    deliveryInstruction: "Please add your delivery details before ordering.",
+    fullNameLabel: "Full Name *",
+    phoneLabel: "Phone Number *",
+    emirateLabel: "Emirate *",
+    areaLabel: "Area / Community *",
+    buildingLabel: "Building / Villa *",
+    streetLabel: "Street / Apartment",
+    landmarkLabel: "Landmark",
+    notesLabel: "Delivery Notes",
+    whatsappBtnText: "Order via WhatsApp",
+    searchPlaceholder: "Search products…",
+    namePlaceholder: "Your full name",
+    phonePlaceholder: "05X XXX XXXX",
+    areaPlaceholder: "e.g. Muwaileh, Al Nahda",
+    buildingPlaceholder: "Building name / Villa no.",
+    streetPlaceholder: "Street, apartment or room no.",
+    landmarkPlaceholder: "Nearby landmark",
+    notesPlaceholder: "Any special delivery instructions"
+  },
+  mm: {
+    annDelivery: "UAE အတွင်း ပို့ဆောင်ပေးသည်",
+    annCod: "ပစ္စည်းရောက်ငွေချေ",
+    annWhatsapp: "WhatsApp မှ မှာယူနိုင်သည်",
+    heroEyebrow: "နေ့စဉ်အလှအပအတွက် လွယ်ကူစွာရွေးချယ်ပါ",
+    heroTitle: "သင့်စတိုင်။<br>သင့်မျက်ကပ်မှန်။",
+    heroText: "နေ့စဉ်လှပတဲ့စတိုင်အတွက် Fashion Contact Lenses များကို အရောင်၊ Power နဲ့ Collection အလိုက် လွယ်ကူစွာရွေးချယ်နိုင်ပါတယ်။",
+    shopLatest: "အသစ်ရောက်ပစ္စည်းများ ကြည့်ရန်",
+    shopEyebrow: "SHOP",
+    latestProductsTitle: "နောက်ဆုံးရောက် ပစ္စည်းများ",
+    yourOrderLabel: "သင့်အော်ဒါ",
+    shoppingBagTitle: "ဈေးဝယ်အိတ်",
+    subtotalLabel: "ပစ္စည်းစုစုပေါင်း",
+    deliveryInstruction: "မှာယူရန်အတွက် ပို့ဆောင်ရမည့်လိပ်စာကို ဖြည့်ပေးပါ။",
+    fullNameLabel: "အမည်အပြည့်အစုံ *",
+    phoneLabel: "ဖုန်းနံပါတ် *",
+    emirateLabel: "Emirate *",
+    areaLabel: "Area / Community *",
+    buildingLabel: "Building / Villa *",
+    streetLabel: "Street / Apartment",
+    landmarkLabel: "အနီးအနား Landmark",
+    notesLabel: "ပို့ဆောင်မှု မှတ်ချက်",
+    whatsappBtnText: "WhatsApp မှ မှာယူမည်",
+    searchPlaceholder: "ပစ္စည်းရှာရန်…",
+    namePlaceholder: "အမည်အပြည့်အစုံ",
+    phonePlaceholder: "05X XXX XXXX",
+    areaPlaceholder: "ဥပမာ - Muwaileh, Al Nahda",
+    buildingPlaceholder: "Building name / Villa no.",
+    streetPlaceholder: "Street, apartment or room no.",
+    landmarkPlaceholder: "အနီးအနား Landmark",
+    notesPlaceholder: "ပို့ဆောင်မှုအတွက် မှတ်ချက်ရှိပါက ရေးပါ"
+  }
+};
+
+function setSiteLanguage(lang){
+  const chosen = uiTranslations[lang] ? lang : "en";
+  const t = uiTranslations[chosen];
+  localStorage.setItem("tfl_language", chosen);
+  document.documentElement.lang = chosen === "mm" ? "my" : "en";
+
+  [
+    "annDelivery","annCod","annWhatsapp","heroEyebrow","heroTitle","heroText",
+    "shopLatest","shopEyebrow","latestProductsTitle","yourOrderLabel",
+    "shoppingBagTitle","subtotalLabel","deliveryInstruction","fullNameLabel",
+    "phoneLabel","emirateLabel","areaLabel","buildingLabel","streetLabel",
+    "landmarkLabel","notesLabel","whatsappBtnText"
+  ].forEach(id=>{
+    const el = document.getElementById(id);
+    if(el) el.innerHTML = t[id];
+  });
+
+  const placeholders = {
+    searchInput: t.searchPlaceholder,
+    customerName: t.namePlaceholder,
+    customerPhone: t.phonePlaceholder,
+    customerArea: t.areaPlaceholder,
+    customerBuilding: t.buildingPlaceholder,
+    customerStreet: t.streetPlaceholder,
+    customerLandmark: t.landmarkPlaceholder,
+    customerNotes: t.notesPlaceholder
+  };
+
+  Object.entries(placeholders).forEach(([id, value])=>{
+    const el = document.getElementById(id);
+    if(el) el.placeholder = value;
+  });
+
+  document.querySelectorAll(".lang-btn").forEach(btn=>{
+    btn.classList.toggle("active", btn.dataset.lang === chosen);
+  });
+}
+
+document.querySelectorAll(".lang-btn").forEach(btn=>{
+  btn.addEventListener("click", ()=>setSiteLanguage(btn.dataset.lang));
+});
+
+const savedSiteLanguage = localStorage.getItem("tfl_language") || "en";
+setSiteLanguage(savedSiteLanguage);
+
+
+renderCategories(); renderProducts();
   }));
 }
 
