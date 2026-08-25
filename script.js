@@ -270,7 +270,6 @@ const i18n = {
     landmarkLabel:"Landmark",
     notesLabel:"Delivery Notes",
     whatsappBtnText:"Order via WhatsApp",
-    messengerBtnText:"Order via Messenger",
     continueShoppingText:"Continue shopping",
     powerLabel:"Power",
     quantityLabel:"Quantity",
@@ -352,7 +351,6 @@ const i18n = {
     landmarkLabel:"အနီးအနား Landmark",
     notesLabel:"ပို့ဆောင်မှု မှတ်ချက်",
     whatsappBtnText:"WhatsApp မှ မှာယူမည်",
-    messengerBtnText:"Messenger မှ မှာယူမည်",
     continueShoppingText:"ပစ္စည်းဆက်ရွေးမည်",
     powerLabel:"Power",
     quantityLabel:"အရေအတွက်",
@@ -480,7 +478,7 @@ function setSiteLanguage(lang){
     "howEyebrow","howTitle","step1Title","step1Text","step2Title","step2Text","step3Title","step3Text",
     "emptyTitle","emptyText","yourOrderLabel","shoppingBagTitle","subtotalLabel","deliveryInstruction",
     "fullNameLabel","phoneLabel","emirateLabel","areaLabel","buildingLabel","streetLabel","landmarkLabel",
-    "notesLabel","whatsappBtnText","messengerBtnText","continueShoppingText","powerLabel","quantityLabel","addToCartText",
+    "notesLabel","whatsappBtnText","continueShoppingText","powerLabel","quantityLabel","addToCartText",
     "footerTagline","selectEmirateOption","addressError","sortFeatured","sortLow","sortHigh","sortName"
   ];
 
@@ -545,66 +543,6 @@ if(clearColorBtn){
 }
 
 
-const FACEBOOK_ORDER_URL = "https://www.facebook.com/share/1BeK14KnkH/";
 
-async function orderMessenger(){
-  if(!cart.length) return;
-
-  const name=$("#customerName").value.trim();
-  const phone=$("#customerPhone").value.trim();
-  const emirate=$("#customerEmirate").value.trim();
-  const area=$("#customerArea").value.trim();
-  const building=$("#customerBuilding").value.trim();
-  const street=$("#customerStreet").value.trim();
-  const landmark=$("#customerLandmark").value.trim();
-  const notes=$("#customerNotes").value.trim();
-
-  if(!name || !phone || !emirate || !area || !building){
-    $("#addressError").classList.remove("hidden");
-    const missing=!name?$("#customerName"):!phone?$("#customerPhone"):!emirate?$("#customerEmirate"):!area?$("#customerArea"):$("#customerBuilding");
-    missing.focus();
-    return;
-  }
-  $("#addressError").classList.add("hidden");
-
-  const lines=cart.map((x,i)=>`${i+1}. ${x.name}${x.power?` | Power ${x.power}`:""} | Qty ${x.qty} | ${money(x.price*x.qty)}`);
-  const total=money(cart.reduce((a,x)=>a+x.price*x.qty,0));
-  const address=[
-    `Name: ${name}`,`Phone: ${phone}`,`Emirate: ${emirate}`,
-    `Area / Community: ${area}`,`Building / Villa: ${building}`,
-    street?`Street / Apartment: ${street}`:"",
-    landmark?`Landmark: ${landmark}`:"",
-    notes?`Delivery Notes: ${notes}`:""
-  ].filter(Boolean);
-
-  const message=`Hi Thai Fashion Lenses UAE! I would like to order:
-
-${lines.join("\n")}
-
-Subtotal: ${total}
-
-DELIVERY DETAILS
-${address.join("\n")}
-
-Please confirm delivery fee and final total.`;
-
-  try{
-    await navigator.clipboard.writeText(message);
-  }catch(e){
-    const ta=document.createElement("textarea");
-    ta.value=message; document.body.appendChild(ta); ta.select();
-    document.execCommand("copy"); ta.remove();
-  }
-
-  const help=$("#messengerHelp");
-  if(help){
-    help.textContent=siteLang==="mm"
-      ?"Order အချက်အလက်တွေကို Copy လုပ်ပြီးပါပြီ။ Messenger ထဲမှာ Paste လုပ်ပြီး ပို့ပေးပါ။"
-      :"Order details copied. Paste them into Messenger and send.";
-    help.classList.remove("hidden");
-  }
-  window.open(FACEBOOK_ORDER_URL,"_blank");
-}
-$("#messengerOrderBtn").addEventListener("click",orderMessenger);
 
 setSiteLanguage(siteLang);
