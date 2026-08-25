@@ -15,7 +15,8 @@ const products = [
   {id:11,name:"Honey Gold",stockStatus:"instock",colorKey:"yellow",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#c5a64f",desc:"Warm golden-yellow lens with a glowing finish.",powers:["0.00","-1.00","-2.00"]},
   {id:12,name:"Violet Dream",stockStatus:"preorder",colorKey:"purple",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#8973a5",desc:"Soft violet fashion lens with a dreamy tone.",powers:["0.00","-1.00","-2.00"]},
   {id:13,name:"Midnight Black",stockStatus:"instock",colorKey:"black",category:"Contact Lenses",price:20,badge:"Best Seller",color:"#333333",desc:"Deep black lens for stronger eye definition.",powers:["0.00","-1.00","-2.00"]},
-  {id:14,name:"Blush Pink",stockStatus:"preorder",colorKey:"pink",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#c990a0",desc:"Soft pink fashion lens for a playful look.",powers:["0.00","-1.00","-2.00"]}];
+  {id:14,name:"Blush Pink",stockStatus:"preorder",colorKey:"pink",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#c990a0",desc:"Soft pink fashion lens for a playful look.",powers:["0.00","-1.00","-2.00"]},
+  {id:15,name:"Icy Gray",colorKey:"gray",stockStatus:"preorder",category:"Contact Lenses",price:20,badge:"Pre-order",color:"#a8adb2",image:"images/icy-gray.jpg",desc:"Natural grey lens for everyday wear.",powers:null}];
 
 let currentCategory = "All";
 let currentColor = "all";
@@ -56,7 +57,8 @@ function renderProducts(){
   $("#emptyState").classList.toggle("hidden", list.length>0);
   productGrid.innerHTML=list.map(p=>`
     <article class="product-card" data-id="${p.id}">
-      <div class="product-image ${p.type||""}" style="--iris:${p.color}">
+      <div class="product-image ${p.type||""} ${p.image?"has-real-image":""}" style="--iris:${p.color}">
+        ${p.image ? `<img src="${p.image}" alt="${p.name}" class="real-product-image" loading="lazy">` : ""}
         <span class="badge">${localizedBadge(p.badge)}</span>
         <span class="stock-status ${p.stockStatus==="preorder"?"preorder":""}">${p.stockStatus==="preorder"?tr().stockPre:tr().stockIn}</span>
         <button class="quick-add" aria-label="View ${p.name}" data-id="${p.id}">+</button>
@@ -81,6 +83,10 @@ function openProduct(id){
   $("#modalStockInfo").innerHTML = `<span class="modal-stock-pill ${selectedProduct.stockStatus==="preorder"?"preorder":""}">${stockText}</span>${waitText}`;
   $("#modalDescription").textContent=selectedProduct.desc;
   $("#modalImage").style.setProperty("--iris",selectedProduct.color);
+  $("#modalImage").classList.toggle("has-real-image", !!selectedProduct.image);
+  $("#modalImage").innerHTML = selectedProduct.image
+    ? `<img src="${selectedProduct.image}" alt="${selectedProduct.name}" class="modal-real-image">`
+    : "";
   $("#powerWrap").classList.toggle("hidden", !selectedProduct.powers);
   if(selectedProduct.powers) $("#powerSelect").innerHTML=selectedProduct.powers.map(x=>`<option value="${x}">${x}</option>`).join("");
   $("#qtyInput").value=1;
@@ -405,7 +411,8 @@ function localizedBadge(raw){
     "In Stock":t.badgeStock,
     "New Arrival":t.badgeNew,
     "Power Lens":t.badgePower,
-    "Daily":t.badgeDaily
+    "Daily":t.badgeDaily,
+    "Pre-order":t.stockPre
   };
   return map[raw] || raw;
 }
