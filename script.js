@@ -105,7 +105,7 @@ function addToCart(){
   const key=`${selectedProduct.id}-${power||"na"}`;
   const existing=cart.find(x=>x.key===key);
   if(existing) existing.qty+=qty;
-  else cart.push({key,id:selectedProduct.id,name:selectedProduct.name,price:selectedProduct.price,qty,power,color:selectedProduct.color});
+  else cart.push({key,id:selectedProduct.id,name:selectedProduct.name,price:selectedProduct.price,qty,power,color:selectedProduct.color,image:selectedProduct.image||null});
   saveCart();
   closeModal();
   showToast(tr().added);
@@ -118,9 +118,14 @@ function renderCart(){
   $("#cartSummary").classList.toggle("hidden",cart.length===0);
 
   const itemCount=cart.reduce((a,x)=>a+x.qty,0);
-  $("#cartItems").innerHTML=(cart.length ? `<div class="bag-items-label">${tr().bagItems(itemCount)}</div>` : "") + cart.map((x,i)=>`
+  $("#cartItems").innerHTML=(cart.length ? `<div class="bag-items-label">${tr().bagItems(itemCount)}</div>` : "") + cart.map((x,i)=>{
+    const product=products.find(p=>p.id===x.id);
+    const cartImage=x.image || (product && product.image) || null;
+    return `
     <div class="cart-item">
-      <div class="cart-thumb" style="--iris:${x.color}"></div>
+      <div class="cart-thumb ${cartImage?"has-cart-image":""}" style="--iris:${x.color}">
+        ${cartImage ? `<img src="${cartImage}" alt="${x.name}" class="cart-real-image">` : ""}
+      </div>
       <div class="cart-item-main">
         <h4>${x.name}</h4>
         <div class="cart-meta">
@@ -132,7 +137,8 @@ function renderCart(){
           <button class="remove-item" data-i="${i}">${siteLang==="mm"?"ဖယ်မည်":"Remove"}</button>
         </div>
       </div>
-    </div>`).join("");
+    </div>`;
+  }).join("");
 
   $("#cartItems").querySelectorAll(".remove-item").forEach(b=>b.addEventListener("click",()=>{
     cart.splice(Number(b.dataset.i),1); saveCart();

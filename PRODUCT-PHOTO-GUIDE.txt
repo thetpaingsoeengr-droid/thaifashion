@@ -1,0 +1,9 @@
+GITHUB READY PRODUCT PHOTO GUIDE
+
+1. Upload index.html, styles.css, script.js and the images folder to GitHub.
+2. Icy Gray is already included as images/icy-gray.jpg.
+3. For a new photo, upload it into images/ and add image:"images/file-name.jpg" to that product in script.js.
+4. No power lens: powers:null
+5. Pre-order: stockStatus:"preorder"
+
+IMPORTANT: upload the images folder too.
