@@ -545,7 +545,7 @@ if(clearColorBtn){
 
 /* ===== FIREBASE PRODUCT DATA BRIDGE ===== */
 window.setProductsFromFirebase = function(firebaseProducts){
-  if(!Array.isArray(firebaseProducts) || !firebaseProducts.length) return;
+  if(!Array.isArray(firebaseProducts)) return;
   products = firebaseProducts;
   renderStockFilters();
   renderColorFilters();
