@@ -1,23 +1,6 @@
 const WHATSAPP_NUMBER = "971544608059";
 
-let products = [
-  {id:1,name:"Venice Gray",stockStatus:"instock",colorKey:"gray",category:"Contact Lenses",price:15,badge:"Best Seller",color:"#8f9a9a",desc:"Soft gray fashion lens for a clean everyday look.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:2,name:"Taylor Brown",stockStatus:"instock",colorKey:"brown",category:"Contact Lenses",price:15,badge:"In Stock",color:"#9b765f",desc:"Warm brown tone designed for a natural, softly defined finish.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:3,name:"Pattaya Green",stockStatus:"preorder",colorKey:"green",category:"Contact Lenses",price:15,badge:"New Arrival",color:"#708979",desc:"Muted green lens with a fashion-forward but wearable tone.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:4,name:"Mocha Hazel",stockStatus:"preorder",colorKey:"brown",category:"Contact Lenses",price:20,badge:"Power Lens",color:"#a58662",desc:"Hazel-brown fashion lens with multiple power choices.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:5,name:"Daily Clear 10 pcs",stockStatus:"instock",colorKey:"clear",category:"Contact Lenses",price:25,badge:"Daily",color:"#b7c0c4",desc:"Daily disposable clear lenses, packed for convenient everyday use.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:6,name:"Lens Travel Case",stockStatus:"instock",colorKey:"pink",category:"Accessories",price:10,badge:"In Stock",color:"#c99d9e",type:"bag",desc:"Compact lens case for your handbag or travel pouch.",powers:null},
-  {id:7,name:"Mini Fashion Pouch",stockStatus:"preorder",colorKey:"brown",category:"Accessories",price:20,badge:"New Arrival",color:"#a98d7b",type:"bag",desc:"Small everyday pouch for lenses, makeup or accessories.",powers:null},
-  {id:8,name:"Soft Pink Lip Tint",stockStatus:"instock",colorKey:"pink",category:"Beauty",price:18,badge:"Best Seller",color:"#bd7378",type:"beauty",desc:"Easy everyday lip tint with a soft pink finish.",powers:null}
-,
-  {id:9,name:"Ocean Blue",stockStatus:"preorder",colorKey:"blue",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#6d8fac",desc:"Cool blue fashion lens for a brighter look.",powers:["0.00","-1.00","-2.00","-4.50"]},
-  {id:10,name:"Ruby Red",stockStatus:"preorder",colorKey:"red",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#a65353",desc:"Bold red fashion lens for special looks.",powers:["0.00","-1.00","-2.00"]},
-  {id:11,name:"Honey Gold",stockStatus:"instock",colorKey:"yellow",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#c5a64f",desc:"Warm golden-yellow lens with a glowing finish.",powers:["0.00","-1.00","-2.00"]},
-  {id:12,name:"Violet Dream",stockStatus:"preorder",colorKey:"purple",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#8973a5",desc:"Soft violet fashion lens with a dreamy tone.",powers:["0.00","-1.00","-2.00"]},
-  {id:13,name:"Midnight Black",stockStatus:"instock",colorKey:"black",category:"Contact Lenses",price:20,badge:"Best Seller",color:"#333333",desc:"Deep black lens for stronger eye definition.",powers:["0.00","-1.00","-2.00"]},
-  {id:14,name:"Blush Pink",stockStatus:"preorder",colorKey:"pink",category:"Contact Lenses",price:20,badge:"New Arrival",color:"#c990a0",desc:"Soft pink fashion lens for a playful look.",powers:["0.00","-1.00","-2.00"]},
-  {id:15,name:"Icy Gray",colorKey:"gray",stockStatus:"preorder",category:"Contact Lenses",price:20,badge:"Pre-order",color:"#a8adb2",image:"images/icy-gray.jpg",desc:"Natural grey lens for everyday wear.",powers:null}];
-
+let products = [ ];
 let currentCategory = "All";
 let currentColor = "all";
 let currentStock = "all";
