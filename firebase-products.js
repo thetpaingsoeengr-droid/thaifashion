@@ -36,7 +36,16 @@ function normalizeProduct(snap) {
     badge: d.badge || (d.stockStatus === "preorder" ? "Pre-order" : "In Stock"),
     color: d.displayColor || d.colorHex || "#a8adb2",
     type: d.type || "",
-    image: d.imageUrl || d.image || "",
+    image: (() => {
+  const raw = String(d.imageUrl || d.image || "")
+    .trim()
+    .replace(/^\/+/, "");
+
+  return raw
+    .replace(/\.JPG$/i, ".jpg")
+    .replace(/\.JPEG$/i, ".jpeg")
+    .replace(/\.PNG$/i, ".png");
+})(),,
     desc: d.description || d.desc || "",
     descMM: d.descriptionMM || d.descMM || "",
     powers
