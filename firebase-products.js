@@ -1,5 +1,9 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import {
+  getFirestore,
+  collection,
+  onSnapshot
+} from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAzEoJkHMqML0nWw9GPkCVKQt8cFnaNjYo",
@@ -16,53 +20,109 @@ const db = getFirestore(app);
 
 function normalizeProduct(snap) {
   const d = snap.data() || {};
+
   let powers = d.powers ?? null;
+
   if (typeof powers === "string") {
-    powers = powers.trim() ? powers.split(",").map(x=>x.trim()).filter(Boolean) : null;
+    powers = powers.trim()
+      ? powers.split(",").map(x => x.trim()).filter(Boolean)
+      : null;
   }
-  if (Array.isArray(powers) && powers.length === 0) powers = null;
-  if (d.hasPower === false) powers = null;
+
+  if (Array.isArray(powers) && powers.length === 0) {
+    powers = null;
+  }
+
+  if (d.hasPower === false) {
+    powers = null;
+  }
+
+  const rawImage = String(
+    d.imageUrl ||
+    d.imageURL ||
+    d.image ||
+    ""
+  )
+    .trim()
+    .replace(/^\/+/, "");
+
+  const image = rawImage
+    .replace(/\.JPG$/i, ".jpg")
+    .replace(/\.JPEG$/i, ".jpeg")
+    .replace(/\.PNG$/i, ".png");
 
   return {
     id: snap.id,
     firestoreId: snap.id,
+
     name: d.name || "Unnamed Product",
     nameMM: d.nameMM || "",
-    price: Number(d.price || 0),
-    category: d.category || "Contact Lenses",
-    colorKey: d.colorKey || d.color || "clear",
-    stockStatus: d.stockStatus === "preorder" ? "preorder" : "instock",
-    waitingPeriod: d.waitingPeriod || (d.stockStatus === "preorder" ? "2 weeks" : ""),
-    badge: d.badge || (d.stockStatus === "preorder" ? "Pre-order" : "In Stock"),
-    color: d.displayColor || d.colorHex || "#a8adb2",
-    type: d.type || "",
-    image: (() => {
-  const raw = String(d.imageUrl || d.image || "")
-    .trim()
-    .replace(/^\/+/, "");
 
-  return raw
-    .replace(/\.JPG$/i, ".jpg")
-    .replace(/\.JPEG$/i, ".jpeg")
-    .replace(/\.PNG$/i, ".png");
-})(),,
-    desc: d.description || d.desc || "",
-    descMM: d.descriptionMM || d.descMM || "",
+    price: Number(d.price || 0),
+
+    category: d.category || "Contact Lenses",
+
+    colorKey:
+      d.colorKey ||
+      d.colour ||
+      d.color ||
+      "clear",
+
+    stockStatus:
+      d.stockStatus === "preorder"
+        ? "preorder"
+        : "instock",
+
+    waitingPeriod:
+      d.waitingPeriod ||
+      (d.stockStatus === "preorder" ? "2 weeks" : ""),
+
+    badge:
+      d.badge ||
+      (d.stockStatus === "preorder"
+        ? "Pre-order"
+        : "In Stock"),
+
+    color:
+      d.displayColor ||
+      d.colorHex ||
+      "#a8adb2",
+
+    type: d.type || "",
+
+    image: image,
+
+    desc:
+      d.description ||
+      d.desc ||
+      "",
+
+    descMM:
+      d.descriptionMM ||
+      d.descMM ||
+      "",
+
     powers
   };
 }
 
-onSnapshot(collection(db, "products"), snapshot => {
-  if (snapshot.empty) {
-  if (typeof window.setProductsFromFirebase === "function") {
-    window.setProductsFromFirebase([]);
+onSnapshot(
+  collection(db, "products"),
+
+  snapshot => {
+    const items = snapshot.docs.map(normalizeProduct);
+
+    console.log("Firebase products loaded:", items);
+
+    if (typeof window.setProductsFromFirebase === "function") {
+      window.setProductsFromFirebase(items);
+    }
+  },
+
+  error => {
+    console.error(
+      "Could not load Firestore products:",
+      error
+    );
   }
-  return;
-  }
-  const items = snapshot.docs.map(normalizeProduct);
-  if (typeof window.setProductsFromFirebase === "function") {
-    window.setProductsFromFirebase(items);
-  }
-}, error => {
-  console.error("Could not load Firestore products. Built-in products remain visible.", error);
-});
+);
