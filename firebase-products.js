@@ -54,8 +54,10 @@ function normalizeProduct(snap) {
 
 onSnapshot(collection(db, "products"), snapshot => {
   if (snapshot.empty) {
-    console.info("Firestore products collection is empty; built-in products remain visible.");
-    return;
+  if (typeof window.setProductsFromFirebase === "function") {
+    window.setProductsFromFirebase([]);
+  }
+  return;
   }
   const items = snapshot.docs.map(normalizeProduct);
   if (typeof window.setProductsFromFirebase === "function") {
