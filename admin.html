@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Thai Fashion Lenses — Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css?v=1">
+</head>
+<body>
+  <main class="admin-shell">
+    <section class="login-card" id="loginView">
+      <p class="eyebrow">THAI FASHION LENSES</p>
+      <h1>Admin Login</h1>
+      <p class="muted">Use the Email/Password account you created in Firebase Authentication.</p>
+      <form id="loginForm">
+        <label>Email<input id="adminEmail" type="email" autocomplete="username" required></label>
+        <label>Password<input id="adminPassword" type="password" autocomplete="current-password" required></label>
+        <button type="submit">Login</button>
+      </form>
+      <p class="message" id="loginMessage"></p>
+    </section>
+
+    <section class="dashboard hidden" id="dashboard">
+      <header class="admin-header">
+        <div>
+          <p class="eyebrow">PRODUCT MANAGEMENT</p>
+          <h1>Thai Fashion Lenses</h1>
+          <p class="muted" id="adminIdentity"></p>
+        </div>
+        <div class="header-actions">
+          <a href="index.html" class="secondary">View Shop</a>
+          <button id="logoutBtn" class="secondary">Logout</button>
+        </div>
+      </header>
+
+      <div class="notice">
+        <strong>Product photos:</strong> upload them to the GitHub <code>images/</code> folder and enter a path such as
+        <code>images/icy-gray.jpg</code>.
+      </div>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">ADD / EDIT</p><h2 id="formTitle">Add product</h2></div>
+          <button id="resetBtn" type="button" class="secondary">New product</button>
+        </div>
+        <form id="productForm" class="product-form">
+          <input type="hidden" id="editId">
+          <label>Product Name *<input id="pName" required placeholder="Icy Gray"></label>
+          <label>Myanmar Name<input id="pNameMM" placeholder="Optional"></label>
+          <label>Price (AED) *<input id="pPrice" type="number" min="0" step="1" required placeholder="20"></label>
+          <label>Category *
+            <select id="pCategory"><option>Contact Lenses</option><option>Accessories</option><option>Beauty</option></select>
+          </label>
+          <label>Color *
+            <select id="pColorKey">
+              <option value="gray">Gray</option><option value="brown">Brown</option><option value="green">Green</option>
+              <option value="blue">Blue</option><option value="red">Red</option><option value="yellow">Yellow</option>
+              <option value="clear">Clear</option><option value="purple">Purple</option><option value="black">Black</option>
+              <option value="pink">Pink</option>
+            </select>
+          </label>
+          <label>Availability *
+            <select id="pStock"><option value="instock">In Stock</option><option value="preorder">Pre-order</option></select>
+          </label>
+          <label>Waiting period<input id="pWaiting" placeholder="2 weeks"></label>
+          <label>Badge
+            <select id="pBadge"><option>In Stock</option><option>Pre-order</option><option>New Arrival</option><option>Best Seller</option><option>Power Lens</option><option>Daily</option></select>
+          </label>
+          <label class="span-2">Power options
+            <input id="pPowers" placeholder="0.00, -1.00, -2.00, -4.50">
+            <small>Leave empty for a no-power / Plano lens.</small>
+          </label>
+          <label class="span-2">Image path<input id="pImage" placeholder="images/icy-gray.jpg"></label>
+          <label class="span-2">English Description<textarea id="pDescription" rows="3"></textarea></label>
+          <label class="span-2">Myanmar Description<textarea id="pDescriptionMM" rows="3"></textarea></label>
+          <button type="submit" class="save-btn span-2" id="saveBtn">Save product</button>
+          <p id="formMessage" class="message span-2"></p>
+        </form>
+      </section>
+
+      <section class="panel">
+        <div class="panel-heading">
+          <div><p class="eyebrow">FIRESTORE</p><h2>Products</h2></div>
+          <button id="importBtn" type="button" class="secondary">Import current 15 products</button>
+        </div>
+        <p class="muted import-note">Use Import once if you want the old website products copied into Firebase. Existing legacy IDs are skipped.</p>
+        <div id="productList" class="admin-product-list"></div>
+      </section>
+    </section>
+  </main>
+  <script type="module" src="admin.js?v=1"></script>
+</body>
+</html>

@@ -680,3 +680,5 @@ html[lang="my"] .filter-title{
   display:block;
   border-radius:14px;
 }
+
+.admin-link{font-size:11px;color:var(--muted);opacity:.6}.admin-link:hover{opacity:1}

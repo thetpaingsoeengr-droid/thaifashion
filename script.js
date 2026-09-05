@@ -1,6 +1,6 @@
 const WHATSAPP_NUMBER = "971544608059";
 
-const products = [
+let products = [
   {id:1,name:"Venice Gray",stockStatus:"instock",colorKey:"gray",category:"Contact Lenses",price:15,badge:"Best Seller",color:"#8f9a9a",desc:"Soft gray fashion lens for a clean everyday look.",powers:["0.00","-1.00","-2.00","-4.50"]},
   {id:2,name:"Taylor Brown",stockStatus:"instock",colorKey:"brown",category:"Contact Lenses",price:15,badge:"In Stock",color:"#9b765f",desc:"Warm brown tone designed for a natural, softly defined finish.",powers:["0.00","-1.00","-2.00","-4.50"]},
   {id:3,name:"Pattaya Green",stockStatus:"preorder",colorKey:"green",category:"Contact Lenses",price:15,badge:"New Arrival",color:"#708979",desc:"Muted green lens with a fashion-forward but wearable tone.",powers:["0.00","-1.00","-2.00","-4.50"]},
@@ -65,23 +65,24 @@ function renderProducts(){
       </div>
       <div class="product-info">
         <div class="product-category">${localizedCategory(p.category)}</div>
-        <div class="product-title">${p.name}</div>
+        <div class="product-title">${siteLang==="mm" && p.nameMM ? p.nameMM : p.name}</div>
         <div class="product-price">${money(p.price)}</div>
-        ${p.stockStatus==="preorder"?`<div class="preorder-note">${tr().waitTwoWeeks}</div>`:""}
+        ${p.stockStatus==="preorder"?`<div class="preorder-note">${siteLang==="mm" ? tr().waitTwoWeeks : `Waiting period: ${p.waitingPeriod || "2 weeks"}`}</div>`:""}
       </div>
     </article>`).join("");
-  productGrid.querySelectorAll(".product-card").forEach(card=>card.addEventListener("click",()=>openProduct(Number(card.dataset.id))));
+  productGrid.querySelectorAll(".product-card").forEach(card=>card.addEventListener("click",()=>openProduct(card.dataset.id)));
 }
 
 function openProduct(id){
-  selectedProduct=products.find(p=>p.id===id);
-  $("#modalName").textContent=selectedProduct.name;
+  selectedProduct=products.find(p=>String(p.id)===String(id));
+  $("#modalName").textContent=(siteLang==="mm" && selectedProduct.nameMM) ? selectedProduct.nameMM : selectedProduct.name;
   $("#modalCategory").textContent=localizedCategory(selectedProduct.category);
   $("#modalPrice").textContent=money(selectedProduct.price);
   const stockText = selectedProduct.stockStatus==="preorder" ? tr().stockPre : tr().stockIn;
-  const waitText = selectedProduct.stockStatus==="preorder" ? `<span class="modal-waiting">${tr().waitTwoWeeks}</span>` : "";
+  const waitLabel = siteLang==="mm" ? tr().waitTwoWeeks : `Waiting period: ${selectedProduct.waitingPeriod || "2 weeks"}`;
+  const waitText = selectedProduct.stockStatus==="preorder" ? `<span class="modal-waiting">${waitLabel}</span>` : "";
   $("#modalStockInfo").innerHTML = `<span class="modal-stock-pill ${selectedProduct.stockStatus==="preorder"?"preorder":""}">${stockText}</span>${waitText}`;
-  $("#modalDescription").textContent=selectedProduct.desc;
+  $("#modalDescription").textContent=(siteLang==="mm" && selectedProduct.descMM) ? selectedProduct.descMM : selectedProduct.desc;
   $("#modalImage").style.setProperty("--iris",selectedProduct.color);
   $("#modalImage").classList.toggle("has-real-image", !!selectedProduct.image);
   $("#modalImage").innerHTML = selectedProduct.image
@@ -119,7 +120,7 @@ function renderCart(){
 
   const itemCount=cart.reduce((a,x)=>a+x.qty,0);
   $("#cartItems").innerHTML=(cart.length ? `<div class="bag-items-label">${tr().bagItems(itemCount)}</div>` : "") + cart.map((x,i)=>{
-    const product=products.find(p=>p.id===x.id);
+    const product=products.find(p=>String(p.id)===String(x.id));
     const cartImage=x.image || (product && product.image) || null;
     return `
     <div class="cart-item">
@@ -557,5 +558,17 @@ if(clearColorBtn){
 
 
 
+
+
+/* ===== FIREBASE PRODUCT DATA BRIDGE ===== */
+window.setProductsFromFirebase = function(firebaseProducts){
+  if(!Array.isArray(firebaseProducts) || !firebaseProducts.length) return;
+  products = firebaseProducts;
+  renderStockFilters();
+  renderColorFilters();
+  renderCategories();
+  renderProducts();
+  renderCart();
+};
 
 setSiteLanguage(siteLang);
