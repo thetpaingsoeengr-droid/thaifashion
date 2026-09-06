@@ -682,3 +682,55 @@ html[lang="my"] .filter-title{
 }
 
 .admin-link{font-size:11px;color:var(--muted);opacity:.6}.admin-link:hover{opacity:1}
+/* =========================================
+   OUT OF STOCK STYLE
+========================================= */
+
+/* Product card stock badge */
+.stock-status.outofstock{
+  background:#eeeeee;
+  color:#666666;
+  border:1px solid #dddddd;
+}
+
+/* Product modal stock badge */
+.modal-stock-pill.outofstock{
+  background:#eeeeee;
+  color:#666666;
+  border:1px solid #dddddd;
+}
+
+/* Out of stock product image slightly faded */
+.product-card:has(.stock-status.outofstock) .product-image{
+  opacity:.65;
+}
+
+/* Keep product name / price readable */
+.product-card:has(.stock-status.outofstock) .product-info{
+  opacity:.85;
+}
+
+/* Add to Bag button when disabled */
+#addToCartBtn:disabled{
+  background:#d9d9d9;
+  color:#777777;
+  cursor:not-allowed;
+  opacity:1;
+}
+
+/* Prevent disabled button interaction */
+#addToCartBtn:disabled:hover{
+  background:#d9d9d9;
+  transform:none;
+}
+
+/* Out of stock filter chip */
+.stock-chip[data-stock="outofstock"]{
+  border-color:#dddddd;
+}
+
+.stock-chip[data-stock="outofstock"].active{
+  background:#666666;
+  color:#ffffff;
+  border-color:#666666;
+}
