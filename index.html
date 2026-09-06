@@ -3,14 +3,27 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
   <title>Thai Fashion Lenses UAE</title>
-  <meta name="description" content="Shop fashion contact lenses and accessories in the UAE. Order easily via WhatsApp." />
+
+  <meta
+    name="description"
+    content="Shop fashion contact lenses and accessories in the UAE. Order easily via WhatsApp."
+  />
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="styles.css?v=16" />
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap"
+    rel="stylesheet"
+  >
+
+  <link rel="stylesheet" href="styles.css?v=17" />
 </head>
+
 <body>
+
   <div class="announcement">
     <span id="annDelivery">UAE Delivery</span>
     <span>•</span>
@@ -19,218 +32,897 @@
     <span id="annWhatsapp">Order via WhatsApp</span>
   </div>
 
+
   <header class="site-header">
+
     <div class="header-inner">
+
       <a class="brand" href="#">
-        <div class="brand-mark">TF</div>
-        <div>
-          <div class="brand-name">Thai Fashion Lenses</div>
-          <div class="brand-sub">UAE</div>
+
+        <div class="brand-mark">
+          TF
         </div>
+
+        <div>
+
+          <div class="brand-name">
+            Thai Fashion Lenses
+          </div>
+
+          <div class="brand-sub">
+            UAE
+          </div>
+
+        </div>
+
       </a>
 
+
       <div class="header-actions">
-        <div class="lang-switch" aria-label="Language selector">
-          <button type="button" class="lang-btn active" data-lang="en">EN</button>
-          <button type="button" class="lang-btn" data-lang="mm">မြန်မာ</button>
+
+        <div
+          class="lang-switch"
+          aria-label="Language selector"
+        >
+
+          <button
+            type="button"
+            class="lang-btn active"
+            data-lang="en"
+          >
+            EN
+          </button>
+
+          <button
+            type="button"
+            class="lang-btn"
+            data-lang="mm"
+          >
+            မြန်မာ
+          </button>
+
         </div>
-        <button class="icon-btn" id="searchFocusBtn" aria-label="Search">⌕</button>
-        <button class="cart-btn" id="openCartBtn">
-          Bag <span id="cartCount">0</span>
+
+
+        <button
+          class="icon-btn"
+          id="searchFocusBtn"
+          aria-label="Search"
+        >
+          ⌕
         </button>
+
+
+        <button
+          class="cart-btn"
+          id="openCartBtn"
+        >
+          Bag
+          <span id="cartCount">
+            0
+          </span>
+        </button>
+
       </div>
+
     </div>
+
   </header>
 
+
   <main>
+
+
+    <!-- HERO -->
+
     <section class="hero hero-clean">
+
       <div class="hero-copy hero-copy-clean">
-        <p class="eyebrow" id="heroEyebrow">EVERYDAY BEAUTY, MADE EASY</p>
-        <h1 id="heroTitle">Your look.<br>Your lenses.</h1>
-        <p class="hero-text" id="heroText">Fashion contact lenses selected for effortless everyday style. Shop by color, power and collection.</p>
-        <a href="#shop" class="primary-btn" id="shopLatest">Shop now</a>
+
+        <p
+          class="eyebrow"
+          id="heroEyebrow"
+        >
+          EVERYDAY BEAUTY, MADE EASY
+        </p>
+
+
+        <h1 id="heroTitle">
+          Your look.<br>Your lenses.
+        </h1>
+
+
+        <p
+          class="hero-text"
+          id="heroText"
+        >
+          Fashion contact lenses selected for effortless everyday style.
+          Shop by color, power and collection.
+        </p>
+
+
+        <a
+          href="#shop"
+          class="primary-btn"
+          id="shopLatest"
+        >
+          Shop now
+        </a>
+
       </div>
+
     </section>
 
-    <section class="shop-section" id="shop">
+
+    <!-- SHOP -->
+
+    <section
+      class="shop-section"
+      id="shop"
+    >
+
+
       <div class="section-heading">
+
         <div>
-          <p class="eyebrow" id="shopEyebrow">SHOP</p>
-          <h2 id="latestProductsTitle">Latest products</h2>
+
+          <p
+            class="eyebrow"
+            id="shopEyebrow"
+          >
+            SHOP
+          </p>
+
+          <h2 id="latestProductsTitle">
+            Latest products
+          </h2>
+
         </div>
-        <p class="results-text"><span id="resultCount">0</span> <span id="productsWord">products</span></p>
+
+
+        <p class="results-text">
+
+          <span id="resultCount">
+            0
+          </span>
+
+          <span id="productsWord">
+            products
+          </span>
+
+        </p>
+
       </div>
+
+
+      <!-- SEARCH + SORT -->
 
       <div class="shop-tools">
+
         <label class="search-box">
-          <span>⌕</span>
-          <input id="searchInput" type="search" placeholder="Search products…" autocomplete="off" />
+
+          <span>
+            ⌕
+          </span>
+
+          <input
+            id="searchInput"
+            type="search"
+            placeholder="Search products…"
+            autocomplete="off"
+          />
+
         </label>
-        <select id="sortSelect" aria-label="Sort products">
-          <option id="sortFeatured" value="featured">Featured</option>
-          <option id="sortLow" value="low">Price: low to high</option>
-          <option id="sortHigh" value="high">Price: high to low</option>
-          <option id="sortName" value="name">Name: A–Z</option>
+
+
+        <select
+          id="sortSelect"
+          aria-label="Sort products"
+        >
+
+          <option
+            id="sortFeatured"
+            value="featured"
+          >
+            Featured
+          </option>
+
+          <option
+            id="sortLow"
+            value="low"
+          >
+            Price: low to high
+          </option>
+
+          <option
+            id="sortHigh"
+            value="high"
+          >
+            Price: high to low
+          </option>
+
+          <option
+            id="sortName"
+            value="name"
+          >
+            Name: A–Z
+          </option>
+
         </select>
+
       </div>
 
-      <div class="filter-block">
-        <div class="filter-title-row">
-          <span class="filter-title" id="stockFilterTitle">Availability</span>
-          <button type="button" class="clear-filter-btn" id="clearStockBtn">Clear</button>
-        </div>
-        <div class="stock-scroller" id="stockFilters"></div>
-      </div>
+
+      <!-- STOCK FILTER -->
 
       <div class="filter-block">
+
         <div class="filter-title-row">
-          <span class="filter-title" id="colorFilterTitle">Shop by color</span>
-          <button type="button" class="clear-filter-btn" id="clearColorBtn">Clear</button>
+
+          <span
+            class="filter-title"
+            id="stockFilterTitle"
+          >
+            Availability
+          </span>
+
+          <button
+            type="button"
+            class="clear-filter-btn"
+            id="clearStockBtn"
+          >
+            Clear
+          </button>
+
         </div>
-        <div class="color-scroller" id="colorFilters"></div>
+
+        <div
+          class="stock-scroller"
+          id="stockFilters"
+        ></div>
+
       </div>
+
+
+      <!-- COLOR FILTER -->
+
+      <div class="filter-block">
+
+        <div class="filter-title-row">
+
+          <span
+            class="filter-title"
+            id="colorFilterTitle"
+          >
+            Shop by color
+          </span>
+
+          <button
+            type="button"
+            class="clear-filter-btn"
+            id="clearColorBtn"
+          >
+            Clear
+          </button>
+
+        </div>
+
+        <div
+          class="color-scroller"
+          id="colorFilters"
+        ></div>
+
+      </div>
+
+
+      <!-- CATEGORY FILTER -->
 
       <div class="filter-title-row category-title-row">
-        <span class="filter-title" id="categoryFilterTitle">Categories</span>
-      </div>
-      <div class="category-scroller" id="categoryFilters"></div>
 
-      <div class="product-grid" id="productGrid"></div>
-      <div class="empty-state hidden" id="emptyState">
-        <h3 id="emptyTitle">No products found</h3>
-        <p id="emptyText">Try another search, color or category.</p>
+        <span
+          class="filter-title"
+          id="categoryFilterTitle"
+        >
+          Categories
+        </span>
+
       </div>
+
+
+      <div
+        class="category-scroller"
+        id="categoryFilters"
+      ></div>
+
+
+      <!-- PRODUCTS -->
+
+      <div
+        class="product-grid"
+        id="productGrid"
+      ></div>
+
+
+      <!-- EMPTY -->
+
+      <div
+        class="empty-state hidden"
+        id="emptyState"
+      >
+
+        <h3 id="emptyTitle">
+          No products found
+        </h3>
+
+        <p id="emptyText">
+          Try another search, color or category.
+        </p>
+
+      </div>
+
+
+      <!-- LOAD MORE -->
+
+      <div
+        class="load-more-wrap hidden"
+        id="loadMoreWrap"
+      >
+
+        <button
+          type="button"
+          class="primary-btn load-more-btn"
+          id="loadMoreBtn"
+        >
+          <span id="loadMoreText">
+            Load More
+          </span>
+        </button>
+
+        <p
+          class="load-more-info"
+          id="loadMoreInfo"
+        ></p>
+
+      </div>
+
+
     </section>
+
+
+    <!-- HOW TO ORDER -->
 
     <section class="how-order">
-      <p class="eyebrow" id="howEyebrow">HOW TO ORDER</p>
-      <h2 id="howTitle">Three easy steps</h2>
+
+      <p
+        class="eyebrow"
+        id="howEyebrow"
+      >
+        HOW TO ORDER
+      </p>
+
+
+      <h2 id="howTitle">
+        Three easy steps
+      </h2>
+
+
       <div class="steps">
-        <div><span>01</span><h3 id="step1Title">Choose</h3><p id="step1Text">Select product, power and quantity.</p></div>
-        <div><span>02</span><h3 id="step2Title">Add to bag</h3><p id="step2Text">Review your order and total.</p></div>
-        <div><span>03</span><h3 id="step3Title">WhatsApp us</h3><p id="step3Text">Send the prepared order message instantly.</p></div>
+
+
+        <div>
+
+          <span>
+            01
+          </span>
+
+          <h3 id="step1Title">
+            Choose
+          </h3>
+
+          <p id="step1Text">
+            Select product, power and quantity.
+          </p>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            02
+          </span>
+
+          <h3 id="step2Title">
+            Add to bag
+          </h3>
+
+          <p id="step2Text">
+            Review your order and total.
+          </p>
+
+        </div>
+
+
+        <div>
+
+          <span>
+            03
+          </span>
+
+          <h3 id="step3Title">
+            WhatsApp us
+          </h3>
+
+          <p id="step3Text">
+            Send the prepared order message instantly.
+          </p>
+
+        </div>
+
+
       </div>
+
     </section>
+
+
   </main>
 
+
+  <!-- FOOTER -->
+
   <footer>
+
     <div>
-      <div class="brand-name">Thai Fashion Lenses UAE</div>
-      <p id="footerTagline">Fashion lenses & beauty finds.</p>
+
+      <div class="brand-name">
+        Thai Fashion Lenses UAE
+      </div>
+
+      <p id="footerTagline">
+        Fashion lenses & beauty finds.
+      </p>
+
     </div>
+
+
     <div class="footer-note">
-      <p id="footerWhatsapp">WhatsApp: +971 54 460 8059</p>
-      <p>© <span id="year"></span> Thai Fashion Lenses UAE</p>
-      <p><a class="admin-link" href="admin.html">Admin</a></p>
+
+      <p id="footerWhatsapp">
+        WhatsApp: +971 54 460 8059
+      </p>
+
+      <p>
+        ©
+        <span id="year"></span>
+        Thai Fashion Lenses UAE
+      </p>
+
+      <p>
+        <a
+          class="admin-link"
+          href="admin.html"
+        >
+          Admin
+        </a>
+      </p>
+
     </div>
+
   </footer>
 
-  <div class="modal-backdrop hidden" id="productModal">
+
+
+  <!-- PRODUCT MODAL -->
+
+  <div
+    class="modal-backdrop hidden"
+    id="productModal"
+  >
+
     <div class="modal product-modal-card">
-      <button class="close-btn" data-close="productModal">×</button>
-      <div class="modal-product-image" id="modalImage"></div>
+
+      <button
+        class="close-btn"
+        data-close="productModal"
+      >
+        ×
+      </button>
+
+
+      <div
+        class="modal-product-image"
+        id="modalImage"
+      ></div>
+
+
       <div class="modal-content">
-        <p class="product-category" id="modalCategory"></p>
+
+        <p
+          class="product-category"
+          id="modalCategory"
+        ></p>
+
+
         <h2 id="modalName"></h2>
-        <p class="modal-price" id="modalPrice"></p>
-        <div class="modal-stock-info" id="modalStockInfo"></div>
-        <p class="modal-desc" id="modalDescription"></p>
+
+
+        <p
+          class="modal-price"
+          id="modalPrice"
+        ></p>
+
+
+        <div
+          class="modal-stock-info"
+          id="modalStockInfo"
+        ></div>
+
+
+        <p
+          class="modal-desc"
+          id="modalDescription"
+        ></p>
+
 
         <div id="powerWrap">
-          <label class="field-label" for="powerSelect" id="powerLabel">Power</label>
+
+          <label
+            class="field-label"
+            for="powerSelect"
+            id="powerLabel"
+          >
+            Power
+          </label>
+
           <select id="powerSelect"></select>
+
         </div>
 
-        <label class="field-label" for="qtyInput" id="quantityLabel">Quantity</label>
+
+        <label
+          class="field-label"
+          for="qtyInput"
+          id="quantityLabel"
+        >
+          Quantity
+        </label>
+
+
         <div class="qty-control">
-          <button id="qtyMinus">−</button>
-          <input id="qtyInput" value="1" inputmode="numeric" />
-          <button id="qtyPlus">+</button>
+
+          <button id="qtyMinus">
+            −
+          </button>
+
+          <input
+            id="qtyInput"
+            value="1"
+            inputmode="numeric"
+          />
+
+          <button id="qtyPlus">
+            +
+          </button>
+
         </div>
 
-        <button class="primary-btn full" id="addToCartBtn"><span id="addToCartText">Add to bag</span></button>
+
+        <button
+          class="primary-btn full"
+          id="addToCartBtn"
+        >
+
+          <span id="addToCartText">
+            Add to bag
+          </span>
+
+        </button>
+
       </div>
+
     </div>
+
   </div>
 
-  <div class="cart-drawer" id="cartDrawer" aria-hidden="true">
+
+
+  <!-- SHOPPING BAG -->
+
+  <div
+    class="cart-drawer"
+    id="cartDrawer"
+    aria-hidden="true"
+  >
+
+
     <div class="cart-header">
+
       <div>
-        <p class="eyebrow" id="yourOrderLabel">YOUR ORDER</p>
-        <h2 id="shoppingBagTitle">Shopping bag</h2>
+
+        <p
+          class="eyebrow"
+          id="yourOrderLabel"
+        >
+          YOUR ORDER
+        </p>
+
+        <h2 id="shoppingBagTitle">
+          Shopping bag
+        </h2>
+
       </div>
-      <button class="close-btn" id="closeCartBtn">×</button>
+
+
+      <button
+        class="close-btn"
+        id="closeCartBtn"
+      >
+        ×
+      </button>
+
     </div>
-    <div class="cart-items" id="cartItems"></div>
-    <div class="cart-empty" id="cartEmpty">
-      <p id="cartEmptyText">Your bag is empty.</p>
-      <button class="secondary-btn" id="continueShoppingBtn"><span id="continueShoppingText">Continue shopping</span></button>
+
+
+    <div
+      class="cart-items"
+      id="cartItems"
+    ></div>
+
+
+    <div
+      class="cart-empty"
+      id="cartEmpty"
+    >
+
+      <p id="cartEmptyText">
+        Your bag is empty.
+      </p>
+
+      <button
+        class="secondary-btn"
+        id="continueShoppingBtn"
+      >
+
+        <span id="continueShoppingText">
+          Continue shopping
+        </span>
+
+      </button>
+
     </div>
-    <div class="cart-summary hidden" id="cartSummary">
-      <div class="summary-row"><span id="subtotalLabel">Subtotal</span><strong id="cartSubtotal">AED 0</strong></div>
-      <p class="shipping-note" id="deliveryInstruction">Please add your delivery details before ordering.</p>
+
+
+    <div
+      class="cart-summary hidden"
+      id="cartSummary"
+    >
+
+
+      <div class="summary-row">
+
+        <span id="subtotalLabel">
+          Subtotal
+        </span>
+
+        <strong id="cartSubtotal">
+          AED 0
+        </strong>
+
+      </div>
+
+
+      <p
+        class="shipping-note"
+        id="deliveryInstruction"
+      >
+        Please add your delivery details before ordering.
+      </p>
+
 
       <div class="delivery-form">
-        <label>
-          <span id="fullNameLabel">Full Name *</span>
-          <input id="customerName" type="text" placeholder="Your full name" />
-        </label>
+
 
         <label>
-          <span id="phoneLabel">Phone Number *</span>
-          <input id="customerPhone" type="tel" placeholder="05X XXX XXXX" />
+
+          <span id="fullNameLabel">
+            Full Name *
+          </span>
+
+          <input
+            id="customerName"
+            type="text"
+            placeholder="Your full name"
+          />
+
         </label>
 
+
         <label>
-          <span id="emirateLabel">Emirate *</span>
+
+          <span id="phoneLabel">
+            Phone Number *
+          </span>
+
+          <input
+            id="customerPhone"
+            type="tel"
+            placeholder="05X XXX XXXX"
+          />
+
+        </label>
+
+
+        <label>
+
+          <span id="emirateLabel">
+            Emirate *
+          </span>
+
           <select id="customerEmirate">
-            <option id="selectEmirateOption" value="">Select emirate</option>
-            <option>Dubai</option>
-            <option>Sharjah</option>
-            <option>Ajman</option>
-            <option>Abu Dhabi</option>
-            <option>Umm Al Quwain</option>
-            <option>Ras Al Khaimah</option>
-            <option>Fujairah</option>
+
+            <option
+              id="selectEmirateOption"
+              value=""
+            >
+              Select emirate
+            </option>
+
+            <option>
+              Dubai
+            </option>
+
+            <option>
+              Sharjah
+            </option>
+
+            <option>
+              Ajman
+            </option>
+
+            <option>
+              Abu Dhabi
+            </option>
+
+            <option>
+              Umm Al Quwain
+            </option>
+
+            <option>
+              Ras Al Khaimah
+            </option>
+
+            <option>
+              Fujairah
+            </option>
+
           </select>
+
         </label>
+
 
         <label>
-          <span id="areaLabel">Area / Community *</span>
-          <input id="customerArea" type="text" placeholder="e.g. Muwaileh, Al Nahda" />
+
+          <span id="areaLabel">
+            Area / Community *
+          </span>
+
+          <input
+            id="customerArea"
+            type="text"
+            placeholder="e.g. Muwaileh, Al Nahda"
+          />
+
         </label>
+
 
         <label>
-          <span id="buildingLabel">Building / Villa *</span>
-          <input id="customerBuilding" type="text" placeholder="Building name / Villa no." />
+
+          <span id="buildingLabel">
+            Building / Villa *
+          </span>
+
+          <input
+            id="customerBuilding"
+            type="text"
+            placeholder="Building name / Villa no."
+          />
+
         </label>
+
 
         <label>
-          <span id="streetLabel">Street / Apartment</span>
-          <input id="customerStreet" type="text" placeholder="Street, apartment or room no." />
+
+          <span id="streetLabel">
+            Street / Apartment
+          </span>
+
+          <input
+            id="customerStreet"
+            type="text"
+            placeholder="Street, apartment or room no."
+          />
+
         </label>
+
 
         <label>
-          <span id="landmarkLabel">Landmark</span>
-          <input id="customerLandmark" type="text" placeholder="Nearby landmark" />
+
+          <span id="landmarkLabel">
+            Landmark
+          </span>
+
+          <input
+            id="customerLandmark"
+            type="text"
+            placeholder="Nearby landmark"
+          />
+
         </label>
+
 
         <label>
-          <span id="notesLabel">Delivery Notes</span>
-          <textarea id="customerNotes" rows="3" placeholder="Any special delivery instructions"></textarea>
+
+          <span id="notesLabel">
+            Delivery Notes
+          </span>
+
+          <textarea
+            id="customerNotes"
+            rows="3"
+            placeholder="Any special delivery instructions"
+          ></textarea>
+
         </label>
 
-        <p class="form-error hidden" id="addressError">Please complete all required (*) delivery fields.</p>
+
+        <p
+          class="form-error hidden"
+          id="addressError"
+        >
+          Please complete all required (*) delivery fields.
+        </p>
+
+
       </div>
 
-      <button class="whatsapp-btn" id="whatsappOrderBtn"><span id="whatsappBtnText">Order via WhatsApp</span></button>
+
+      <button
+        class="whatsapp-btn"
+        id="whatsappOrderBtn"
+      >
+
+        <span id="whatsappBtnText">
+          Order via WhatsApp
+        </span>
+
+      </button>
+
+
     </div>
+
   </div>
-  <div class="drawer-backdrop hidden" id="drawerBackdrop"></div>
 
-  <div class="toast hidden" id="toast">Added to bag</div>
 
-  <script src="script.js?v=17"></script>
-  <script type="module" src="firebase-products.js?v=3"></script>
+  <div
+    class="drawer-backdrop hidden"
+    id="drawerBackdrop"
+  ></div>
+
+
+  <div
+    class="toast hidden"
+    id="toast"
+  >
+    Added to bag
+  </div>
+
+
+  <script src="script.js?v=18"></script>
+
+  <script
+    type="module"
+    src="firebase-products.js?v=4"
+  ></script>
+
 </body>
 </html>
