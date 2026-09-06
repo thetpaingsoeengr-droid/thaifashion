@@ -51,6 +51,13 @@ function normalizeProduct(snap) {
     .replace(/\.JPEG$/i, ".jpeg")
     .replace(/\.PNG$/i, ".png");
 
+  const stockStatus =
+    d.stockStatus === "preorder"
+      ? "preorder"
+      : d.stockStatus === "outofstock"
+        ? "outofstock"
+        : "instock";
+
   return {
     id: snap.id,
     firestoreId: snap.id,
@@ -68,20 +75,22 @@ function normalizeProduct(snap) {
       d.color ||
       "clear",
 
-    stockStatus:
-      d.stockStatus === "preorder"
-        ? "preorder"
-        : "instock",
+    stockStatus: stockStatus,
 
     waitingPeriod:
-      d.waitingPeriod ||
-      (d.stockStatus === "preorder" ? "2 weeks" : ""),
+      stockStatus === "preorder"
+        ? (d.waitingPeriod || "2 weeks")
+        : "",
 
     badge:
       d.badge ||
-      (d.stockStatus === "preorder"
-        ? "Pre-order"
-        : "In Stock"),
+      (
+        stockStatus === "preorder"
+          ? "Pre-order"
+          : stockStatus === "outofstock"
+            ? "Out of Stock"
+            : "In Stock"
+      ),
 
     color:
       d.displayColor ||
