@@ -59,17 +59,28 @@
               <option value="clear">Clear</option><option value="purple">Purple</option><option value="black">Black</option>
               <option value="pink">Pink</option>
             </select>
-          </label>
           <label>Availability *
-            <select id="pStock"><option value="instock">In Stock</option><option value="preorder">Pre-order</option></select>
-          </label>
+  <select id="pStock">
+    <option value="instock">In Stock</option>
+    <option value="preorder">Pre-order</option>
+    <option value="outofstock">Out of Stock</option>
+  </select>
+</label>
           <label>Waiting period<input id="pWaiting" placeholder="2 weeks"></label>
           <label>Badge
-            <select id="pBadge"><option>In Stock</option><option>Pre-order</option><option>New Arrival</option><option>Best Seller</option><option>Power Lens</option><option>Daily</option></select>
+      <select id="pBadge">
+  <option>In Stock</option>
+  <option>Pre-order</option>
+  <option>Out of Stock</option>
+  <option>New Arrival</option>
+  <option>Best Seller</option>
+  <option>Power Lens</option>
+  <option>Daily</option>
+      </select>
           </label>
           <label class="span-2">Power options
             <input id="pPowers" placeholder="0.00, -1.00, -2.00, -4.50">
-            <small>Leave empty for a no-power / Plano lens.</small>
+            <small>Leave emptyno-powero-power / Plano lens.</small>
           </label>
           <label class="span-2">Image path<input id="pImage" placeholder="images/icy-gray.jpg"></label>
           <label class="span-2">English Description<textarea id="pDescription" rows="3"></textarea></label>
