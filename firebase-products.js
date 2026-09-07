@@ -277,16 +277,6 @@ function buildQuery() {
   /*
     Keep newest products first.
   */
-
-  constraints.push(
-    orderBy(
-      "createdAt",
-      "desc"
-    )
-  );
-
-
-  /*
     Pagination cursor.
   */
 
