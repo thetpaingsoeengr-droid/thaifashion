@@ -1,4 +1,4 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
+catch { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 
 import {
   getFirestore,
@@ -321,12 +321,17 @@ async function loadProducts() {
 
   catch(error) {
 
-    console.error(
-      "Firestore color query failed:",
-      error
-    );
+  console.error(
+    "Firestore color query failed:",
+    error
+  );
 
-  }
+  alert(
+    "Firebase Error:\n\n" +
+    (error.message || error.code || error)
+  );
+
+}
 
   finally {
 
