@@ -4,6 +4,7 @@ import {
   getFirestore,
   collection,
   query,
+  where,
   orderBy,
   limit,
   startAfter,
@@ -27,19 +28,31 @@ const db = getFirestore(app);
 
 
 /* =========================================
-   PAGINATION SETTINGS
+   SETTINGS
 ========================================= */
 
 const PAGE_SIZE = 10;
 
 let lastVisible = null;
-let allLoadedProducts = [];
-let loading = false;
+let loadedProducts = [];
+
 let hasMore = true;
+let loading = false;
 
 
 /* =========================================
-   NORMALIZE FIREBASE PRODUCT
+   ACTIVE FIRESTORE FILTERS
+========================================= */
+
+let activeFilters = {
+  category: "All",
+  color: "all",
+  stock: "all"
+};
+
+
+/* =========================================
+   NORMALIZE PRODUCT
 ========================================= */
 
 function normalizeProduct(snap) {
@@ -47,6 +60,7 @@ function normalizeProduct(snap) {
   const d = snap.data() || {};
 
   let powers = d.powers ?? null;
+
 
   if (typeof powers === "string") {
 
@@ -88,18 +102,20 @@ function normalizeProduct(snap) {
     .replace(/\.PNG$/i, ".png");
 
 
-  const stockStatus =
-    d.stockStatus === "preorder"
-      ? "preorder"
-      : d.stockStatus === "outofstock"
-        ? "outofstock"
-        : "instock";
+  let stockStatus = "instock";
+
+  if (d.stockStatus === "preorder") {
+    stockStatus = "preorder";
+  }
+
+  if (d.stockStatus === "outofstock") {
+    stockStatus = "outofstock";
+  }
 
 
   return {
 
     id: snap.id,
-
     firestoreId: snap.id,
 
     name:
@@ -170,7 +186,7 @@ function normalizeProduct(snap) {
 
 
 /* =========================================
-   UPDATE WEBSITE
+   SEND DATA TO WEBSITE
 ========================================= */
 
 function updateWebsite() {
@@ -181,7 +197,7 @@ function updateWebsite() {
   ) {
 
     window.setProductsFromFirebase(
-      allLoadedProducts
+      loadedProducts
     );
   }
 
@@ -199,12 +215,123 @@ function updateWebsite() {
 
 
 /* =========================================
-   LOAD PRODUCTS
+   BUILD FIRESTORE QUERY
+========================================= */
+
+function buildQuery() {
+
+  const constraints = [];
+
+
+  /* CATEGORY */
+
+  if (
+    activeFilters.category &&
+    activeFilters.category !== "All"
+  ) {
+
+    constraints.push(
+      where(
+        "category",
+        "==",
+        activeFilters.category
+      )
+    );
+  }
+
+
+  /* COLOR */
+
+  if (
+    activeFilters.color &&
+    activeFilters.color !== "all"
+  ) {
+
+    constraints.push(
+      where(
+        "colorKey",
+        "==",
+        activeFilters.color
+      )
+    );
+  }
+
+
+  /* STOCK */
+
+  if (
+    activeFilters.stock &&
+    activeFilters.stock !== "all"
+  ) {
+
+    constraints.push(
+      where(
+        "stockStatus",
+        "==",
+        activeFilters.stock
+      )
+    );
+  }
+
+
+  /*
+    Keep newest products first.
+  */
+
+  constraints.push(
+    orderBy(
+      "createdAt",
+      "desc"
+    )
+  );
+
+
+  /*
+    Pagination cursor.
+  */
+
+  if (lastVisible) {
+
+    constraints.push(
+      startAfter(
+        lastVisible
+      )
+    );
+  }
+
+
+  /*
+    Fetch 11 so we can know whether
+    another page exists.
+  */
+
+  constraints.push(
+    limit(
+      PAGE_SIZE + 1
+    )
+  );
+
+
+  return query(
+    collection(
+      db,
+      "products"
+    ),
+    ...constraints
+  );
+}
+
+
+/* =========================================
+   LOAD PAGE
 ========================================= */
 
 async function loadProducts() {
 
-  if (loading || !hasMore) {
+  if (
+    loading ||
+    !hasMore
+  ) {
     return;
   }
 
@@ -217,44 +344,16 @@ async function loadProducts() {
     "function"
   ) {
 
-    window.setFirebaseLoading(true);
+    window.setFirebaseLoading(
+      true
+    );
   }
 
 
   try {
 
-    /*
-      We fetch PAGE_SIZE + 1.
-
-      Example:
-      Need to display 10 products.
-      Firebase fetches maximum 11.
-
-      If product #11 exists,
-      we know there is another page.
-    */
-
-    let q;
-
-
-    if (lastVisible) {
-
-      q = query(
-        collection(db, "products"),
-        orderBy("createdAt", "desc"),
-        startAfter(lastVisible),
-        limit(PAGE_SIZE + 1)
-      );
-
-    } else {
-
-      q = query(
-        collection(db, "products"),
-        orderBy("createdAt", "desc"),
-        limit(PAGE_SIZE + 1)
-      );
-
-    }
+    const q =
+      buildQuery();
 
 
     const snapshot =
@@ -265,24 +364,21 @@ async function loadProducts() {
       snapshot.docs;
 
 
-    /*
-      More than 10 means another
-      page exists.
-    */
-
     hasMore =
-      docs.length > PAGE_SIZE;
+      docs.length >
+      PAGE_SIZE;
 
-
-    /*
-      Only display first 10.
-    */
 
     const pageDocs =
-      docs.slice(0, PAGE_SIZE);
+      docs.slice(
+        0,
+        PAGE_SIZE
+      );
 
 
-    if (pageDocs.length > 0) {
+    if (
+      pageDocs.length > 0
+    ) {
 
       lastVisible =
         pageDocs[
@@ -296,31 +392,31 @@ async function loadProducts() {
         );
 
 
-      /*
-        Prevent duplicate products
-        just in case.
-      */
-
       const existingIds =
         new Set(
-          allLoadedProducts.map(
-            p => String(p.id)
+          loadedProducts.map(
+            product =>
+              String(product.id)
           )
         );
 
 
-      newProducts.forEach(p => {
+      newProducts.forEach(
+        product => {
 
-        if (
-          !existingIds.has(
-            String(p.id)
-          )
-        ) {
+          if (
+            !existingIds.has(
+              String(product.id)
+            )
+          ) {
 
-          allLoadedProducts.push(p);
+            loadedProducts.push(
+              product
+            );
+          }
+
         }
-
-      });
+      );
 
     } else {
 
@@ -329,8 +425,14 @@ async function loadProducts() {
 
 
     console.log(
-      "Loaded products:",
-      allLoadedProducts.length
+      "Firestore filters:",
+      activeFilters
+    );
+
+
+    console.log(
+      "Products loaded:",
+      loadedProducts.length
     );
 
 
@@ -338,12 +440,23 @@ async function loadProducts() {
 
   }
 
-  catch(error) {
+  catch (error) {
 
     console.error(
-      "Could not load Firestore products:",
+      "Firestore query failed:",
       error
     );
+
+
+    /*
+      Very important:
+      Firestore may require a
+      composite index when several
+      filters are combined.
+
+      Check browser console for the
+      Firebase index creation link.
+    */
 
   }
 
@@ -357,22 +470,118 @@ async function loadProducts() {
       "function"
     ) {
 
-      window.setFirebaseLoading(false);
+      window.setFirebaseLoading(
+        false
+      );
     }
-
   }
 }
 
 
 /* =========================================
-   LOAD MORE BRIDGE
+   RESET + APPLY FILTERS
 ========================================= */
+
+async function applyFilters(filters = {}) {
+
+  activeFilters = {
+
+    category:
+      filters.category ??
+      activeFilters.category,
+
+    color:
+      filters.color ??
+      activeFilters.color,
+
+    stock:
+      filters.stock ??
+      activeFilters.stock
+
+  };
+
+
+  /*
+    Reset pagination because this is
+    a completely new Firestore query.
+  */
+
+  lastVisible = null;
+
+  loadedProducts = [];
+
+  hasMore = true;
+
+
+  /*
+    Immediately clear old products
+    from the screen.
+  */
+
+  updateWebsite();
+
+
+  /*
+    Fetch first 10 matching products.
+  */
+
+  await loadProducts();
+}
+
+
+/* =========================================
+   PUBLIC BRIDGE FOR SCRIPT.JS
+========================================= */
+
+
+/*
+  Load next 10 matching products.
+*/
 
 window.loadMoreFirebaseProducts =
   function() {
 
-    loadProducts();
+    return loadProducts();
+  };
 
+
+/*
+  Change server-side filters.
+
+  Example:
+
+  window.setFirebaseProductFilters({
+    category: "Contact Lenses",
+    color: "gray",
+    stock: "instock"
+  });
+*/
+
+window.setFirebaseProductFilters =
+  function(filters) {
+
+    return applyFilters(
+      filters || {}
+    );
+  };
+
+
+/*
+  Optional reset helper.
+*/
+
+window.resetFirebaseProductFilters =
+  function() {
+
+    return applyFilters({
+
+      category: "All",
+
+      color: "all",
+
+      stock: "all"
+
+    });
   };
 
 
