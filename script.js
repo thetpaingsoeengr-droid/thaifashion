@@ -4,33 +4,47 @@ let products = [];
 let currentCategory = "All";
 let currentColor = "all";
 let currentStock = "all";
-let cart = JSON.parse(localStorage.getItem("tfl_cart") || "[]");
+
+let cart = JSON.parse(
+  localStorage.getItem("tfl_cart") || "[]"
+);
+
 let selectedProduct = null;
 
 let firebaseHasMore = false;
 let firebaseLoading = false;
 
-const $ = (s) => document.querySelector(s);
+const $ = s => document.querySelector(s);
 
 const productGrid = $("#productGrid");
 const categoryFilters = $("#categoryFilters");
 const searchInput = $("#searchInput");
 const sortSelect = $("#sortSelect");
 
+
 function money(n){
   return `AED ${Number(n).toFixed(0)}`;
 }
 
+
+/* =========================================
+   FIXED CATEGORIES
+========================================= */
+
 function categories(){
   return [
     "All",
-    ...new Set(products.map(p => p.category))
+    "Contact Lenses",
+    "Accessories",
+    "Beauty"
   ];
 }
 
 
 /* =========================================
-   FILTER PRODUCTS
+   LOCAL SEARCH + SORT
+   Category / Color / Stock are now
+   handled by Firestore.
 ========================================= */
 
 function filteredProducts(){
@@ -39,53 +53,71 @@ function filteredProducts(){
     .trim()
     .toLowerCase();
 
-  let list = products.filter(p => {
-
-    const categoryMatch =
-      currentCategory === "All" ||
-      p.category === currentCategory;
-
-    const colorMatch =
-      currentColor === "all" ||
-      p.colorKey === currentColor;
-
-    const stockMatch =
-      currentStock === "all" ||
-      p.stockStatus === currentStock;
-
-    const searchMatch =
-      (p.name || "")
-        .toLowerCase()
-        .includes(q);
-
-    return (
-      categoryMatch &&
-      colorMatch &&
-      stockMatch &&
-      searchMatch
-    );
-  });
+  let list = products.filter(p =>
+    (p.name || "")
+      .toLowerCase()
+      .includes(q)
+  );
 
 
   const sort = sortSelect.value;
 
+
   if(sort === "low"){
-    list.sort((a,b) => a.price - b.price);
+    list.sort(
+      (a,b) => a.price - b.price
+    );
   }
 
+
   if(sort === "high"){
-    list.sort((a,b) => b.price - a.price);
+    list.sort(
+      (a,b) => b.price - a.price
+    );
   }
+
 
   if(sort === "name"){
     list.sort(
       (a,b) =>
         (a.name || "")
-          .localeCompare(b.name || "")
+          .localeCompare(
+            b.name || ""
+          )
     );
   }
 
+
   return list;
+}
+
+
+/* =========================================
+   SEND FILTERS TO FIRESTORE
+========================================= */
+
+function sendFiltersToFirebase(){
+
+  if(
+    typeof window.setFirebaseProductFilters
+    !== "function"
+  ){
+    return;
+  }
+
+
+  window.setFirebaseProductFilters({
+
+    category:
+      currentCategory,
+
+    color:
+      currentColor,
+
+    stock:
+      currentStock
+
+  });
 }
 
 
@@ -95,18 +127,25 @@ function filteredProducts(){
 
 function renderProducts(){
 
-  const list = filteredProducts();
-
-  $("#resultCount").textContent = list.length;
-
-  $("#emptyState").classList.toggle(
-    "hidden",
-    list.length > 0
-  );
+  const list =
+    filteredProducts();
 
 
-  productGrid.innerHTML = list
-    .map(p => {
+  $("#resultCount").textContent =
+    list.length;
+
+
+  $("#emptyState")
+    .classList
+    .toggle(
+      "hidden",
+      list.length > 0 ||
+      firebaseLoading
+    );
+
+
+  productGrid.innerHTML =
+    list.map(p => {
 
       const isPreorder =
         p.stockStatus === "preorder";
@@ -191,12 +230,14 @@ function renderProducts(){
 
 
             <div class="product-title">
+
               ${
                 siteLang === "mm" &&
                 p.nameMM
                   ? p.nameMM
                   : p.name
               }
+
             </div>
 
 
@@ -209,6 +250,7 @@ function renderProducts(){
               isPreorder
                 ? `
                   <div class="preorder-note">
+
                     ${
                       siteLang === "mm"
                         ? tr().waitTwoWeeks
@@ -217,6 +259,7 @@ function renderProducts(){
                             "2 weeks"
                           }`
                     }
+
                   </div>
                 `
                 : ""
@@ -227,20 +270,23 @@ function renderProducts(){
         </article>
       `;
 
-    })
-    .join("");
+    }).join("");
 
 
   productGrid
-    .querySelectorAll(".product-card")
+    .querySelectorAll(
+      ".product-card"
+    )
     .forEach(card => {
 
       card.addEventListener(
         "click",
         () => {
+
           openProduct(
             card.dataset.id
           );
+
         }
       );
 
@@ -273,6 +319,7 @@ function openProduct(id){
   const isPreorder =
     selectedProduct.stockStatus ===
     "preorder";
+
 
   const isOut =
     selectedProduct.stockStatus ===
@@ -335,16 +382,17 @@ function openProduct(id){
       : "";
 
 
-  $("#modalStockInfo").innerHTML =
-    `
-      <span
-        class="modal-stock-pill ${stockClass}"
-      >
-        ${stockText}
-      </span>
+  $("#modalStockInfo").innerHTML = `
 
-      ${waitText}
-    `;
+    <span
+      class="modal-stock-pill ${stockClass}"
+    >
+      ${stockText}
+    </span>
+
+    ${waitText}
+
+  `;
 
 
   $("#modalDescription").textContent =
@@ -413,7 +461,8 @@ function openProduct(id){
     $("#addToCartBtn");
 
 
-  addBtn.disabled = isOut;
+  addBtn.disabled =
+    isOut;
 
 
   $("#addToCartText").textContent =
@@ -510,6 +559,7 @@ function addToCart(){
       image:
         selectedProduct.image ||
         null
+
     });
   }
 
@@ -577,7 +627,9 @@ function renderCart(){
         `
         : ""
     )
+
     +
+
     cart.map((x,i) => {
 
       const product =
@@ -646,12 +698,15 @@ function renderCart(){
 
 
               <span>
+
                 ${
                   siteLang === "mm"
                     ? "အရေအတွက်"
                     : "Qty"
                 }
+
                 ${x.qty}
+
               </span>
 
             </div>
@@ -660,12 +715,9 @@ function renderCart(){
             <div class="cart-item-bottom">
 
               <strong>
-                ${
-                  money(
-                    x.price *
-                    x.qty
-                  )
-                }
+                ${money(
+                  x.price * x.qty
+                )}
               </strong>
 
 
@@ -673,11 +725,13 @@ function renderCart(){
                 class="remove-item"
                 data-i="${i}"
               >
+
                 ${
                   siteLang === "mm"
                     ? "ဖယ်မည်"
                     : "Remove"
                 }
+
               </button>
 
             </div>
@@ -687,8 +741,7 @@ function renderCart(){
         </div>
       `;
 
-    })
-    .join("");
+    }).join("");
 
 
   $("#cartItems")
@@ -809,7 +862,7 @@ function showToast(
 
 
 /* =========================================
-   WHATSAPP ORDER
+   WHATSAPP
 ========================================= */
 
 function orderWhatsApp(){
@@ -906,12 +959,10 @@ function orderWhatsApp(){
             : ""
         }` +
         ` | Qty ${x.qty}` +
-        ` | ${
-          money(
-            x.price *
-            x.qty
-          )
-        }`
+        ` | ${money(
+          x.price *
+          x.qty
+        )}`
     );
 
 
@@ -976,71 +1027,27 @@ function orderWhatsApp(){
 
 const colorDefs = [
 
-  {
-    key:"all",
-    en:"All colors",
-    mm:"အရောင်အားလုံး"
-  },
+  {key:"all",en:"All colors",mm:"အရောင်အားလုံး"},
 
-  {
-    key:"green",
-    en:"Green",
-    mm:"စိမ်း"
-  },
+  {key:"green",en:"Green",mm:"စိမ်း"},
 
-  {
-    key:"blue",
-    en:"Blue",
-    mm:"ပြာ"
-  },
+  {key:"blue",en:"Blue",mm:"ပြာ"},
 
-  {
-    key:"red",
-    en:"Red",
-    mm:"နီ"
-  },
+  {key:"red",en:"Red",mm:"နီ"},
 
-  {
-    key:"brown",
-    en:"Brown",
-    mm:"ညို"
-  },
+  {key:"brown",en:"Brown",mm:"ညို"},
 
-  {
-    key:"yellow",
-    en:"Yellow",
-    mm:"ဝါ"
-  },
+  {key:"yellow",en:"Yellow",mm:"ဝါ"},
 
-  {
-    key:"clear",
-    en:"Clear",
-    mm:"အကြည်"
-  },
+  {key:"clear",en:"Clear",mm:"အကြည်"},
 
-  {
-    key:"gray",
-    en:"Gray",
-    mm:"မီးခိုး"
-  },
+  {key:"gray",en:"Gray",mm:"မီးခိုး"},
 
-  {
-    key:"purple",
-    en:"Purple",
-    mm:"ခရမ်း"
-  },
+  {key:"purple",en:"Purple",mm:"ခရမ်း"},
 
-  {
-    key:"black",
-    en:"Black",
-    mm:"အနက်"
-  },
+  {key:"black",en:"Black",mm:"အနက်"},
 
-  {
-    key:"pink",
-    en:"Pink",
-    mm:"ပန်းရောင်"
-  }
+  {key:"pink",en:"Pink",mm:"ပန်းရောင်"}
 
 ];
 
@@ -1112,14 +1119,12 @@ const i18n = {
     step1Text:
       "Select product, power and quantity.",
 
-    step2Title:
-      "Add to bag",
+    step2Title:"Add to bag",
 
     step2Text:
       "Review your order and total.",
 
-    step3Title:
-      "WhatsApp us",
+    step3Title:"WhatsApp us",
 
     step3Text:
       "Send the prepared order message instantly.",
@@ -1236,8 +1241,7 @@ const i18n = {
       "Beauty",
 
     bagItems:
-      n =>
-        `Items in your bag (${n})`,
+      n => `Items in your bag (${n})`,
 
     cartEmpty:
       "Your bag is empty.",
@@ -1307,8 +1311,7 @@ const i18n = {
     clearStockBtn:
       "ရှင်းမည်",
 
-    stockAll:
-      "အားလုံး",
+    stockAll:"အားလုံး",
 
     stockIn:
       "ပစ္စည်းအသင့်ရှိ",
@@ -1469,8 +1472,7 @@ const i18n = {
       "အလှကုန်",
 
     bagItems:
-      n =>
-        `Bag ထဲရှိ ပစ္စည်း (${n})`,
+      n => `Bag ထဲရှိ ပစ္စည်း (${n})`,
 
     cartEmpty:
       "သင့် Bag ထဲမှာ ပစ္စည်းမရှိသေးပါ။",
@@ -1512,10 +1514,7 @@ let siteLang =
 
 
 function tr(){
-  return (
-    i18n[siteLang] ||
-    i18n.en
-  );
+  return i18n[siteLang] || i18n.en;
 }
 
 
@@ -1573,7 +1572,9 @@ function localizedBadge(raw){
 
     "Pre-order":
       t.stockPre
+
   };
+
 
   return map[raw] || raw;
 }
@@ -1586,6 +1587,7 @@ function localizedBadge(raw){
 function renderStockFilters(){
 
   const t = tr();
+
 
   const defs = [
 
@@ -1613,9 +1615,7 @@ function renderStockFilters(){
 
 
   const wrap =
-    document.getElementById(
-      "stockFilters"
-    );
+    $("#stockFilters");
 
 
   if(!wrap){
@@ -1635,9 +1635,7 @@ function renderStockFilters(){
         }"
         data-stock="${s.key}"
       >
-
         ${s.label}
-
       </button>
 
     `).join("");
@@ -1656,9 +1654,11 @@ function renderStockFilters(){
           currentStock =
             btn.dataset.stock;
 
+
           renderStockFilters();
 
-          renderProducts();
+
+          sendFiltersToFirebase();
 
         }
       );
@@ -1680,9 +1680,7 @@ function renderColorFilters(){
 
 
   const wrap =
-    document.getElementById(
-      "colorFilters"
-    );
+    $("#colorFilters");
 
 
   if(!wrap){
@@ -1727,9 +1725,11 @@ function renderColorFilters(){
           currentColor =
             btn.dataset.color;
 
+
           renderColorFilters();
 
-          renderProducts();
+
+          sendFiltersToFirebase();
 
         }
       );
@@ -1739,7 +1739,7 @@ function renderColorFilters(){
 
 
 /* =========================================
-   CATEGORIES
+   CATEGORY FILTERS
 ========================================= */
 
 function renderCategories(){
@@ -1769,18 +1769,20 @@ function renderCategories(){
 
   categoryFilters
     .querySelectorAll("button")
-    .forEach(b => {
+    .forEach(btn => {
 
-      b.addEventListener(
+      btn.addEventListener(
         "click",
         () => {
 
           currentCategory =
-            b.dataset.category;
+            btn.dataset.category;
+
 
           renderCategories();
 
-          renderProducts();
+
+          sendFiltersToFirebase();
 
         }
       );
@@ -1862,6 +1864,7 @@ window.setFirebaseHasMore =
     firebaseHasMore =
       Boolean(hasMore);
 
+
     updateLoadMoreButton();
   };
 
@@ -1871,6 +1874,10 @@ window.setFirebaseLoading =
 
     firebaseLoading =
       Boolean(isLoading);
+
+
+    renderProducts();
+
 
     updateLoadMoreButton();
   };
@@ -1895,8 +1902,7 @@ if(loadMoreBtn){
 
 
       if(
-        typeof
-        window.loadMoreFirebaseProducts
+        typeof window.loadMoreFirebaseProducts
         === "function"
       ){
 
@@ -1939,101 +1945,68 @@ function setSiteLanguage(lang){
   const ids = [
 
     "annDelivery",
-
     "annCod",
-
     "annWhatsapp",
 
     "heroEyebrow",
-
     "heroTitle",
-
     "heroText",
-
     "shopLatest",
 
     "shopEyebrow",
-
     "latestProductsTitle",
-
     "productsWord",
 
     "stockFilterTitle",
-
     "clearStockBtn",
 
     "colorFilterTitle",
-
     "clearColorBtn",
 
     "categoryFilterTitle",
 
     "howEyebrow",
-
     "howTitle",
 
     "step1Title",
-
     "step1Text",
 
     "step2Title",
-
     "step2Text",
 
     "step3Title",
-
     "step3Text",
 
     "emptyTitle",
-
     "emptyText",
 
     "yourOrderLabel",
-
     "shoppingBagTitle",
-
     "subtotalLabel",
-
     "deliveryInstruction",
 
     "fullNameLabel",
-
     "phoneLabel",
-
     "emirateLabel",
-
     "areaLabel",
-
     "buildingLabel",
-
     "streetLabel",
-
     "landmarkLabel",
-
     "notesLabel",
 
     "whatsappBtnText",
-
     "continueShoppingText",
-
     "powerLabel",
-
     "quantityLabel",
-
     "addToCartText",
 
     "footerTagline",
-
     "selectEmirateOption",
-
     "addressError",
 
     "sortFeatured",
-
     "sortLow",
-
     "sortHigh",
-
     "sortName"
 
   ];
@@ -2043,6 +2016,7 @@ function setSiteLanguage(lang){
 
     const el =
       document.getElementById(id);
+
 
     if(
       el &&
@@ -2087,19 +2061,22 @@ function setSiteLanguage(lang){
 
   Object.entries(
     placeholders
-  ).forEach(
-    ([id,value]) => {
+  )
+    .forEach(
+      ([id,value]) => {
 
-      const el =
-        document.getElementById(id);
+        const el =
+          document.getElementById(id);
 
-      if(el){
-        el.placeholder =
-          value;
+
+        if(el){
+
+          el.placeholder =
+            value;
+        }
+
       }
-
-    }
-  );
+    );
 
 
   document
@@ -2152,6 +2129,10 @@ document
   });
 
 
+/*
+  SEARCH IS STILL LOCAL
+*/
+
 searchInput.addEventListener(
   "input",
   renderProducts
@@ -2171,6 +2152,7 @@ $("#searchFocusBtn")
 
       location.hash =
         "shop";
+
 
       setTimeout(
         () =>
@@ -2322,9 +2304,11 @@ if(clearStockBtn){
       currentStock =
         "all";
 
+
       renderStockFilters();
 
-      renderProducts();
+
+      sendFiltersToFirebase();
 
     }
   );
@@ -2344,9 +2328,11 @@ if(clearColorBtn){
       currentColor =
         "all";
 
+
       renderColorFilters();
 
-      renderProducts();
+
+      sendFiltersToFirebase();
 
     }
   );
@@ -2354,7 +2340,7 @@ if(clearColorBtn){
 
 
 /* =========================================
-   FIREBASE PRODUCT BRIDGE
+   FIREBASE DATA BRIDGE
 ========================================= */
 
 window.setProductsFromFirebase =
@@ -2372,12 +2358,6 @@ window.setProductsFromFirebase =
     products =
       firebaseProducts;
 
-
-    renderStockFilters();
-
-    renderColorFilters();
-
-    renderCategories();
 
     renderProducts();
 
