@@ -10,7 +10,6 @@ let cart = JSON.parse(
 );
 
 let selectedProduct = null;
-
 let firebaseHasMore = false;
 let firebaseLoading = false;
 
@@ -22,16 +21,15 @@ const searchInput = $("#searchInput");
 const sortSelect = $("#sortSelect");
 
 
-function money(n){
+/* =========================================
+   BASIC HELPERS
+========================================= */
+
+function money(n) {
   return `AED ${Number(n).toFixed(0)}`;
 }
 
-
-/* =========================================
-   FIXED CATEGORIES
-========================================= */
-
-function categories(){
+function categories() {
   return [
     "All",
     "Contact Lenses",
@@ -42,117 +40,354 @@ function categories(){
 
 
 /* =========================================
-   LOCAL SEARCH + SORT
-   Category / Color / Stock are now
-   handled by Firestore.
+   COLORS
 ========================================= */
 
-function filteredProducts(){
+const colorDefs = [
+  { key:"all",    en:"All colors", mm:"အရောင်အားလုံး" },
+  { key:"green",  en:"Green",      mm:"စိမ်း" },
+  { key:"blue",   en:"Blue",       mm:"ပြာ" },
+  { key:"red",    en:"Red",        mm:"နီ" },
+  { key:"brown",  en:"Brown",      mm:"ညို" },
+  { key:"yellow", en:"Yellow",     mm:"ဝါ" },
+  { key:"clear",  en:"Clear",      mm:"အကြည်" },
+  { key:"gray",   en:"Gray",       mm:"မီးခိုး" },
+  { key:"purple", en:"Purple",     mm:"ခရမ်း" },
+  { key:"black",  en:"Black",      mm:"အနက်" },
+  { key:"pink",   en:"Pink",       mm:"ပန်းရောင်" }
+];
 
-  const q = searchInput.value
-    .trim()
-    .toLowerCase();
 
-  let list = products.filter(p =>
-    (p.name || "")
-      .toLowerCase()
-      .includes(q)
-  );
+/* =========================================
+   LANGUAGE
+========================================= */
 
+const i18n = {
+  en: {
+    annDelivery:"UAE Delivery",
+    annCod:"Cash on Delivery",
+    annWhatsapp:"Order via WhatsApp",
+
+    heroEyebrow:"EVERYDAY BEAUTY, MADE EASY",
+    heroTitle:"Your look.<br>Your lenses.",
+    heroText:"Fashion contact lenses selected for effortless everyday style. Shop by color, power and collection.",
+    shopLatest:"Shop latest",
+
+    shopEyebrow:"SHOP",
+    latestProductsTitle:"Latest products",
+    productsWord:"products",
+
+    stockFilterTitle:"Availability",
+    clearStockBtn:"Clear",
+    stockAll:"All",
+    stockIn:"In Stock",
+    stockPre:"Pre-order",
+    stockOut:"Out of Stock",
+
+    waitTwoWeeks:"Waiting period: 2 weeks",
+
+    colorFilterTitle:"Shop by color",
+    clearColorBtn:"Clear",
+    categoryFilterTitle:"Categories",
+
+    howEyebrow:"HOW TO ORDER",
+    howTitle:"Three easy steps",
+
+    step1Title:"Choose",
+    step1Text:"Select product, power and quantity.",
+
+    step2Title:"Add to bag",
+    step2Text:"Review your order and total.",
+
+    step3Title:"WhatsApp us",
+    step3Text:"Send the prepared order message instantly.",
+
+    emptyTitle:"No products found",
+    emptyText:"Try another search, color or category.",
+
+    yourOrderLabel:"YOUR ORDER",
+    shoppingBagTitle:"Shopping bag",
+    subtotalLabel:"Subtotal",
+
+    deliveryInstruction:"Please add your delivery details before ordering.",
+
+    fullNameLabel:"Full Name *",
+    phoneLabel:"Phone Number *",
+    emirateLabel:"Emirate *",
+    areaLabel:"Area / Community *",
+    buildingLabel:"Building / Villa *",
+    streetLabel:"Street / Apartment",
+    landmarkLabel:"Landmark",
+    notesLabel:"Delivery Notes",
+
+    whatsappBtnText:"Order via WhatsApp",
+    continueShoppingText:"Continue shopping",
+
+    powerLabel:"Power",
+    quantityLabel:"Quantity",
+    addToCartText:"Add to bag",
+
+    footerTagline:"Fashion lenses & beauty finds.",
+
+    selectEmirateOption:"Select emirate",
+    addressError:"Please complete all required (*) delivery fields.",
+
+    searchPlaceholder:"Search products…",
+    namePlaceholder:"Your full name",
+    phonePlaceholder:"05X XXX XXXX",
+    areaPlaceholder:"e.g. Muwaileh, Al Nahda",
+    buildingPlaceholder:"Building name / Villa no.",
+    streetPlaceholder:"Street, apartment or room no.",
+    landmarkPlaceholder:"Nearby landmark",
+    notesPlaceholder:"Any special delivery instructions",
+
+    sortFeatured:"Featured",
+    sortLow:"Price: low to high",
+    sortHigh:"Price: high to low",
+    sortName:"Name: A–Z",
+
+    categoryAll:"All",
+    categoryLenses:"Contact Lenses",
+    categoryAccessories:"Lens Accessories",
+    categoryBeauty:"Beauty",
+
+    bagItems:n => `Items in your bag (${n})`,
+    cartEmpty:"Your bag is empty.",
+    added:"Added to bag — tap Bag to review",
+
+    badgeBest:"Best Seller",
+    badgeStock:"In Stock",
+    badgeOut:"Out of Stock",
+    badgeNew:"New Arrival",
+    badgePower:"Power Lens",
+    badgeDaily:"Daily",
+
+    loadMore:"Load More",
+    loading:"Loading..."
+  },
+
+  mm: {
+    annDelivery:"UAE အတွင်း ပို့ဆောင်ပေးသည်",
+    annCod:"ပစ္စည်းရောက်ငွေချေ",
+    annWhatsapp:"WhatsApp မှ မှာယူနိုင်သည်",
+
+    heroEyebrow:"နေ့စဉ်အလှအပအတွက် လွယ်ကူစွာရွေးချယ်ပါ",
+    heroTitle:"Thai Fashion Lens မှ<br>နွေးထွေးစွာ ကြိုဆိုပါ၏",
+    heroText:"နေ့စဉ်လှပတဲ့စတိုင်အတွက် Fashion Contact Lenses များကို အရောင်၊ Power နဲ့ Collection အလိုက် လွယ်ကူစွာရွေးချယ်နိုင်ပါတယ်။",
+    shopLatest:"အသစ်ရောက်ပစ္စည်းများ ကြည့်ရန်",
+
+    shopEyebrow:"ဆိုင်",
+    latestProductsTitle:"နောက်ဆုံးရောက် ပစ္စည်းများ",
+    productsWord:"ပစ္စည်း",
+
+    stockFilterTitle:"ပစ္စည်းအခြေအနေ",
+    clearStockBtn:"ရှင်းမည်",
+    stockAll:"အားလုံး",
+    stockIn:"ပစ္စည်းအသင့်ရှိ",
+    stockPre:"ကြိုတင်မှာယူ",
+    stockOut:"ပစ္စည်းကုန်",
+
+    waitTwoWeeks:"စောင့်ဆိုင်းချိန် ၂ ပတ်",
+
+    colorFilterTitle:"အရောင်အလိုက် ရွေးရန်",
+    clearColorBtn:"ရှင်းမည်",
+    categoryFilterTitle:"အမျိုးအစားများ",
+
+    howEyebrow:"မှာယူနည်း",
+    howTitle:"လွယ်ကူတဲ့ အဆင့် ၃ ဆင့်",
+
+    step1Title:"ရွေးချယ်ပါ",
+    step1Text:"ပစ္စည်း၊ Power နဲ့ အရေအတွက်ကို ရွေးပါ။",
+
+    step2Title:"Bag ထဲထည့်ပါ",
+    step2Text:"သင့်အော်ဒါနဲ့ စုစုပေါင်းကို စစ်ဆေးပါ။",
+
+    step3Title:"WhatsApp မှ မှာယူပါ",
+    step3Text:"ပြင်ဆင်ပြီးသား Order Message ကို ချက်ချင်းပို့နိုင်ပါတယ်။",
+
+    emptyTitle:"ပစ္စည်း မတွေ့ပါ",
+    emptyText:"အခြားအရောင်၊ အမျိုးအစား သို့မဟုတ် Search စာသားနဲ့ ပြန်ရှာကြည့်ပါ။",
+
+    yourOrderLabel:"သင့်အော်ဒါ",
+    shoppingBagTitle:"ဈေးဝယ်အိတ်",
+    subtotalLabel:"ပစ္စည်းစုစုပေါင်း",
+
+    deliveryInstruction:"မှာယူရန်အတွက် ပို့ဆောင်ရမည့်လိပ်စာကို ဖြည့်ပေးပါ။",
+
+    fullNameLabel:"အမည်အပြည့်အစုံ *",
+    phoneLabel:"ဖုန်းနံပါတ် *",
+    emirateLabel:"Emirate *",
+    areaLabel:"Area / Community *",
+    buildingLabel:"Building / Villa *",
+    streetLabel:"Street / Apartment",
+    landmarkLabel:"အနီးအနား Landmark",
+    notesLabel:"ပို့ဆောင်မှု မှတ်ချက်",
+
+    whatsappBtnText:"WhatsApp မှ မှာယူမည်",
+    continueShoppingText:"ပစ္စည်းဆက်ရွေးမည်",
+
+    powerLabel:"Power",
+    quantityLabel:"အရေအတွက်",
+    addToCartText:"Bag ထဲထည့်မည်",
+
+    footerTagline:"Fashion lenses နဲ့ Beauty ပစ္စည်းများ",
+
+    selectEmirateOption:"Emirate ရွေးပါ",
+    addressError:"လိုအပ်သော (*) လိပ်စာအချက်အလက်များကို အပြည့်အစုံဖြည့်ပါ။",
+
+    searchPlaceholder:"ပစ္စည်းရှာရန်…",
+    namePlaceholder:"အမည်အပြည့်အစုံ",
+    phonePlaceholder:"05X XXX XXXX",
+    areaPlaceholder:"ဥပမာ - Muwaileh, Al Nahda",
+    buildingPlaceholder:"Building name / Villa no.",
+    streetPlaceholder:"Street, apartment or room no.",
+    landmarkPlaceholder:"အနီးအနား Landmark",
+    notesPlaceholder:"ပို့ဆောင်မှုအတွက် မှတ်ချက်ရှိပါက ရေးပါ",
+
+    sortFeatured:"အထူးရွေးချယ်ထားသော",
+    sortLow:"ဈေးနည်းမှ များသို့",
+    sortHigh:"ဈေးများမှ နည်းသို့",
+    sortName:"အမည် A–Z",
+
+    categoryAll:"အားလုံး",
+    categoryLenses:"မျက်ကပ်မှန်များ",
+    categoryAccessories:"မျက်ကပ်မှန် အပိုပစ္စည်းများ",
+    categoryBeauty:"အလှကုန်",
+
+    bagItems:n => `Bag ထဲရှိ ပစ္စည်း (${n})`,
+    cartEmpty:"သင့် Bag ထဲမှာ ပစ္စည်းမရှိသေးပါ။",
+    added:"Bag ထဲထည့်ပြီးပါပြီ — Bag ကိုနှိပ်ပြီး စစ်နိုင်ပါတယ်",
+
+    badgeBest:"အရောင်းရဆုံး",
+    badgeStock:"ပစ္စည်းရှိ",
+    badgeOut:"ပစ္စည်းကုန်",
+    badgeNew:"အသစ်ရောက်",
+    badgePower:"Power Lens",
+    badgeDaily:"နေ့စဉ်သုံး",
+
+    loadMore:"နောက်ထပ်ကြည့်ရန်",
+    loading:"ဖွင့်နေသည်..."
+  }
+};
+
+
+let siteLang =
+  localStorage.getItem("tfl_language") || "en";
+
+
+function tr() {
+  return i18n[siteLang] || i18n.en;
+}
+
+
+function localizedCategory(raw) {
+  const t = tr();
+
+  if (raw === "All") return t.categoryAll;
+  if (raw === "Contact Lenses") return t.categoryLenses;
+  if (raw === "Accessories") return t.categoryAccessories;
+  if (raw === "Beauty") return t.categoryBeauty;
+
+  return raw;
+}
+
+
+function localizedBadge(raw) {
+  const t = tr();
+
+  const map = {
+    "Best Seller": t.badgeBest,
+    "In Stock": t.badgeStock,
+    "Out of Stock": t.badgeOut,
+    "New Arrival": t.badgeNew,
+    "Power Lens": t.badgePower,
+    "Daily": t.badgeDaily,
+    "Pre-order": t.stockPre
+  };
+
+  return map[raw] || raw;
+}
+
+
+/* =========================================
+   SEARCH + SORT
+========================================= */
+
+function filteredProducts() {
+  const q =
+    searchInput.value
+      .trim()
+      .toLowerCase();
+
+  let list =
+    products.filter(p =>
+      (p.name || "")
+        .toLowerCase()
+        .includes(q)
+    );
 
   const sort = sortSelect.value;
 
-
-  if(sort === "low"){
-    list.sort(
-      (a,b) => a.price - b.price
-    );
+  if (sort === "low") {
+    list.sort((a,b) => a.price - b.price);
   }
 
-
-  if(sort === "high"){
-    list.sort(
-      (a,b) => b.price - a.price
-    );
+  if (sort === "high") {
+    list.sort((a,b) => b.price - a.price);
   }
 
-
-  if(sort === "name"){
-    list.sort(
-      (a,b) =>
-        (a.name || "")
-          .localeCompare(
-            b.name || ""
-          )
+  if (sort === "name") {
+    list.sort((a,b) =>
+      (a.name || "")
+        .localeCompare(b.name || "")
     );
   }
-
 
   return list;
 }
 
 
 /* =========================================
-   SEND FILTERS TO FIRESTORE
+   FIRESTORE FILTER BRIDGE
 ========================================= */
 
-function sendFiltersToFirebase(){
-
-  if(
-    typeof window.setFirebaseProductFilters
-    !== "function"
-  ){
+function sendFiltersToFirebase() {
+  if (
+    typeof window.setFirebaseProductFilters !==
+    "function"
+  ) {
     return;
   }
 
-
   window.setFirebaseProductFilters({
-
-    category:
-      currentCategory,
-
-    color:
-      currentColor,
-
-    stock:
-      currentStock
-
+    category: currentCategory,
+    color: currentColor,
+    stock: currentStock
   });
 }
 
 
 /* =========================================
-   RENDER PRODUCTS
+   PRODUCT GRID
 ========================================= */
 
-function renderProducts(){
+function renderProducts() {
+  const list = filteredProducts();
 
-  const list =
-    filteredProducts();
+  $("#resultCount").textContent = list.length;
 
-
-  $("#resultCount").textContent =
-    list.length;
-
-
-  $("#emptyState")
-    .classList
-    .toggle(
-      "hidden",
-      list.length > 0 ||
-      firebaseLoading
-    );
-
+  $("#emptyState").classList.toggle(
+    "hidden",
+    list.length > 0 || firebaseLoading
+  );
 
   productGrid.innerHTML =
     list.map(p => {
-
       const isPreorder =
         p.stockStatus === "preorder";
 
       const isOut =
         p.stockStatus === "outofstock";
-
 
       const stockText =
         isPreorder
@@ -161,7 +396,6 @@ function renderProducts(){
             ? tr().stockOut
             : tr().stockIn;
 
-
       const stockClass =
         isPreorder
           ? "preorder"
@@ -169,22 +403,15 @@ function renderProducts(){
             ? "outofstock"
             : "";
 
-
       return `
-
         <article
           class="product-card"
           data-id="${p.id}"
         >
-
           <div
-            class="product-image
-              ${p.type || ""}
-              ${p.image ? "has-real-image" : ""}
-            "
+            class="product-image ${p.type || ""} ${p.image ? "has-real-image" : ""}"
             style="--iris:${p.color}"
           >
-
             ${
               p.image
                 ? `
@@ -198,18 +425,13 @@ function renderProducts(){
                 : ""
             }
 
-
             <span class="badge">
               ${localizedBadge(p.badge)}
             </span>
 
-
-            <span
-              class="stock-status ${stockClass}"
-            >
+            <span class="stock-status ${stockClass}">
               ${stockText}
             </span>
-
 
             <button
               class="quick-add"
@@ -218,80 +440,51 @@ function renderProducts(){
             >
               +
             </button>
-
           </div>
 
-
           <div class="product-info">
-
             <div class="product-category">
               ${localizedCategory(p.category)}
             </div>
 
-
             <div class="product-title">
-
               ${
-                siteLang === "mm" &&
-                p.nameMM
+                siteLang === "mm" && p.nameMM
                   ? p.nameMM
                   : p.name
               }
-
             </div>
-
 
             <div class="product-price">
               ${money(p.price)}
             </div>
 
-
             ${
               isPreorder
                 ? `
                   <div class="preorder-note">
-
                     ${
                       siteLang === "mm"
                         ? tr().waitTwoWeeks
-                        : `Waiting period: ${
-                            p.waitingPeriod ||
-                            "2 weeks"
-                          }`
+                        : `Waiting period: ${p.waitingPeriod || "2 weeks"}`
                     }
-
                   </div>
                 `
                 : ""
             }
-
           </div>
-
         </article>
       `;
-
     }).join("");
 
-
   productGrid
-    .querySelectorAll(
-      ".product-card"
-    )
+    .querySelectorAll(".product-card")
     .forEach(card => {
-
       card.addEventListener(
         "click",
-        () => {
-
-          openProduct(
-            card.dataset.id
-          );
-
-        }
+        () => openProduct(card.dataset.id)
       );
-
     });
-
 
   updateLoadMoreButton();
 }
@@ -301,8 +494,7 @@ function renderProducts(){
    PRODUCT MODAL
 ========================================= */
 
-function openProduct(id){
-
+function openProduct(id) {
   selectedProduct =
     products.find(
       p =>
@@ -310,42 +502,26 @@ function openProduct(id){
         String(id)
     );
 
-
-  if(!selectedProduct){
-    return;
-  }
-
+  if (!selectedProduct) return;
 
   const isPreorder =
-    selectedProduct.stockStatus ===
-    "preorder";
-
+    selectedProduct.stockStatus === "preorder";
 
   const isOut =
-    selectedProduct.stockStatus ===
-    "outofstock";
-
+    selectedProduct.stockStatus === "outofstock";
 
   $("#modalName").textContent =
-    (
-      siteLang === "mm" &&
-      selectedProduct.nameMM
-    )
+    siteLang === "mm" && selectedProduct.nameMM
       ? selectedProduct.nameMM
       : selectedProduct.name;
-
 
   $("#modalCategory").textContent =
     localizedCategory(
       selectedProduct.category
     );
 
-
   $("#modalPrice").textContent =
-    money(
-      selectedProduct.price
-    );
-
+    money(selectedProduct.price);
 
   const stockText =
     isPreorder
@@ -354,7 +530,6 @@ function openProduct(id){
         ? tr().stockOut
         : tr().stockIn;
 
-
   const stockClass =
     isPreorder
       ? "preorder"
@@ -362,47 +537,27 @@ function openProduct(id){
         ? "outofstock"
         : "";
 
-
   const waitLabel =
     siteLang === "mm"
       ? tr().waitTwoWeeks
-      : `Waiting period: ${
-          selectedProduct.waitingPeriod ||
-          "2 weeks"
-        }`;
-
+      : `Waiting period: ${selectedProduct.waitingPeriod || "2 weeks"}`;
 
   const waitText =
     isPreorder
-      ? `
-        <span class="modal-waiting">
-          ${waitLabel}
-        </span>
-      `
+      ? `<span class="modal-waiting">${waitLabel}</span>`
       : "";
 
-
   $("#modalStockInfo").innerHTML = `
-
-    <span
-      class="modal-stock-pill ${stockClass}"
-    >
+    <span class="modal-stock-pill ${stockClass}">
       ${stockText}
     </span>
-
     ${waitText}
-
   `;
 
-
   $("#modalDescription").textContent =
-    (
-      siteLang === "mm" &&
-      selectedProduct.descMM
-    )
+    siteLang === "mm" && selectedProduct.descMM
       ? selectedProduct.descMM
       : selectedProduct.desc;
-
 
   $("#modalImage")
     .style
@@ -411,14 +566,12 @@ function openProduct(id){
       selectedProduct.color
     );
 
-
   $("#modalImage")
     .classList
     .toggle(
       "has-real-image",
       !!selectedProduct.image
     );
-
 
   $("#modalImage").innerHTML =
     selectedProduct.image
@@ -431,7 +584,6 @@ function openProduct(id){
       `
       : "";
 
-
   $("#powerWrap")
     .classList
     .toggle(
@@ -439,50 +591,38 @@ function openProduct(id){
       !selectedProduct.powers
     );
 
-
-  if(selectedProduct.powers){
-
+  if (selectedProduct.powers) {
     $("#powerSelect").innerHTML =
       selectedProduct.powers
         .map(
           x =>
-            `<option value="${x}">
-              ${x}
-            </option>`
+            `<option value="${x}">${x}</option>`
         )
         .join("");
   }
 
-
   $("#qtyInput").value = 1;
-
 
   const addBtn =
     $("#addToCartBtn");
 
-
-  addBtn.disabled =
-    isOut;
-
+  addBtn.disabled = isOut;
 
   $("#addToCartText").textContent =
     isOut
       ? tr().stockOut
       : tr().addToCartText;
 
-
   $("#productModal")
     .classList
     .remove("hidden");
-
 
   document.body.style.overflow =
     "hidden";
 }
 
 
-function closeModal(){
-
+function closeModal() {
   $("#productModal")
     .classList
     .add("hidden");
@@ -496,86 +636,53 @@ function closeModal(){
    CART
 ========================================= */
 
-function addToCart(){
-
-  if(
+function addToCart() {
+  if (
     !selectedProduct ||
-    selectedProduct.stockStatus ===
-      "outofstock"
-  ){
+    selectedProduct.stockStatus === "outofstock"
+  ) {
     return;
   }
-
 
   const qty =
     Math.max(
       1,
-      parseInt(
-        $("#qtyInput").value
-      ) || 1
+      parseInt($("#qtyInput").value) || 1
     );
-
 
   const power =
     selectedProduct.powers
       ? $("#powerSelect").value
       : null;
 
-
   const key =
-    `${selectedProduct.id}-${
-      power || "na"
-    }`;
-
+    `${selectedProduct.id}-${power || "na"}`;
 
   const existing =
-    cart.find(
-      x => x.key === key
-    );
+    cart.find(x => x.key === key);
 
-
-  if(existing){
-
+  if (existing) {
     existing.qty += qty;
-
-  }else{
-
+  } else {
     cart.push({
-
       key,
-
       id:selectedProduct.id,
-
       name:selectedProduct.name,
-
       price:selectedProduct.price,
-
       qty,
-
       power,
-
       color:selectedProduct.color,
-
-      image:
-        selectedProduct.image ||
-        null
-
+      image:selectedProduct.image || null
     });
   }
 
-
   saveCart();
-
   closeModal();
-
-  showToast(
-    tr().added
-  );
+  showToast(tr().added);
 }
 
 
-function saveCart(){
-
+function saveCart() {
   localStorage.setItem(
     "tfl_cart",
     JSON.stringify(cart)
@@ -585,14 +692,12 @@ function saveCart(){
 }
 
 
-function renderCart(){
-
+function renderCart() {
   $("#cartCount").textContent =
     cart.reduce(
       (a,x) => a + x.qty,
       0
     );
-
 
   $("#cartEmpty")
     .classList
@@ -601,7 +706,6 @@ function renderCart(){
       cart.length > 0
     );
 
-
   $("#cartSummary")
     .classList
     .toggle(
@@ -609,13 +713,11 @@ function renderCart(){
       cart.length === 0
     );
 
-
   const itemCount =
     cart.reduce(
       (a,x) => a + x.qty,
       0
     );
-
 
   $("#cartItems").innerHTML =
     (
@@ -627,11 +729,8 @@ function renderCart(){
         `
         : ""
     )
-
     +
-
     cart.map((x,i) => {
-
       const product =
         products.find(
           p =>
@@ -639,29 +738,18 @@ function renderCart(){
             String(x.id)
         );
 
-
       const cartImage =
         x.image ||
-        (
-          product &&
-          product.image
-        ) ||
+        (product && product.image) ||
         null;
 
-
       return `
-
         <div class="cart-item">
 
           <div
-            class="cart-thumb ${
-              cartImage
-                ? "has-cart-image"
-                : ""
-            }"
+            class="cart-thumb ${cartImage ? "has-cart-image" : ""}"
             style="--iris:${x.color}"
           >
-
             ${
               cartImage
                 ? `
@@ -673,109 +761,61 @@ function renderCart(){
                 `
                 : ""
             }
-
           </div>
 
-
           <div class="cart-item-main">
-
-            <h4>
-              ${x.name}
-            </h4>
-
+            <h4>${x.name}</h4>
 
             <div class="cart-meta">
-
               ${
                 x.power
-                  ? `
-                    <span>
-                      Power ${x.power}
-                    </span>
-                  `
+                  ? `<span>Power ${x.power}</span>`
                   : ""
               }
 
-
               <span>
-
-                ${
-                  siteLang === "mm"
-                    ? "အရေအတွက်"
-                    : "Qty"
-                }
-
-                ${x.qty}
-
+                ${siteLang === "mm" ? "အရေအတွက်" : "Qty"} ${x.qty}
               </span>
-
             </div>
 
-
             <div class="cart-item-bottom">
-
               <strong>
-                ${money(
-                  x.price * x.qty
-                )}
+                ${money(x.price * x.qty)}
               </strong>
-
 
               <button
                 class="remove-item"
                 data-i="${i}"
               >
-
-                ${
-                  siteLang === "mm"
-                    ? "ဖယ်မည်"
-                    : "Remove"
-                }
-
+                ${siteLang === "mm" ? "ဖယ်မည်" : "Remove"}
               </button>
-
             </div>
-
           </div>
-
         </div>
       `;
-
     }).join("");
 
-
   $("#cartItems")
-    .querySelectorAll(
-      ".remove-item"
-    )
+    .querySelectorAll(".remove-item")
     .forEach(b => {
-
       b.addEventListener(
         "click",
         () => {
-
           cart.splice(
-            Number(
-              b.dataset.i
-            ),
+            Number(b.dataset.i),
             1
           );
 
           saveCart();
-
         }
       );
-
     });
-
 
   $("#cartSubtotal").textContent =
     money(
       cart.reduce(
         (a,x) =>
-          a +
-          x.price *
-          x.qty,
+          a + x.price * x.qty,
         0
       )
     );
@@ -786,17 +826,14 @@ function renderCart(){
    CART DRAWER
 ========================================= */
 
-function openCart(){
-
+function openCart() {
   $("#cartDrawer")
     .classList
     .add("open");
 
-
   $("#drawerBackdrop")
     .classList
     .remove("hidden");
-
 
   $("#cartDrawer")
     .setAttribute(
@@ -804,30 +841,25 @@ function openCart(){
       "false"
     );
 
-
   document.body.style.overflow =
     "hidden";
 }
 
 
-function closeCart(){
-
+function closeCart() {
   $("#cartDrawer")
     .classList
     .remove("open");
 
-
   $("#drawerBackdrop")
     .classList
     .add("hidden");
-
 
   $("#cartDrawer")
     .setAttribute(
       "aria-hidden",
       "true"
     );
-
 
   document.body.style.overflow =
     "";
@@ -838,18 +870,12 @@ function closeCart(){
    TOAST
 ========================================= */
 
-function showToast(
-  message="Added to bag"
-){
-
-  $("#toast").textContent =
-    message;
-
+function showToast(message="Added to bag") {
+  $("#toast").textContent = message;
 
   $("#toast")
     .classList
     .remove("hidden");
-
 
   setTimeout(
     () =>
@@ -862,56 +888,35 @@ function showToast(
 
 
 /* =========================================
-   WHATSAPP
+   WHATSAPP ORDER
 ========================================= */
 
-function orderWhatsApp(){
-
-  if(!cart.length){
-    return;
-  }
-
+function orderWhatsApp() {
+  if (!cart.length) return;
 
   const name =
-    $("#customerName")
-      .value
-      .trim();
+    $("#customerName").value.trim();
 
   const phone =
-    $("#customerPhone")
-      .value
-      .trim();
+    $("#customerPhone").value.trim();
 
   const emirate =
-    $("#customerEmirate")
-      .value
-      .trim();
+    $("#customerEmirate").value.trim();
 
   const area =
-    $("#customerArea")
-      .value
-      .trim();
+    $("#customerArea").value.trim();
 
   const building =
-    $("#customerBuilding")
-      .value
-      .trim();
+    $("#customerBuilding").value.trim();
 
   const street =
-    $("#customerStreet")
-      .value
-      .trim();
+    $("#customerStreet").value.trim();
 
   const landmark =
-    $("#customerLandmark")
-      .value
-      .trim();
+    $("#customerLandmark").value.trim();
 
   const notes =
-    $("#customerNotes")
-      .value
-      .trim();
-
+    $("#customerNotes").value.trim();
 
   const requiredMissing =
     !name ||
@@ -920,7 +925,6 @@ function orderWhatsApp(){
     !area ||
     !building;
 
-
   $("#addressError")
     .classList
     .toggle(
@@ -928,9 +932,7 @@ function orderWhatsApp(){
       !requiredMissing
     );
 
-
-  if(requiredMissing){
-
+  if (requiredMissing) {
     const firstMissing =
       !name
         ? $("#customerName")
@@ -942,68 +944,44 @@ function orderWhatsApp(){
               ? $("#customerArea")
               : $("#customerBuilding");
 
-
     firstMissing.focus();
-
     return;
   }
-
 
   const lines =
     cart.map(
       (x,i) =>
         `${i+1}. ${x.name}` +
-        `${
-          x.power
-            ? ` | Power ${x.power}`
-            : ""
-        }` +
+        `${x.power ? ` | Power ${x.power}` : ""}` +
         ` | Qty ${x.qty}` +
-        ` | ${money(
-          x.price *
-          x.qty
-        )}`
+        ` | ${money(x.price * x.qty)}`
     );
-
 
   const total =
     money(
       cart.reduce(
         (a,x) =>
-          a +
-          x.price *
-          x.qty,
+          a + x.price * x.qty,
         0
       )
     );
 
-
   const addressLines = [
-
     `Name: ${name}`,
-
     `Phone: ${phone}`,
-
     `Emirate: ${emirate}`,
-
     `Area / Community: ${area}`,
-
     `Building / Villa: ${building}`,
-
     street
       ? `Street / Apartment: ${street}`
       : "",
-
     landmark
       ? `Landmark: ${landmark}`
       : "",
-
     notes
       ? `Delivery Notes: ${notes}`
       : ""
-
   ].filter(Boolean);
-
 
   const message =
     `Hi Thai Fashion Lenses UAE! I would like to order:\n\n` +
@@ -1013,7 +991,6 @@ function orderWhatsApp(){
     `${addressLines.join("\n")}` +
     `\n\nPlease confirm delivery fee and final total.`;
 
-
   window.open(
     `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(message)}`,
     "_blank"
@@ -1022,644 +999,58 @@ function orderWhatsApp(){
 
 
 /* =========================================
-   COLORS
-========================================= */
-
-const colorDefs = [
-
-  {key:"all",en:"All colors",mm:"အရောင်အားလုံး"},
-
-  {key:"green",en:"Green",mm:"စိမ်း"},
-
-  {key:"blue",en:"Blue",mm:"ပြာ"},
-
-  {key:"red",en:"Red",mm:"နီ"},
-
-  {key:"brown",en:"Brown",mm:"ညို"},
-
-  {key:"yellow",en:"Yellow",mm:"ဝါ"},
-
-  {key:"clear",en:"Clear",mm:"အကြည်"},
-
-  {key:"gray",en:"Gray",mm:"မီးခိုး"},
-
-  {key:"purple",en:"Purple",mm:"ခရမ်း"},
-
-  {key:"black",en:"Black",mm:"အနက်"},
-
-  {key:"pink",en:"Pink",mm:"ပန်းရောင်"}
-
-];
-
-
-/* =========================================
-   LANGUAGE
-========================================= */
-
-const i18n = {
-
-  en:{
-
-    annDelivery:"UAE Delivery",
-
-    annCod:"Cash on Delivery",
-
-    annWhatsapp:"Order via WhatsApp",
-
-    heroEyebrow:
-      "EVERYDAY BEAUTY, MADE EASY",
-
-    heroTitle:
-      "Your look.<br>Your lenses.",
-
-    heroText:
-      "Fashion contact lenses selected for effortless everyday style. Shop by color, power and collection.",
-
-    shopLatest:"Shop latest",
-
-    shopEyebrow:"SHOP",
-
-    latestProductsTitle:
-      "Latest products",
-
-    productsWord:"products",
-
-    stockFilterTitle:
-      "Availability",
-
-    clearStockBtn:"Clear",
-
-    stockAll:"All",
-
-    stockIn:"In Stock",
-
-    stockPre:"Pre-order",
-
-    stockOut:"Out of Stock",
-
-    waitTwoWeeks:
-      "Waiting period: 2 weeks",
-
-    colorFilterTitle:
-      "Shop by color",
-
-    clearColorBtn:"Clear",
-
-    categoryFilterTitle:
-      "Categories",
-
-    howEyebrow:
-      "HOW TO ORDER",
-
-    howTitle:
-      "Three easy steps",
-
-    step1Title:"Choose",
-
-    step1Text:
-      "Select product, power and quantity.",
-
-    step2Title:"Add to bag",
-
-    step2Text:
-      "Review your order and total.",
-
-    step3Title:"WhatsApp us",
-
-    step3Text:
-      "Send the prepared order message instantly.",
-
-    emptyTitle:
-      "No products found",
-
-    emptyText:
-      "Try another search, color or category.",
-
-    yourOrderLabel:
-      "YOUR ORDER",
-
-    shoppingBagTitle:
-      "Shopping bag",
-
-    subtotalLabel:"Subtotal",
-
-    deliveryInstruction:
-      "Please add your delivery details before ordering.",
-
-    fullNameLabel:
-      "Full Name *",
-
-    phoneLabel:
-      "Phone Number *",
-
-    emirateLabel:
-      "Emirate *",
-
-    areaLabel:
-      "Area / Community *",
-
-    buildingLabel:
-      "Building / Villa *",
-
-    streetLabel:
-      "Street / Apartment",
-
-    landmarkLabel:
-      "Landmark",
-
-    notesLabel:
-      "Delivery Notes",
-
-    whatsappBtnText:
-      "Order via WhatsApp",
-
-    continueShoppingText:
-      "Continue shopping",
-
-    powerLabel:"Power",
-
-    quantityLabel:
-      "Quantity",
-
-    addToCartText:
-      "Add to bag",
-
-    footerTagline:
-      "Fashion lenses & beauty finds.",
-
-    selectEmirateOption:
-      "Select emirate",
-
-    addressError:
-      "Please complete all required (*) delivery fields.",
-
-    searchPlaceholder:
-      "Search products…",
-
-    namePlaceholder:
-      "Your full name",
-
-    phonePlaceholder:
-      "05X XXX XXXX",
-
-    areaPlaceholder:
-      "e.g. Muwaileh, Al Nahda",
-
-    buildingPlaceholder:
-      "Building name / Villa no.",
-
-    streetPlaceholder:
-      "Street, apartment or room no.",
-
-    landmarkPlaceholder:
-      "Nearby landmark",
-
-    notesPlaceholder:
-      "Any special delivery instructions",
-
-    sortFeatured:
-      "Featured",
-
-    sortLow:
-      "Price: low to high",
-
-    sortHigh:
-      "Price: high to low",
-
-    sortName:
-      "Name: A–Z",
-
-    categoryAll:"All",
-
-    categoryLenses:
-      "Contact Lenses",
-
-    categoryAccessories:
-      "Lens Accessories",
-
-    categoryBeauty:
-      "Beauty",
-
-    bagItems:
-      n => `Items in your bag (${n})`,
-
-    cartEmpty:
-      "Your bag is empty.",
-
-    added:
-      "Added to bag — tap Bag to review",
-
-    badgeBest:
-      "Best Seller",
-
-    badgeStock:
-      "In Stock",
-
-    badgeOut:
-      "Out of Stock",
-
-    badgeNew:
-      "New Arrival",
-
-    badgePower:
-      "Power Lens",
-
-    badgeDaily:
-      "Daily",
-
-    loadMore:
-      "Load More",
-
-    loading:
-      "Loading..."
-  },
-
-
-  mm:{
-
-    annDelivery:
-      "UAE အတွင်း ပို့ဆောင်ပေးသည်",
-
-    annCod:
-      "ပစ္စည်းရောက်ငွေချေ",
-
-    annWhatsapp:
-      "WhatsApp မှ မှာယူနိုင်သည်",
-
-    heroEyebrow:
-      "နေ့စဉ်အလှအပအတွက် လွယ်ကူစွာရွေးချယ်ပါ",
-
-    heroTitle:
-      "Thai Fashion Lens မှ<br>နွေးထွေးစွာ ကြိုဆိုပါ၏",
-
-    heroText:
-      "နေ့စဉ်လှပတဲ့စတိုင်အတွက် Fashion Contact Lenses များကို အရောင်၊ Power နဲ့ Collection အလိုက် လွယ်ကူစွာရွေးချယ်နိုင်ပါတယ်။",
-
-    shopLatest:
-      "အသစ်ရောက်ပစ္စည်းများ ကြည့်ရန်",
-
-    shopEyebrow:"ဆိုင်",
-
-    latestProductsTitle:
-      "နောက်ဆုံးရောက် ပစ္စည်းများ",
-
-    productsWord:"ပစ္စည်း",
-
-    stockFilterTitle:
-      "ပစ္စည်းအခြေအနေ",
-
-    clearStockBtn:
-      "ရှင်းမည်",
-
-    stockAll:"အားလုံး",
-
-    stockIn:
-      "ပစ္စည်းအသင့်ရှိ",
-
-    stockPre:
-      "ကြိုတင်မှာယူ",
-
-    stockOut:
-      "ပစ္စည်းကုန်",
-
-    waitTwoWeeks:
-      "စောင့်ဆိုင်းချိန် ၂ ပတ်",
-
-    colorFilterTitle:
-      "အရောင်အလိုက် ရွေးရန်",
-
-    clearColorBtn:
-      "ရှင်းမည်",
-
-    categoryFilterTitle:
-      "အမျိုးအစားများ",
-
-    howEyebrow:
-      "မှာယူနည်း",
-
-    howTitle:
-      "လွယ်ကူတဲ့ အဆင့် ၃ ဆင့်",
-
-    step1Title:
-      "ရွေးချယ်ပါ",
-
-    step1Text:
-      "ပစ္စည်း၊ Power နဲ့ အရေအတွက်ကို ရွေးပါ။",
-
-    step2Title:
-      "Bag ထဲထည့်ပါ",
-
-    step2Text:
-      "သင့်အော်ဒါနဲ့ စုစုပေါင်းကို စစ်ဆေးပါ။",
-
-    step3Title:
-      "WhatsApp မှ မှာယူပါ",
-
-    step3Text:
-      "ပြင်ဆင်ပြီးသား Order Message ကို ချက်ချင်းပို့နိုင်ပါတယ်။",
-
-    emptyTitle:
-      "ပစ္စည်း မတွေ့ပါ",
-
-    emptyText:
-      "အခြားအရောင်၊ အမျိုးအစား သို့မဟုတ် Search စာသားနဲ့ ပြန်ရှာကြည့်ပါ။",
-
-    yourOrderLabel:
-      "သင့်အော်ဒါ",
-
-    shoppingBagTitle:
-      "ဈေးဝယ်အိတ်",
-
-    subtotalLabel:
-      "ပစ္စည်းစုစုပေါင်း",
-
-    deliveryInstruction:
-      "မှာယူရန်အတွက် ပို့ဆောင်ရမည့်လိပ်စာကို ဖြည့်ပေးပါ။",
-
-    fullNameLabel:
-      "အမည်အပြည့်အစုံ *",
-
-    phoneLabel:
-      "ဖုန်းနံပါတ် *",
-
-    emirateLabel:
-      "Emirate *",
-
-    areaLabel:
-      "Area / Community *",
-
-    buildingLabel:
-      "Building / Villa *",
-
-    streetLabel:
-      "Street / Apartment",
-
-    landmarkLabel:
-      "အနီးအနား Landmark",
-
-    notesLabel:
-      "ပို့ဆောင်မှု မှတ်ချက်",
-
-    whatsappBtnText:
-      "WhatsApp မှ မှာယူမည်",
-
-    continueShoppingText:
-      "ပစ္စည်းဆက်ရွေးမည်",
-
-    powerLabel:"Power",
-
-    quantityLabel:
-      "အရေအတွက်",
-
-    addToCartText:
-      "Bag ထဲထည့်မည်",
-
-    footerTagline:
-      "Fashion lenses နဲ့ Beauty ပစ္စည်းများ",
-
-    selectEmirateOption:
-      "Emirate ရွေးပါ",
-
-    addressError:
-      "လိုအပ်သော (*) လိပ်စာအချက်အလက်များကို အပြည့်အစုံဖြည့်ပါ။",
-
-    searchPlaceholder:
-      "ပစ္စည်းရှာရန်…",
-
-    namePlaceholder:
-      "အမည်အပြည့်အစုံ",
-
-    phonePlaceholder:
-      "05X XXX XXXX",
-
-    areaPlaceholder:
-      "ဥပမာ - Muwaileh, Al Nahda",
-
-    buildingPlaceholder:
-      "Building name / Villa no.",
-
-    streetPlaceholder:
-      "Street, apartment or room no.",
-
-    landmarkPlaceholder:
-      "အနီးအနား Landmark",
-
-    notesPlaceholder:
-      "ပို့ဆောင်မှုအတွက် မှတ်ချက်ရှိပါက ရေးပါ",
-
-    sortFeatured:
-      "အထူးရွေးချယ်ထားသော",
-
-    sortLow:
-      "ဈေးနည်းမှ များသို့",
-
-    sortHigh:
-      "ဈေးများမှ နည်းသို့",
-
-    sortName:
-      "အမည် A–Z",
-
-    categoryAll:
-      "အားလုံး",
-
-    categoryLenses:
-      "မျက်ကပ်မှန်များ",
-
-    categoryAccessories:
-      "မျက်ကပ်မှန် အပိုပစ္စည်းများ",
-
-    categoryBeauty:
-      "အလှကုန်",
-
-    bagItems:
-      n => `Bag ထဲရှိ ပစ္စည်း (${n})`,
-
-    cartEmpty:
-      "သင့် Bag ထဲမှာ ပစ္စည်းမရှိသေးပါ။",
-
-    added:
-      "Bag ထဲထည့်ပြီးပါပြီ — Bag ကိုနှိပ်ပြီး စစ်နိုင်ပါတယ်",
-
-    badgeBest:
-      "အရောင်းရဆုံး",
-
-    badgeStock:
-      "ပစ္စည်းရှိ",
-
-    badgeOut:
-      "ပစ္စည်းကုန်",
-
-    badgeNew:
-      "အသစ်ရောက်",
-
-    badgePower:
-      "Power Lens",
-
-    badgeDaily:
-      "နေ့စဉ်သုံး",
-
-    loadMore:
-      "နောက်ထပ်ကြည့်ရန်",
-
-    loading:
-      "ဖွင့်နေသည်..."
-  }
-};
-
-
-let siteLang =
-  localStorage.getItem(
-    "tfl_language"
-  ) || "en";
-
-
-function tr(){
-  return i18n[siteLang] || i18n.en;
-}
-
-
-/* =========================================
-   CATEGORY / BADGE
-========================================= */
-
-function localizedCategory(raw){
-
-  const t = tr();
-
-  if(raw === "All"){
-    return t.categoryAll;
-  }
-
-  if(raw === "Contact Lenses"){
-    return t.categoryLenses;
-  }
-
-  if(raw === "Accessories"){
-    return t.categoryAccessories;
-  }
-
-  if(raw === "Beauty"){
-    return t.categoryBeauty;
-  }
-
-  return raw;
-}
-
-
-function localizedBadge(raw){
-
-  const t = tr();
-
-  const map = {
-
-    "Best Seller":
-      t.badgeBest,
-
-    "In Stock":
-      t.badgeStock,
-
-    "Out of Stock":
-      t.badgeOut,
-
-    "New Arrival":
-      t.badgeNew,
-
-    "Power Lens":
-      t.badgePower,
-
-    "Daily":
-      t.badgeDaily,
-
-    "Pre-order":
-      t.stockPre
-
-  };
-
-
-  return map[raw] || raw;
-}
-
-
-/* =========================================
    STOCK FILTERS
+   CUSTOMER ONLY SEES:
+   ALL / IN STOCK / PRE-ORDER
 ========================================= */
 
-function renderStockFilters(){
-
+function renderStockFilters() {
   const t = tr();
-
 
   const defs = [
-
     {
       key:"all",
       label:t.stockAll
     },
-
     {
       key:"instock",
       label:t.stockIn
     },
-
     {
       key:"preorder",
       label:t.stockPre
     }
-
-  
-
   ];
-
 
   const wrap =
     $("#stockFilters");
 
-
-  if(!wrap){
-    return;
-  }
-
+  if (!wrap) return;
 
   wrap.innerHTML =
     defs.map(s => `
-
       <button
         type="button"
-        class="stock-chip ${
-          currentStock === s.key
-            ? "active"
-            : ""
-        }"
+        class="stock-chip ${currentStock === s.key ? "active" : ""}"
         data-stock="${s.key}"
       >
         ${s.label}
       </button>
-
     `).join("");
 
-
   wrap
-    .querySelectorAll(
-      ".stock-chip"
-    )
+    .querySelectorAll(".stock-chip")
     .forEach(btn => {
-
       btn.addEventListener(
         "click",
         () => {
-
           currentStock =
             btn.dataset.stock;
 
-
           renderStockFilters();
-
-
           sendFiltersToFirebase();
-
         }
       );
-
     });
 }
 
@@ -1668,69 +1059,42 @@ function renderStockFilters(){
    COLOR FILTERS
 ========================================= */
 
-function renderColorFilters(){
-
+function renderColorFilters() {
   const labels =
     siteLang === "mm"
       ? "mm"
       : "en";
 
-
   const wrap =
     $("#colorFilters");
 
-
-  if(!wrap){
-    return;
-  }
-
+  if (!wrap) return;
 
   wrap.innerHTML =
     colorDefs.map(c => `
-
       <button
         type="button"
-        class="color-chip ${
-          currentColor === c.key
-            ? "active"
-            : ""
-        }"
+        class="color-chip ${currentColor === c.key ? "active" : ""}"
         data-color="${c.key}"
       >
-
         <span class="color-dot"></span>
-
-        <span>
-          ${c[labels]}
-        </span>
-
+        <span>${c[labels]}</span>
       </button>
-
     `).join("");
 
-
   wrap
-    .querySelectorAll(
-      ".color-chip"
-    )
+    .querySelectorAll(".color-chip")
     .forEach(btn => {
-
       btn.addEventListener(
         "click",
         () => {
-
           currentColor =
             btn.dataset.color;
 
-
           renderColorFilters();
-
-
           sendFiltersToFirebase();
-
         }
       );
-
     });
 }
 
@@ -1739,51 +1103,32 @@ function renderColorFilters(){
    CATEGORY FILTERS
 ========================================= */
 
-function renderCategories(){
-
-  const cats =
-    categories();
-
+function renderCategories() {
+  const cats = categories();
 
   categoryFilters.innerHTML =
     cats.map(c => `
-
       <button
-        class="category-chip ${
-          c === currentCategory
-            ? "active"
-            : ""
-        }"
+        class="category-chip ${c === currentCategory ? "active" : ""}"
         data-category="${c}"
       >
-
         ${localizedCategory(c)}
-
       </button>
-
     `).join("");
-
 
   categoryFilters
     .querySelectorAll("button")
     .forEach(btn => {
-
       btn.addEventListener(
         "click",
         () => {
-
           currentCategory =
             btn.dataset.category;
 
-
           renderCategories();
-
-
           sendFiltersToFirebase();
-
         }
       );
-
     });
 }
 
@@ -1792,8 +1137,7 @@ function renderCategories(){
    LOAD MORE
 ========================================= */
 
-function updateLoadMoreButton(){
-
+function updateLoadMoreButton() {
   const wrap =
     $("#loadMoreWrap");
 
@@ -1806,45 +1150,28 @@ function updateLoadMoreButton(){
   const info =
     $("#loadMoreInfo");
 
-
-  if(
-    !wrap ||
-    !btn ||
-    !text
-  ){
+  if (!wrap || !btn || !text) {
     return;
   }
 
-
-  if(
+  if (
     firebaseHasMore ||
     firebaseLoading
-  ){
-
-    wrap.classList.remove(
-      "hidden"
-    );
-
-  }else{
-
-    wrap.classList.add(
-      "hidden"
-    );
+  ) {
+    wrap.classList.remove("hidden");
+  } else {
+    wrap.classList.add("hidden");
   }
-
 
   btn.disabled =
     firebaseLoading;
-
 
   text.textContent =
     firebaseLoading
       ? tr().loading
       : tr().loadMore;
 
-
-  if(info){
-
+  if (info) {
     info.textContent =
       `${products.length} ${
         siteLang === "mm"
@@ -1856,26 +1183,20 @@ function updateLoadMoreButton(){
 
 
 window.setFirebaseHasMore =
-  function(hasMore){
-
+  function(hasMore) {
     firebaseHasMore =
       Boolean(hasMore);
-
 
     updateLoadMoreButton();
   };
 
 
 window.setFirebaseLoading =
-  function(isLoading){
-
+  function(isLoading) {
     firebaseLoading =
       Boolean(isLoading);
 
-
     renderProducts();
-
-
     updateLoadMoreButton();
   };
 
@@ -1883,64 +1204,51 @@ window.setFirebaseLoading =
 const loadMoreBtn =
   $("#loadMoreBtn");
 
-
-if(loadMoreBtn){
-
+if (loadMoreBtn) {
   loadMoreBtn.addEventListener(
     "click",
     () => {
-
-      if(
+      if (
         firebaseLoading ||
         !firebaseHasMore
-      ){
+      ) {
         return;
       }
 
-
-      if(
-        typeof window.loadMoreFirebaseProducts
-        === "function"
-      ){
-
-        window
-          .loadMoreFirebaseProducts();
+      if (
+        typeof window.loadMoreFirebaseProducts ===
+        "function"
+      ) {
+        window.loadMoreFirebaseProducts();
       }
-
     }
   );
 }
 
 
 /* =========================================
-   LANGUAGE
+   LANGUAGE SWITCH
 ========================================= */
 
-function setSiteLanguage(lang){
-
+function setSiteLanguage(lang) {
   siteLang =
     lang === "mm"
       ? "mm"
       : "en";
-
 
   localStorage.setItem(
     "tfl_language",
     siteLang
   );
 
-
   document.documentElement.lang =
     siteLang === "mm"
       ? "my"
       : "en";
 
-
   const t = tr();
 
-
   const ids = [
-
     "annDelivery",
     "annCod",
     "annWhatsapp",
@@ -2005,102 +1313,56 @@ function setSiteLanguage(lang){
     "sortLow",
     "sortHigh",
     "sortName"
-
   ];
 
-
   ids.forEach(id => {
-
     const el =
       document.getElementById(id);
 
-
-    if(
+    if (
       el &&
       t[id] !== undefined
-    ){
-
+    ) {
       el.innerHTML =
         t[id];
     }
-
   });
 
-
   const placeholders = {
-
-    searchInput:
-      t.searchPlaceholder,
-
-    customerName:
-      t.namePlaceholder,
-
-    customerPhone:
-      t.phonePlaceholder,
-
-    customerArea:
-      t.areaPlaceholder,
-
-    customerBuilding:
-      t.buildingPlaceholder,
-
-    customerStreet:
-      t.streetPlaceholder,
-
-    customerLandmark:
-      t.landmarkPlaceholder,
-
-    customerNotes:
-      t.notesPlaceholder
-
+    searchInput:t.searchPlaceholder,
+    customerName:t.namePlaceholder,
+    customerPhone:t.phonePlaceholder,
+    customerArea:t.areaPlaceholder,
+    customerBuilding:t.buildingPlaceholder,
+    customerStreet:t.streetPlaceholder,
+    customerLandmark:t.landmarkPlaceholder,
+    customerNotes:t.notesPlaceholder
   };
 
+  Object.entries(placeholders)
+    .forEach(([id,value]) => {
+      const el =
+        document.getElementById(id);
 
-  Object.entries(
-    placeholders
-  )
-    .forEach(
-      ([id,value]) => {
-
-        const el =
-          document.getElementById(id);
-
-
-        if(el){
-
-          el.placeholder =
-            value;
-        }
-
+      if (el) {
+        el.placeholder = value;
       }
-    );
-
-
-  document
-    .querySelectorAll(
-      ".lang-btn"
-    )
-    .forEach(btn => {
-
-      btn.classList.toggle(
-        "active",
-        btn.dataset.lang ===
-          siteLang
-      );
-
     });
 
+  document
+    .querySelectorAll(".lang-btn")
+    .forEach(btn => {
+      btn.classList.toggle(
+        "active",
+        btn.dataset.lang === siteLang
+      );
+    });
 
   renderStockFilters();
-
   renderColorFilters();
-
   renderCategories();
-
   renderProducts();
-
   renderCart();
-
   updateLoadMoreButton();
 }
 
@@ -2110,11 +1372,8 @@ function setSiteLanguage(lang){
 ========================================= */
 
 document
-  .querySelectorAll(
-    ".lang-btn"
-  )
+  .querySelectorAll(".lang-btn")
   .forEach(btn => {
-
     btn.addEventListener(
       "click",
       () =>
@@ -2122,13 +1381,8 @@ document
           btn.dataset.lang
         )
     );
-
   });
 
-
-/*
-  SEARCH IS STILL LOCAL
-*/
 
 searchInput.addEventListener(
   "input",
@@ -2146,17 +1400,12 @@ $("#searchFocusBtn")
   .addEventListener(
     "click",
     () => {
-
-      location.hash =
-        "shop";
-
+      location.hash = "shop";
 
       setTimeout(
-        () =>
-          searchInput.focus(),
+        () => searchInput.focus(),
         300
       );
-
     }
   );
 
@@ -2207,17 +1456,11 @@ $("#qtyMinus")
   .addEventListener(
     "click",
     () => {
-
       $("#qtyInput").value =
         Math.max(
           1,
-          (
-            parseInt(
-              $("#qtyInput").value
-            ) || 1
-          ) - 1
+          (parseInt($("#qtyInput").value) || 1) - 1
         );
-
     }
   );
 
@@ -2226,29 +1469,19 @@ $("#qtyPlus")
   .addEventListener(
     "click",
     () => {
-
       $("#qtyInput").value =
-        (
-          parseInt(
-            $("#qtyInput").value
-          ) || 1
-        ) + 1;
-
+        (parseInt($("#qtyInput").value) || 1) + 1;
     }
   );
 
 
 document
-  .querySelectorAll(
-    "[data-close='productModal']"
-  )
+  .querySelectorAll("[data-close='productModal']")
   .forEach(x => {
-
     x.addEventListener(
       "click",
       closeModal
     );
-
   });
 
 
@@ -2256,15 +1489,12 @@ $("#productModal")
   .addEventListener(
     "click",
     e => {
-
-      if(
+      if (
         e.target ===
         $("#productModal")
-      ){
-
+      ) {
         closeModal();
       }
-
     }
   );
 
@@ -2272,14 +1502,10 @@ $("#productModal")
 document.addEventListener(
   "keydown",
   e => {
-
-    if(e.key === "Escape"){
-
+    if (e.key === "Escape") {
       closeModal();
-
       closeCart();
     }
-
   }
 );
 
@@ -2291,22 +1517,14 @@ document.addEventListener(
 const clearStockBtn =
   $("#clearStockBtn");
 
-
-if(clearStockBtn){
-
+if (clearStockBtn) {
   clearStockBtn.addEventListener(
     "click",
     () => {
-
-      currentStock =
-        "all";
-
+      currentStock = "all";
 
       renderStockFilters();
-
-
       sendFiltersToFirebase();
-
     }
   );
 }
@@ -2315,22 +1533,14 @@ if(clearStockBtn){
 const clearColorBtn =
   $("#clearColorBtn");
 
-
-if(clearColorBtn){
-
+if (clearColorBtn) {
   clearColorBtn.addEventListener(
     "click",
     () => {
-
-      currentColor =
-        "all";
-
+      currentColor = "all";
 
       renderColorFilters();
-
-
       sendFiltersToFirebase();
-
     }
   );
 }
@@ -2341,25 +1551,17 @@ if(clearColorBtn){
 ========================================= */
 
 window.setProductsFromFirebase =
-  function(firebaseProducts){
-
-    if(
-      !Array.isArray(
-        firebaseProducts
-      )
-    ){
+  function(firebaseProducts) {
+    if (
+      !Array.isArray(firebaseProducts)
+    ) {
       return;
     }
 
-
-    products =
-      firebaseProducts;
-
+    products = firebaseProducts;
 
     renderProducts();
-
     renderCart();
-
     updateLoadMoreButton();
   };
 
@@ -2368,6 +1570,4 @@ $("#year").textContent =
   new Date().getFullYear();
 
 
-setSiteLanguage(
-  siteLang
-);
+setSiteLanguage(siteLang);
