@@ -1604,12 +1604,9 @@ function renderStockFilters(){
     {
       key:"preorder",
       label:t.stockPre
-    },
-
-    {
-      key:"outofstock",
-      label:t.stockOut
     }
+
+  
 
   ];
 
