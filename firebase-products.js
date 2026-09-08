@@ -7,7 +7,8 @@ import {
   where,
   limit,
   startAfter,
-  getDocs
+  getDocs,
+  getCountFromServer
 } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 
@@ -239,6 +240,45 @@ function updateWebsite(){
    CATEGORY IS ALWAYS SELECTED.
    COLOR IS OPTIONAL FOR CONTACT LENSES.
 ========================================= */
+
+function buildCountQuery(){
+  const productsRef = collection(db, "products");
+  const constraints = [];
+
+  constraints.push(
+    where("category", "==", activeFilters.category)
+  );
+
+  if(
+    activeFilters.category === "Contact Lenses" &&
+    activeFilters.color !== "all"
+  ){
+    constraints.push(
+      where("colorKey", "==", activeFilters.color)
+    );
+  }
+
+  return query(productsRef, ...constraints);
+}
+
+async function updateTotalCount(){
+  try{
+    const countSnap = await getCountFromServer(
+      buildCountQuery()
+    );
+
+    const total = Number(countSnap.data().count || 0);
+
+    if(typeof window.setFirebaseTotalCount === "function"){
+      window.setFirebaseTotalCount(total);
+    }
+  }catch(error){
+    console.error("Could not count Firestore products:", error);
+    if(typeof window.setFirebaseTotalCount === "function"){
+      window.setFirebaseTotalCount(0);
+    }
+  }
+}
 
 function buildQuery(){
 
@@ -503,6 +543,7 @@ async function applyFilters(
 
   updateWebsite();
 
+  await updateTotalCount();
 
   await loadProducts();
 }
@@ -551,4 +592,5 @@ window.resetFirebaseProductFilters =
    INITIAL LOAD
 ========================================= */
 
+updateTotalCount();
 loadProducts();

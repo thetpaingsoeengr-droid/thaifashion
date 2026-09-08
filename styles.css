@@ -800,3 +800,17 @@ html[lang="my"] .filter-title{
     padding-top:26px;
   }
 }
+
+
+/* ===== V22 TOTAL PRODUCT COUNT ===== */
+.total-products-text{
+  margin:8px 0 0;
+  font-size:13px;
+  color:var(--muted);
+}
+@media(max-width:600px){
+  .total-products-text{
+    margin-top:6px;
+    font-size:11px;
+  }
+}

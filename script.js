@@ -17,6 +17,7 @@ let selectedProduct = null;
 
 let firebaseHasMore = false;
 let firebaseLoading = false;
+let firebaseTotalCount = 0;
 
 const $ = s => document.querySelector(s);
 
@@ -461,7 +462,7 @@ function renderProducts(){
     filteredProducts();
 
   $("#resultCount").textContent =
-    list.length;
+    firebaseTotalCount;
 
   $("#emptyState")
     .classList
@@ -1219,6 +1220,21 @@ function updateLoadMoreButton(){
       }`;
   }
 }
+
+
+window.setFirebaseTotalCount =
+  function(total){
+    firebaseTotalCount =
+      Number(total || 0);
+
+    const countEl =
+      $("#resultCount");
+
+    if(countEl){
+      countEl.textContent =
+        firebaseTotalCount;
+    }
+  };
 
 
 window.setFirebaseHasMore =
