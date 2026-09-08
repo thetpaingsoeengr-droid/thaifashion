@@ -226,6 +226,128 @@ const oldProducts = [
 
 const $ = s => document.querySelector(s);
 
+const CLOUDINARY_CLOUD_NAME = "hygs5upi";
+const CLOUDINARY_UPLOAD_PRESET = "thai_fashion_products";
+
+let selectedImageObjectUrl = "";
+
+function showImagePreview(src){
+  const img = $("#pImagePreview");
+  const removeBtn = $("#removeImageBtn");
+
+  if(selectedImageObjectUrl){
+    URL.revokeObjectURL(selectedImageObjectUrl);
+    selectedImageObjectUrl = "";
+  }
+
+  if(src){
+    img.src = src;
+    img.classList.remove("hidden");
+    removeBtn.classList.remove("hidden");
+  }else{
+    img.removeAttribute("src");
+    img.classList.add("hidden");
+    removeBtn.classList.add("hidden");
+  }
+}
+
+async function uploadProductImage(file){
+  if(!file){
+    return $("#pImage").value.trim();
+  }
+
+  const allowedTypes = [
+    "image/jpeg",
+    "image/png",
+    "image/webp"
+  ];
+
+  if(!allowedTypes.includes(file.type)){
+    throw new Error("Please choose a JPG, PNG or WebP image.");
+  }
+
+  const maxBytes = 10 * 1024 * 1024;
+
+  if(file.size > maxBytes){
+    throw new Error("Image is too large. Please use an image under 10 MB.");
+  }
+
+  $("#uploadStatus").textContent = "Uploading image to Cloudinary…";
+
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+  const response = await fetch(
+    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+    {
+      method: "POST",
+      body: formData
+    }
+  );
+
+  const data = await response.json();
+
+  if(!response.ok){
+    throw new Error(
+      data?.error?.message ||
+      "Cloudinary image upload failed."
+    );
+  }
+
+  const secureUrl = String(data.secure_url || "").trim();
+
+  if(!secureUrl){
+    throw new Error("Cloudinary did not return an image URL.");
+  }
+
+  $("#pImage").value = secureUrl;
+  showImagePreview(secureUrl);
+  $("#uploadStatus").textContent = "Image uploaded successfully.";
+
+  return secureUrl;
+}
+
+$("#pImageFile").addEventListener("change",()=>{
+  const file = $("#pImageFile").files?.[0];
+
+  if(!file){
+    const current = $("#pImage").value.trim();
+    showImagePreview(current);
+    $("#uploadStatus").textContent = current
+      ? "Current product image."
+      : "No new image selected.";
+    return;
+  }
+
+  if(selectedImageObjectUrl){
+    URL.revokeObjectURL(selectedImageObjectUrl);
+  }
+
+  selectedImageObjectUrl = URL.createObjectURL(file);
+
+  const img = $("#pImagePreview");
+  img.src = selectedImageObjectUrl;
+  img.classList.remove("hidden");
+  $("#removeImageBtn").classList.remove("hidden");
+
+  $("#uploadStatus").textContent =
+    `Selected: ${file.name}. It will upload when you save.`;
+});
+
+$("#removeImageBtn").addEventListener("click",()=>{
+  $("#pImageFile").value = "";
+  $("#pImage").value = "";
+
+  if(selectedImageObjectUrl){
+    URL.revokeObjectURL(selectedImageObjectUrl);
+    selectedImageObjectUrl = "";
+  }
+
+  showImagePreview("");
+  $("#uploadStatus").textContent = "Image removed. Save product to apply.";
+});
+
 
 function msg(el,text,ok=false){
   el.textContent=text;
