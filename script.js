@@ -240,6 +240,40 @@ const i18n = {
 let siteLang =
   localStorage.getItem("tfl_language") || "en";
 
+let siteFontMode =
+  localStorage.getItem("tfl_font_mode") || "default";
+
+function applySiteFontMode(){
+  document.body.classList.toggle(
+    "alt-font",
+    siteFontMode === "alt"
+  );
+
+  const btn = $("#fontToggleBtn");
+
+  if(btn){
+    btn.classList.toggle(
+      "active",
+      siteFontMode === "alt"
+    );
+  }
+}
+
+function toggleSiteFont(){
+  siteFontMode =
+    siteFontMode === "alt"
+      ? "default"
+      : "alt";
+
+  localStorage.setItem(
+    "tfl_font_mode",
+    siteFontMode
+  );
+
+  applySiteFontMode();
+}
+
+
 
 function tr(){
   return i18n[siteLang] || i18n.en;
@@ -1421,6 +1455,17 @@ sortSelect.addEventListener(
 
 
 
+const fontToggleBtn =
+  $("#fontToggleBtn");
+
+if(fontToggleBtn){
+  fontToggleBtn.addEventListener(
+    "click",
+    toggleSiteFont
+  );
+}
+
+
 $("#openCartBtn")
   .addEventListener(
     "click",
@@ -1585,6 +1630,8 @@ $("#year").textContent =
   Firebase file also starts with Contact Lenses,
   so there is no flash of another category.
 */
+applySiteFontMode();
+
 setSiteLanguage(
   siteLang
 );

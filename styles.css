@@ -888,3 +888,164 @@ footer{
     transition:none;
   }
 }
+
+
+/* ==========================================================
+   V26 CLEAN HEADER
+========================================================== */
+
+.header-inner-clean{
+  min-height:72px;
+}
+
+.brand-script{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  min-width:0;
+}
+
+.brand-script-text{
+  font-family:"Allura",cursive;
+  font-size:34px;
+  line-height:1;
+  font-weight:400;
+  color:var(--ink);
+  white-space:nowrap;
+}
+
+.brand-heart{
+  color:#ef8da1;
+  font-size:14px;
+  line-height:1;
+  transform:translateY(-7px);
+}
+
+.header-actions-clean{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex-wrap:nowrap;
+}
+
+.font-toggle-btn{
+  width:40px;
+  height:40px;
+  border:0;
+  background:transparent;
+  border-radius:50%;
+  font-family:"DM Sans",sans-serif;
+  font-size:15px;
+  font-weight:700;
+  display:grid;
+  place-items:center;
+  padding:0;
+}
+
+.font-toggle-btn:hover,
+.font-toggle-btn.active{
+  background:var(--soft);
+}
+
+.cart-icon-btn{
+  position:relative;
+  width:42px;
+  height:42px;
+  border:0;
+  background:transparent;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  padding:7px;
+}
+
+.cart-icon-btn:hover{
+  background:var(--soft);
+}
+
+.cart-icon-btn svg{
+  width:27px;
+  height:27px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+
+.cart-count-badge{
+  position:absolute;
+  top:0;
+  right:-1px;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#ef5f82;
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-size:10px;
+  font-weight:800;
+  line-height:1;
+  border:2px solid #fff;
+}
+
+body.alt-font{
+  font-family:"DM Sans","Noto Sans Myanmar",sans-serif;
+}
+
+body:not(.alt-font){
+  font-family:"Noto Sans Myanmar","DM Sans",sans-serif;
+}
+
+.shop-section{
+  padding-top:28px;
+}
+
+@media(max-width:600px){
+  .header-inner-clean{
+    min-height:64px;
+    gap:10px;
+  }
+
+  .brand-script-text{
+    font-size:28px;
+  }
+
+  .brand-heart{
+    font-size:12px;
+    transform:translateY(-6px);
+  }
+
+  .header-actions-clean{
+    gap:4px;
+  }
+
+  .font-toggle-btn{
+    width:36px;
+    height:36px;
+    font-size:14px;
+  }
+
+  .cart-icon-btn{
+    width:38px;
+    height:38px;
+    padding:7px;
+  }
+
+  .cart-icon-btn svg{
+    width:25px;
+    height:25px;
+  }
+
+  .shop-section{
+    padding-top:22px;
+  }
+}
+
+@media(max-width:380px){
+  .brand-script-text{
+    font-size:24px;
+  }
+}

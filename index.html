@@ -10,9 +10,9 @@
   <link rel="dns-prefetch" href="//www.gstatic.com">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=24" />
+  <link rel="stylesheet" href="styles.css?v=26" />
 </head>
 
 <body>
@@ -26,47 +26,44 @@
   </div>
 
   <header class="site-header">
-    <div class="header-inner">
+    <div class="header-inner header-inner-clean">
 
-      <a class="brand" href="#">
-        <div class="brand-mark">TF</div>
-        <div>
-          <div class="brand-name">Thai Fashion Lenses</div>
-          <div class="brand-sub">UAE</div>
-        </div>
+      <a class="brand brand-script" href="#" aria-label="Thai Fashion Lenses home">
+        <span class="brand-script-text">Thai Fashion Lenses</span>
+        <span class="brand-heart" aria-hidden="true">♥</span>
       </a>
 
-      <div class="header-actions">
-
-        <div class="lang-switch" aria-label="Language selector">
-          <button type="button" class="lang-btn active" data-lang="en">EN</button>
-          <button type="button" class="lang-btn" data-lang="mm">မြန်မာ</button>
-        </div>
-<button class="cart-btn" id="openCartBtn">
-          Bag <span id="cartCount">0</span>
+      <div class="header-actions header-actions-clean">
+        <button
+          type="button"
+          class="icon-btn font-toggle-btn"
+          id="fontToggleBtn"
+          aria-label="Change font"
+          title="Change font"
+        >
+          Aa
         </button>
 
+        <button
+          class="cart-icon-btn"
+          id="openCartBtn"
+          aria-label="Open shopping bag"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M3 4h2l2.1 10.2a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 2-1.6L20.4 7H6.1"/>
+            <circle cx="10" cy="20" r="1.3"/>
+            <circle cx="17" cy="20" r="1.3"/>
+          </svg>
+          <span class="cart-count-badge" id="cartCount">0</span>
+        </button>
       </div>
+
     </div>
   </header>
 
 
   <main>
-
-    <section class="hero hero-clean">
-      <div class="hero-copy hero-copy-clean">
-        <p class="eyebrow" id="heroEyebrow">EVERYDAY BEAUTY, MADE EASY</p>
-        <h1 id="heroTitle">Your look.<br>Your lenses.</h1>
-        <p class="hero-text" id="heroText">
-          Fashion contact lenses selected for effortless everyday style.
-          Shop by color, power and collection.
-        </p>
-        <a href="#shop" class="primary-btn" id="shopLatest">Shop now</a>
-      </div>
-    </section>
-
-
-    <section class="shop-section" id="shop">
+<section class="shop-section" id="shop">
 
       <div class="section-heading">
         <div>
@@ -338,7 +335,7 @@
   <div class="toast hidden" id="toast">Added to bag</div>
 
 
-  <script src="script.js?v=24"></script>
+  <script src="script.js?v=26"></script>
   <script type="module" src="firebase-products.js?v=16"></script>
 
 </body>
