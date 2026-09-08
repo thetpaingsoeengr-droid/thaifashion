@@ -1,15 +1,20 @@
 const WHATSAPP_NUMBER = "971544608059";
 
 let products = [];
-let currentCategory = "All";
+
+/*
+  DEFAULT CATEGORY:
+  Website opens directly on Contact Lenses.
+*/
+let currentCategory = "Contact Lenses";
 let currentColor = "all";
-let currentStock = "all";
 
 let cart = JSON.parse(
   localStorage.getItem("tfl_cart") || "[]"
 );
 
 let selectedProduct = null;
+
 let firebaseHasMore = false;
 let firebaseLoading = false;
 
@@ -21,17 +26,18 @@ const searchInput = $("#searchInput");
 const sortSelect = $("#sortSelect");
 
 
-/* =========================================
-   BASIC HELPERS
-========================================= */
-
-function money(n) {
+function money(n){
   return `AED ${Number(n).toFixed(0)}`;
 }
 
-function categories() {
+
+/* =========================================
+   CATEGORIES
+   NO "ALL" CATEGORY
+========================================= */
+
+function categories(){
   return [
-    "All",
     "Contact Lenses",
     "Accessories",
     "Beauty"
@@ -40,21 +46,21 @@ function categories() {
 
 
 /* =========================================
-   COLORS
+   COLOR DEFINITIONS
 ========================================= */
 
 const colorDefs = [
-  { key:"all",    en:"All colors", mm:"အရောင်အားလုံး" },
-  { key:"green",  en:"Green",      mm:"စိမ်း" },
-  { key:"blue",   en:"Blue",       mm:"ပြာ" },
-  { key:"red",    en:"Red",        mm:"နီ" },
-  { key:"brown",  en:"Brown",      mm:"ညို" },
-  { key:"yellow", en:"Yellow",     mm:"ဝါ" },
-  { key:"clear",  en:"Clear",      mm:"အကြည်" },
-  { key:"gray",   en:"Gray",       mm:"မီးခိုး" },
-  { key:"purple", en:"Purple",     mm:"ခရမ်း" },
-  { key:"black",  en:"Black",      mm:"အနက်" },
-  { key:"pink",   en:"Pink",       mm:"ပန်းရောင်" }
+  {key:"all", en:"All colors", mm:"အရောင်အားလုံး"},
+  {key:"green", en:"Green", mm:"စိမ်း"},
+  {key:"blue", en:"Blue", mm:"ပြာ"},
+  {key:"red", en:"Red", mm:"နီ"},
+  {key:"brown", en:"Brown", mm:"ညို"},
+  {key:"yellow", en:"Yellow", mm:"ဝါ"},
+  {key:"clear", en:"Clear", mm:"အကြည်"},
+  {key:"gray", en:"Gray", mm:"မီးခိုး"},
+  {key:"purple", en:"Purple", mm:"ခရမ်း"},
+  {key:"black", en:"Black", mm:"အနက်"},
+  {key:"pink", en:"Pink", mm:"ပန်းရောင်"}
 ];
 
 
@@ -63,7 +69,7 @@ const colorDefs = [
 ========================================= */
 
 const i18n = {
-  en: {
+  en:{
     annDelivery:"UAE Delivery",
     annCod:"Cash on Delivery",
     annWhatsapp:"Order via WhatsApp",
@@ -77,28 +83,21 @@ const i18n = {
     latestProductsTitle:"Latest products",
     productsWord:"products",
 
-    stockFilterTitle:"Availability",
-    clearStockBtn:"Clear",
-    stockAll:"All",
-    stockIn:"In Stock",
-    stockPre:"Pre-order",
-    stockOut:"Out of Stock",
-
-    waitTwoWeeks:"Waiting period: 2 weeks",
-
     colorFilterTitle:"Shop by color",
     clearColorBtn:"Clear",
     categoryFilterTitle:"Categories",
 
+    stockIn:"In Stock",
+    stockPre:"Pre-order",
+    stockOut:"Out of Stock",
+    waitTwoWeeks:"Waiting period: 2 weeks",
+
     howEyebrow:"HOW TO ORDER",
     howTitle:"Three easy steps",
-
     step1Title:"Choose",
     step1Text:"Select product, power and quantity.",
-
     step2Title:"Add to bag",
     step2Text:"Review your order and total.",
-
     step3Title:"WhatsApp us",
     step3Text:"Send the prepared order message instantly.",
 
@@ -108,7 +107,6 @@ const i18n = {
     yourOrderLabel:"YOUR ORDER",
     shoppingBagTitle:"Shopping bag",
     subtotalLabel:"Subtotal",
-
     deliveryInstruction:"Please add your delivery details before ordering.",
 
     fullNameLabel:"Full Name *",
@@ -122,13 +120,11 @@ const i18n = {
 
     whatsappBtnText:"Order via WhatsApp",
     continueShoppingText:"Continue shopping",
-
     powerLabel:"Power",
     quantityLabel:"Quantity",
     addToCartText:"Add to bag",
 
     footerTagline:"Fashion lenses & beauty finds.",
-
     selectEmirateOption:"Select emirate",
     addressError:"Please complete all required (*) delivery fields.",
 
@@ -146,27 +142,19 @@ const i18n = {
     sortHigh:"Price: high to low",
     sortName:"Name: A–Z",
 
-    categoryAll:"All",
     categoryLenses:"Contact Lenses",
     categoryAccessories:"Lens Accessories",
     categoryBeauty:"Beauty",
 
-    bagItems:n => `Items in your bag (${n})`,
+    bagItems:n=>`Items in your bag (${n})`,
     cartEmpty:"Your bag is empty.",
     added:"Added to bag — tap Bag to review",
-
-    badgeBest:"Best Seller",
-    badgeStock:"In Stock",
-    badgeOut:"Out of Stock",
-    badgeNew:"New Arrival",
-    badgePower:"Power Lens",
-    badgeDaily:"Daily",
 
     loadMore:"Load More",
     loading:"Loading..."
   },
 
-  mm: {
+  mm:{
     annDelivery:"UAE အတွင်း ပို့ဆောင်ပေးသည်",
     annCod:"ပစ္စည်းရောက်ငွေချေ",
     annWhatsapp:"WhatsApp မှ မှာယူနိုင်သည်",
@@ -180,28 +168,21 @@ const i18n = {
     latestProductsTitle:"နောက်ဆုံးရောက် ပစ္စည်းများ",
     productsWord:"ပစ္စည်း",
 
-    stockFilterTitle:"ပစ္စည်းအခြေအနေ",
-    clearStockBtn:"ရှင်းမည်",
-    stockAll:"အားလုံး",
-    stockIn:"ပစ္စည်းအသင့်ရှိ",
-    stockPre:"ကြိုတင်မှာယူ",
-    stockOut:"ပစ္စည်းကုန်",
-
-    waitTwoWeeks:"စောင့်ဆိုင်းချိန် ၂ ပတ်",
-
     colorFilterTitle:"အရောင်အလိုက် ရွေးရန်",
     clearColorBtn:"ရှင်းမည်",
     categoryFilterTitle:"အမျိုးအစားများ",
 
+    stockIn:"ပစ္စည်းအသင့်ရှိ",
+    stockPre:"ကြိုတင်မှာယူ",
+    stockOut:"ပစ္စည်းကုန်",
+    waitTwoWeeks:"စောင့်ဆိုင်းချိန် ၂ ပတ်",
+
     howEyebrow:"မှာယူနည်း",
     howTitle:"လွယ်ကူတဲ့ အဆင့် ၃ ဆင့်",
-
     step1Title:"ရွေးချယ်ပါ",
     step1Text:"ပစ္စည်း၊ Power နဲ့ အရေအတွက်ကို ရွေးပါ။",
-
     step2Title:"Bag ထဲထည့်ပါ",
     step2Text:"သင့်အော်ဒါနဲ့ စုစုပေါင်းကို စစ်ဆေးပါ။",
-
     step3Title:"WhatsApp မှ မှာယူပါ",
     step3Text:"ပြင်ဆင်ပြီးသား Order Message ကို ချက်ချင်းပို့နိုင်ပါတယ်။",
 
@@ -211,7 +192,6 @@ const i18n = {
     yourOrderLabel:"သင့်အော်ဒါ",
     shoppingBagTitle:"ဈေးဝယ်အိတ်",
     subtotalLabel:"ပစ္စည်းစုစုပေါင်း",
-
     deliveryInstruction:"မှာယူရန်အတွက် ပို့ဆောင်ရမည့်လိပ်စာကို ဖြည့်ပေးပါ။",
 
     fullNameLabel:"အမည်အပြည့်အစုံ *",
@@ -225,13 +205,11 @@ const i18n = {
 
     whatsappBtnText:"WhatsApp မှ မှာယူမည်",
     continueShoppingText:"ပစ္စည်းဆက်ရွေးမည်",
-
     powerLabel:"Power",
     quantityLabel:"အရေအတွက်",
     addToCartText:"Bag ထဲထည့်မည်",
 
     footerTagline:"Fashion lenses နဲ့ Beauty ပစ္စည်းများ",
-
     selectEmirateOption:"Emirate ရွေးပါ",
     addressError:"လိုအပ်သော (*) လိပ်စာအချက်အလက်များကို အပြည့်အစုံဖြည့်ပါ။",
 
@@ -249,21 +227,13 @@ const i18n = {
     sortHigh:"ဈေးများမှ နည်းသို့",
     sortName:"အမည် A–Z",
 
-    categoryAll:"အားလုံး",
     categoryLenses:"မျက်ကပ်မှန်များ",
     categoryAccessories:"မျက်ကပ်မှန် အပိုပစ္စည်းများ",
     categoryBeauty:"အလှကုန်",
 
-    bagItems:n => `Bag ထဲရှိ ပစ္စည်း (${n})`,
+    bagItems:n=>`Bag ထဲရှိ ပစ္စည်း (${n})`,
     cartEmpty:"သင့် Bag ထဲမှာ ပစ္စည်းမရှိသေးပါ။",
     added:"Bag ထဲထည့်ပြီးပါပြီ — Bag ကိုနှိပ်ပြီး စစ်နိုင်ပါတယ်",
-
-    badgeBest:"အရောင်းရဆုံး",
-    badgeStock:"ပစ္စည်းရှိ",
-    badgeOut:"ပစ္စည်းကုန်",
-    badgeNew:"အသစ်ရောက်",
-    badgePower:"Power Lens",
-    badgeDaily:"နေ့စဉ်သုံး",
 
     loadMore:"နောက်ထပ်ကြည့်ရန်",
     loading:"ဖွင့်နေသည်..."
@@ -275,45 +245,28 @@ let siteLang =
   localStorage.getItem("tfl_language") || "en";
 
 
-function tr() {
+function tr(){
   return i18n[siteLang] || i18n.en;
 }
 
 
-function localizedCategory(raw) {
+function localizedCategory(raw){
   const t = tr();
 
-  if (raw === "All") return t.categoryAll;
-  if (raw === "Contact Lenses") return t.categoryLenses;
-  if (raw === "Accessories") return t.categoryAccessories;
-  if (raw === "Beauty") return t.categoryBeauty;
+  if(raw === "Contact Lenses") return t.categoryLenses;
+  if(raw === "Accessories") return t.categoryAccessories;
+  if(raw === "Beauty") return t.categoryBeauty;
 
   return raw;
 }
 
 
-function localizedBadge(raw) {
-  const t = tr();
-
-  const map = {
-    "Best Seller": t.badgeBest,
-    "In Stock": t.badgeStock,
-    "Out of Stock": t.badgeOut,
-    "New Arrival": t.badgeNew,
-    "Power Lens": t.badgePower,
-    "Daily": t.badgeDaily,
-    "Pre-order": t.stockPre
-  };
-
-  return map[raw] || raw;
-}
-
-
 /* =========================================
    SEARCH + SORT
+   Search currently works on loaded products.
 ========================================= */
 
-function filteredProducts() {
+function filteredProducts(){
   const q =
     searchInput.value
       .trim()
@@ -326,20 +279,22 @@ function filteredProducts() {
         .includes(q)
     );
 
-  const sort = sortSelect.value;
+  const sort =
+    sortSelect.value;
 
-  if (sort === "low") {
-    list.sort((a,b) => a.price - b.price);
+  if(sort === "low"){
+    list.sort((a,b)=>a.price-b.price);
   }
 
-  if (sort === "high") {
-    list.sort((a,b) => b.price - a.price);
+  if(sort === "high"){
+    list.sort((a,b)=>b.price-a.price);
   }
 
-  if (sort === "name") {
-    list.sort((a,b) =>
-      (a.name || "")
-        .localeCompare(b.name || "")
+  if(sort === "name"){
+    list.sort(
+      (a,b)=>
+        (a.name || "")
+          .localeCompare(b.name || "")
     );
   }
 
@@ -349,40 +304,176 @@ function filteredProducts() {
 
 /* =========================================
    FIRESTORE FILTER BRIDGE
+   ONLY CATEGORY + COLOR
 ========================================= */
 
-function sendFiltersToFirebase() {
-  if (
+function sendFiltersToFirebase(){
+  if(
     typeof window.setFirebaseProductFilters !==
     "function"
-  ) {
+  ){
     return;
   }
 
   window.setFirebaseProductFilters({
     category: currentCategory,
-    color: currentColor,
-    stock: currentStock
+    color:
+      currentCategory === "Contact Lenses"
+        ? currentColor
+        : "all"
   });
 }
 
 
 /* =========================================
-   PRODUCT GRID
+   CATEGORY FILTER
 ========================================= */
 
-function renderProducts() {
-  const list = filteredProducts();
+function renderCategories(){
+  categoryFilters.innerHTML =
+    categories()
+      .map(category => `
+        <button
+          type="button"
+          class="category-chip ${
+            currentCategory === category
+              ? "active"
+              : ""
+          }"
+          data-category="${category}"
+        >
+          ${localizedCategory(category)}
+        </button>
+      `)
+      .join("");
 
-  $("#resultCount").textContent = list.length;
+  categoryFilters
+    .querySelectorAll(".category-chip")
+    .forEach(btn => {
 
-  $("#emptyState").classList.toggle(
+      btn.addEventListener(
+        "click",
+        ()=>{
+
+          currentCategory =
+            btn.dataset.category;
+
+          /*
+            Colors only belong to Contact Lenses.
+            Reset color when user opens another category.
+          */
+          if(currentCategory !== "Contact Lenses"){
+            currentColor = "all";
+          }
+
+          renderCategories();
+          renderColorArea();
+          sendFiltersToFirebase();
+        }
+      );
+
+    });
+}
+
+
+/* =========================================
+   COLOR FILTER
+   ONLY VISIBLE FOR CONTACT LENSES
+========================================= */
+
+function renderColorFilters(){
+  const labels =
+    siteLang === "mm"
+      ? "mm"
+      : "en";
+
+  const wrap =
+    $("#colorFilters");
+
+  if(!wrap) return;
+
+  wrap.innerHTML =
+    colorDefs
+      .map(c => `
+        <button
+          type="button"
+          class="color-chip ${
+            currentColor === c.key
+              ? "active"
+              : ""
+          }"
+          data-color="${c.key}"
+        >
+          <span class="color-dot"></span>
+          <span>${c[labels]}</span>
+        </button>
+      `)
+      .join("");
+
+  wrap
+    .querySelectorAll(".color-chip")
+    .forEach(btn => {
+
+      btn.addEventListener(
+        "click",
+        ()=>{
+
+          currentColor =
+            btn.dataset.color;
+
+          renderColorFilters();
+          sendFiltersToFirebase();
+        }
+      );
+
+    });
+}
+
+
+function renderColorArea(){
+  const block =
+    $("#colorFilterBlock");
+
+  if(!block) return;
+
+  const showColors =
+    currentCategory === "Contact Lenses";
+
+  block.classList.toggle(
     "hidden",
-    list.length > 0 || firebaseLoading
+    !showColors
   );
+
+  if(showColors){
+    renderColorFilters();
+  }
+}
+
+
+/* =========================================
+   PRODUCT GRID
+   ONE STOCK STATUS ONLY:
+   TOP-RIGHT CORNER
+========================================= */
+
+function renderProducts(){
+  const list =
+    filteredProducts();
+
+  $("#resultCount").textContent =
+    list.length;
+
+  $("#emptyState")
+    .classList
+    .toggle(
+      "hidden",
+      list.length > 0 ||
+      firebaseLoading
+    );
 
   productGrid.innerHTML =
     list.map(p => {
+
       const isPreorder =
         p.stockStatus === "preorder";
 
@@ -408,10 +499,18 @@ function renderProducts() {
           class="product-card"
           data-id="${p.id}"
         >
+
           <div
-            class="product-image ${p.type || ""} ${p.image ? "has-real-image" : ""}"
+            class="product-image ${
+              p.type || ""
+            } ${
+              p.image
+                ? "has-real-image"
+                : ""
+            }"
             style="--iris:${p.color}"
           >
+
             ${
               p.image
                 ? `
@@ -425,10 +524,7 @@ function renderProducts() {
                 : ""
             }
 
-            <span class="badge">
-              ${localizedBadge(p.badge)}
-            </span>
-
+            <!-- ONLY ONE STATUS LABEL -->
             <span class="stock-status ${stockClass}">
               ${stockText}
             </span>
@@ -440,16 +536,19 @@ function renderProducts() {
             >
               +
             </button>
+
           </div>
 
           <div class="product-info">
+
             <div class="product-category">
               ${localizedCategory(p.category)}
             </div>
 
             <div class="product-title">
               ${
-                siteLang === "mm" && p.nameMM
+                siteLang === "mm" &&
+                p.nameMM
                   ? p.nameMM
                   : p.name
               }
@@ -466,24 +565,34 @@ function renderProducts() {
                     ${
                       siteLang === "mm"
                         ? tr().waitTwoWeeks
-                        : `Waiting period: ${p.waitingPeriod || "2 weeks"}`
+                        : `Waiting period: ${
+                            p.waitingPeriod ||
+                            "2 weeks"
+                          }`
                     }
                   </div>
                 `
                 : ""
             }
+
           </div>
+
         </article>
       `;
+
     }).join("");
 
   productGrid
     .querySelectorAll(".product-card")
     .forEach(card => {
+
       card.addEventListener(
         "click",
-        () => openProduct(card.dataset.id)
+        ()=>openProduct(
+          card.dataset.id
+        )
       );
+
     });
 
   updateLoadMoreButton();
@@ -494,7 +603,7 @@ function renderProducts() {
    PRODUCT MODAL
 ========================================= */
 
-function openProduct(id) {
+function openProduct(id){
   selectedProduct =
     products.find(
       p =>
@@ -502,7 +611,7 @@ function openProduct(id) {
         String(id)
     );
 
-  if (!selectedProduct) return;
+  if(!selectedProduct) return;
 
   const isPreorder =
     selectedProduct.stockStatus === "preorder";
@@ -511,7 +620,10 @@ function openProduct(id) {
     selectedProduct.stockStatus === "outofstock";
 
   $("#modalName").textContent =
-    siteLang === "mm" && selectedProduct.nameMM
+    (
+      siteLang === "mm" &&
+      selectedProduct.nameMM
+    )
       ? selectedProduct.nameMM
       : selectedProduct.name;
 
@@ -521,7 +633,9 @@ function openProduct(id) {
     );
 
   $("#modalPrice").textContent =
-    money(selectedProduct.price);
+    money(
+      selectedProduct.price
+    );
 
   const stockText =
     isPreorder
@@ -540,11 +654,18 @@ function openProduct(id) {
   const waitLabel =
     siteLang === "mm"
       ? tr().waitTwoWeeks
-      : `Waiting period: ${selectedProduct.waitingPeriod || "2 weeks"}`;
+      : `Waiting period: ${
+          selectedProduct.waitingPeriod ||
+          "2 weeks"
+        }`;
 
   const waitText =
     isPreorder
-      ? `<span class="modal-waiting">${waitLabel}</span>`
+      ? `
+        <span class="modal-waiting">
+          ${waitLabel}
+        </span>
+      `
       : "";
 
   $("#modalStockInfo").innerHTML = `
@@ -555,7 +676,10 @@ function openProduct(id) {
   `;
 
   $("#modalDescription").textContent =
-    siteLang === "mm" && selectedProduct.descMM
+    (
+      siteLang === "mm" &&
+      selectedProduct.descMM
+    )
       ? selectedProduct.descMM
       : selectedProduct.desc;
 
@@ -591,7 +715,7 @@ function openProduct(id) {
       !selectedProduct.powers
     );
 
-  if (selectedProduct.powers) {
+  if(selectedProduct.powers){
     $("#powerSelect").innerHTML =
       selectedProduct.powers
         .map(
@@ -606,7 +730,8 @@ function openProduct(id) {
   const addBtn =
     $("#addToCartBtn");
 
-  addBtn.disabled = isOut;
+  addBtn.disabled =
+    isOut;
 
   $("#addToCartText").textContent =
     isOut
@@ -622,7 +747,7 @@ function openProduct(id) {
 }
 
 
-function closeModal() {
+function closeModal(){
   $("#productModal")
     .classList
     .add("hidden");
@@ -636,18 +761,20 @@ function closeModal() {
    CART
 ========================================= */
 
-function addToCart() {
-  if (
+function addToCart(){
+  if(
     !selectedProduct ||
     selectedProduct.stockStatus === "outofstock"
-  ) {
+  ){
     return;
   }
 
   const qty =
     Math.max(
       1,
-      parseInt($("#qtyInput").value) || 1
+      parseInt(
+        $("#qtyInput").value
+      ) || 1
     );
 
   const power =
@@ -659,11 +786,13 @@ function addToCart() {
     `${selectedProduct.id}-${power || "na"}`;
 
   const existing =
-    cart.find(x => x.key === key);
+    cart.find(
+      x => x.key === key
+    );
 
-  if (existing) {
+  if(existing){
     existing.qty += qty;
-  } else {
+  }else{
     cart.push({
       key,
       id:selectedProduct.id,
@@ -678,11 +807,13 @@ function addToCart() {
 
   saveCart();
   closeModal();
-  showToast(tr().added);
+  showToast(
+    tr().added
+  );
 }
 
 
-function saveCart() {
+function saveCart(){
   localStorage.setItem(
     "tfl_cart",
     JSON.stringify(cart)
@@ -692,10 +823,10 @@ function saveCart() {
 }
 
 
-function renderCart() {
+function renderCart(){
   $("#cartCount").textContent =
     cart.reduce(
-      (a,x) => a + x.qty,
+      (a,x)=>a+x.qty,
       0
     );
 
@@ -715,7 +846,7 @@ function renderCart() {
 
   const itemCount =
     cart.reduce(
-      (a,x) => a + x.qty,
+      (a,x)=>a+x.qty,
       0
     );
 
@@ -730,7 +861,8 @@ function renderCart() {
         : ""
     )
     +
-    cart.map((x,i) => {
+    cart.map((x,i)=>{
+
       const product =
         products.find(
           p =>
@@ -740,16 +872,24 @@ function renderCart() {
 
       const cartImage =
         x.image ||
-        (product && product.image) ||
+        (
+          product &&
+          product.image
+        ) ||
         null;
 
       return `
         <div class="cart-item">
 
           <div
-            class="cart-thumb ${cartImage ? "has-cart-image" : ""}"
+            class="cart-thumb ${
+              cartImage
+                ? "has-cart-image"
+                : ""
+            }"
             style="--iris:${x.color}"
           >
+
             ${
               cartImage
                 ? `
@@ -761,12 +901,15 @@ function renderCart() {
                 `
                 : ""
             }
+
           </div>
 
           <div class="cart-item-main">
+
             <h4>${x.name}</h4>
 
             <div class="cart-meta">
+
               ${
                 x.power
                   ? `<span>Power ${x.power}</span>`
@@ -774,33 +917,50 @@ function renderCart() {
               }
 
               <span>
-                ${siteLang === "mm" ? "အရေအတွက်" : "Qty"} ${x.qty}
+                ${
+                  siteLang === "mm"
+                    ? "အရေအတွက်"
+                    : "Qty"
+                }
+                ${x.qty}
               </span>
+
             </div>
 
             <div class="cart-item-bottom">
+
               <strong>
-                ${money(x.price * x.qty)}
+                ${money(x.price*x.qty)}
               </strong>
 
               <button
                 class="remove-item"
                 data-i="${i}"
               >
-                ${siteLang === "mm" ? "ဖယ်မည်" : "Remove"}
+                ${
+                  siteLang === "mm"
+                    ? "ဖယ်မည်"
+                    : "Remove"
+                }
               </button>
+
             </div>
+
           </div>
+
         </div>
       `;
+
     }).join("");
 
   $("#cartItems")
     .querySelectorAll(".remove-item")
-    .forEach(b => {
+    .forEach(b=>{
+
       b.addEventListener(
         "click",
-        () => {
+        ()=>{
+
           cart.splice(
             Number(b.dataset.i),
             1
@@ -809,13 +969,14 @@ function renderCart() {
           saveCart();
         }
       );
+
     });
 
   $("#cartSubtotal").textContent =
     money(
       cart.reduce(
-        (a,x) =>
-          a + x.price * x.qty,
+        (a,x)=>
+          a + x.price*x.qty,
         0
       )
     );
@@ -826,7 +987,7 @@ function renderCart() {
    CART DRAWER
 ========================================= */
 
-function openCart() {
+function openCart(){
   $("#cartDrawer")
     .classList
     .add("open");
@@ -846,7 +1007,7 @@ function openCart() {
 }
 
 
-function closeCart() {
+function closeCart(){
   $("#cartDrawer")
     .classList
     .remove("open");
@@ -866,19 +1027,18 @@ function closeCart() {
 }
 
 
-/* =========================================
-   TOAST
-========================================= */
-
-function showToast(message="Added to bag") {
-  $("#toast").textContent = message;
+function showToast(
+  message="Added to bag"
+){
+  $("#toast").textContent =
+    message;
 
   $("#toast")
     .classList
     .remove("hidden");
 
   setTimeout(
-    () =>
+    ()=>
       $("#toast")
         .classList
         .add("hidden"),
@@ -891,8 +1051,8 @@ function showToast(message="Added to bag") {
    WHATSAPP ORDER
 ========================================= */
 
-function orderWhatsApp() {
-  if (!cart.length) return;
+function orderWhatsApp(){
+  if(!cart.length) return;
 
   const name =
     $("#customerName").value.trim();
@@ -932,7 +1092,8 @@ function orderWhatsApp() {
       !requiredMissing
     );
 
-  if (requiredMissing) {
+  if(requiredMissing){
+
     const firstMissing =
       !name
         ? $("#customerName")
@@ -945,23 +1106,28 @@ function orderWhatsApp() {
               : $("#customerBuilding");
 
     firstMissing.focus();
+
     return;
   }
 
   const lines =
     cart.map(
-      (x,i) =>
+      (x,i)=>
         `${i+1}. ${x.name}` +
-        `${x.power ? ` | Power ${x.power}` : ""}` +
+        `${
+          x.power
+            ? ` | Power ${x.power}`
+            : ""
+        }` +
         ` | Qty ${x.qty}` +
-        ` | ${money(x.price * x.qty)}`
+        ` | ${money(x.price*x.qty)}`
     );
 
   const total =
     money(
       cart.reduce(
-        (a,x) =>
-          a + x.price * x.qty,
+        (a,x)=>
+          a + x.price*x.qty,
         0
       )
     );
@@ -999,145 +1165,10 @@ function orderWhatsApp() {
 
 
 /* =========================================
-   STOCK FILTERS
-   CUSTOMER ONLY SEES:
-   ALL / IN STOCK / PRE-ORDER
-========================================= */
-
-function renderStockFilters() {
-  const t = tr();
-
-  const defs = [
-    {
-      key:"all",
-      label:t.stockAll
-    },
-    {
-      key:"instock",
-      label:t.stockIn
-    },
-    {
-      key:"preorder",
-      label:t.stockPre
-    }
-  ];
-
-  const wrap =
-    $("#stockFilters");
-
-  if (!wrap) return;
-
-  wrap.innerHTML =
-    defs.map(s => `
-      <button
-        type="button"
-        class="stock-chip ${currentStock === s.key ? "active" : ""}"
-        data-stock="${s.key}"
-      >
-        ${s.label}
-      </button>
-    `).join("");
-
-  wrap
-    .querySelectorAll(".stock-chip")
-    .forEach(btn => {
-      btn.addEventListener(
-        "click",
-        () => {
-          currentStock =
-            btn.dataset.stock;
-
-          renderStockFilters();
-          sendFiltersToFirebase();
-        }
-      );
-    });
-}
-
-
-/* =========================================
-   COLOR FILTERS
-========================================= */
-
-function renderColorFilters() {
-  const labels =
-    siteLang === "mm"
-      ? "mm"
-      : "en";
-
-  const wrap =
-    $("#colorFilters");
-
-  if (!wrap) return;
-
-  wrap.innerHTML =
-    colorDefs.map(c => `
-      <button
-        type="button"
-        class="color-chip ${currentColor === c.key ? "active" : ""}"
-        data-color="${c.key}"
-      >
-        <span class="color-dot"></span>
-        <span>${c[labels]}</span>
-      </button>
-    `).join("");
-
-  wrap
-    .querySelectorAll(".color-chip")
-    .forEach(btn => {
-      btn.addEventListener(
-        "click",
-        () => {
-          currentColor =
-            btn.dataset.color;
-
-          renderColorFilters();
-          sendFiltersToFirebase();
-        }
-      );
-    });
-}
-
-
-/* =========================================
-   CATEGORY FILTERS
-========================================= */
-
-function renderCategories() {
-  const cats = categories();
-
-  categoryFilters.innerHTML =
-    cats.map(c => `
-      <button
-        class="category-chip ${c === currentCategory ? "active" : ""}"
-        data-category="${c}"
-      >
-        ${localizedCategory(c)}
-      </button>
-    `).join("");
-
-  categoryFilters
-    .querySelectorAll("button")
-    .forEach(btn => {
-      btn.addEventListener(
-        "click",
-        () => {
-          currentCategory =
-            btn.dataset.category;
-
-          renderCategories();
-          sendFiltersToFirebase();
-        }
-      );
-    });
-}
-
-
-/* =========================================
    LOAD MORE
 ========================================= */
 
-function updateLoadMoreButton() {
+function updateLoadMoreButton(){
   const wrap =
     $("#loadMoreWrap");
 
@@ -1150,17 +1181,25 @@ function updateLoadMoreButton() {
   const info =
     $("#loadMoreInfo");
 
-  if (!wrap || !btn || !text) {
+  if(
+    !wrap ||
+    !btn ||
+    !text
+  ){
     return;
   }
 
-  if (
+  if(
     firebaseHasMore ||
     firebaseLoading
-  ) {
-    wrap.classList.remove("hidden");
-  } else {
-    wrap.classList.add("hidden");
+  ){
+    wrap.classList.remove(
+      "hidden"
+    );
+  }else{
+    wrap.classList.add(
+      "hidden"
+    );
   }
 
   btn.disabled =
@@ -1171,7 +1210,7 @@ function updateLoadMoreButton() {
       ? tr().loading
       : tr().loadMore;
 
-  if (info) {
+  if(info){
     info.textContent =
       `${products.length} ${
         siteLang === "mm"
@@ -1183,7 +1222,7 @@ function updateLoadMoreButton() {
 
 
 window.setFirebaseHasMore =
-  function(hasMore) {
+  function(hasMore){
     firebaseHasMore =
       Boolean(hasMore);
 
@@ -1192,7 +1231,7 @@ window.setFirebaseHasMore =
 
 
 window.setFirebaseLoading =
-  function(isLoading) {
+  function(isLoading){
     firebaseLoading =
       Boolean(isLoading);
 
@@ -1204,21 +1243,22 @@ window.setFirebaseLoading =
 const loadMoreBtn =
   $("#loadMoreBtn");
 
-if (loadMoreBtn) {
+if(loadMoreBtn){
   loadMoreBtn.addEventListener(
     "click",
-    () => {
-      if (
+    ()=>{
+
+      if(
         firebaseLoading ||
         !firebaseHasMore
-      ) {
+      ){
         return;
       }
 
-      if (
+      if(
         typeof window.loadMoreFirebaseProducts ===
         "function"
-      ) {
+      ){
         window.loadMoreFirebaseProducts();
       }
     }
@@ -1230,7 +1270,7 @@ if (loadMoreBtn) {
    LANGUAGE SWITCH
 ========================================= */
 
-function setSiteLanguage(lang) {
+function setSiteLanguage(lang){
   siteLang =
     lang === "mm"
       ? "mm"
@@ -1252,44 +1292,30 @@ function setSiteLanguage(lang) {
     "annDelivery",
     "annCod",
     "annWhatsapp",
-
     "heroEyebrow",
     "heroTitle",
     "heroText",
     "shopLatest",
-
     "shopEyebrow",
     "latestProductsTitle",
     "productsWord",
-
-    "stockFilterTitle",
-    "clearStockBtn",
-
     "colorFilterTitle",
     "clearColorBtn",
-
     "categoryFilterTitle",
-
     "howEyebrow",
     "howTitle",
-
     "step1Title",
     "step1Text",
-
     "step2Title",
     "step2Text",
-
     "step3Title",
     "step3Text",
-
     "emptyTitle",
     "emptyText",
-
     "yourOrderLabel",
     "shoppingBagTitle",
     "subtotalLabel",
     "deliveryInstruction",
-
     "fullNameLabel",
     "phoneLabel",
     "emirateLabel",
@@ -1298,31 +1324,28 @@ function setSiteLanguage(lang) {
     "streetLabel",
     "landmarkLabel",
     "notesLabel",
-
     "whatsappBtnText",
     "continueShoppingText",
     "powerLabel",
     "quantityLabel",
     "addToCartText",
-
     "footerTagline",
     "selectEmirateOption",
     "addressError",
-
     "sortFeatured",
     "sortLow",
     "sortHigh",
     "sortName"
   ];
 
-  ids.forEach(id => {
+  ids.forEach(id=>{
     const el =
       document.getElementById(id);
 
-    if (
+    if(
       el &&
       t[id] !== undefined
-    ) {
+    ){
       el.innerHTML =
         t[id];
     }
@@ -1340,27 +1363,28 @@ function setSiteLanguage(lang) {
   };
 
   Object.entries(placeholders)
-    .forEach(([id,value]) => {
+    .forEach(([id,value])=>{
       const el =
         document.getElementById(id);
 
-      if (el) {
-        el.placeholder = value;
+      if(el){
+        el.placeholder =
+          value;
       }
     });
 
   document
     .querySelectorAll(".lang-btn")
-    .forEach(btn => {
+    .forEach(btn=>{
       btn.classList.toggle(
         "active",
-        btn.dataset.lang === siteLang
+        btn.dataset.lang ===
+          siteLang
       );
     });
 
-  renderStockFilters();
-  renderColorFilters();
   renderCategories();
+  renderColorArea();
   renderProducts();
   renderCart();
   updateLoadMoreButton();
@@ -1373,13 +1397,12 @@ function setSiteLanguage(lang) {
 
 document
   .querySelectorAll(".lang-btn")
-  .forEach(btn => {
+  .forEach(btn=>{
     btn.addEventListener(
       "click",
-      () =>
-        setSiteLanguage(
-          btn.dataset.lang
-        )
+      ()=>setSiteLanguage(
+        btn.dataset.lang
+      )
     );
   });
 
@@ -1399,11 +1422,12 @@ sortSelect.addEventListener(
 $("#searchFocusBtn")
   .addEventListener(
     "click",
-    () => {
-      location.hash = "shop";
+    ()=>{
+      location.hash =
+        "shop";
 
       setTimeout(
-        () => searchInput.focus(),
+        ()=>searchInput.focus(),
         300
       );
     }
@@ -1455,11 +1479,15 @@ $("#addToCartBtn")
 $("#qtyMinus")
   .addEventListener(
     "click",
-    () => {
+    ()=>{
       $("#qtyInput").value =
         Math.max(
           1,
-          (parseInt($("#qtyInput").value) || 1) - 1
+          (
+            parseInt(
+              $("#qtyInput").value
+            ) || 1
+          ) - 1
         );
     }
   );
@@ -1468,16 +1496,22 @@ $("#qtyMinus")
 $("#qtyPlus")
   .addEventListener(
     "click",
-    () => {
+    ()=>{
       $("#qtyInput").value =
-        (parseInt($("#qtyInput").value) || 1) + 1;
+        (
+          parseInt(
+            $("#qtyInput").value
+          ) || 1
+        ) + 1;
     }
   );
 
 
 document
-  .querySelectorAll("[data-close='productModal']")
-  .forEach(x => {
+  .querySelectorAll(
+    "[data-close='productModal']"
+  )
+  .forEach(x=>{
     x.addEventListener(
       "click",
       closeModal
@@ -1488,11 +1522,11 @@ document
 $("#productModal")
   .addEventListener(
     "click",
-    e => {
-      if (
+    e=>{
+      if(
         e.target ===
         $("#productModal")
-      ) {
+      ){
         closeModal();
       }
     }
@@ -1501,8 +1535,8 @@ $("#productModal")
 
 document.addEventListener(
   "keydown",
-  e => {
-    if (e.key === "Escape") {
+  e=>{
+    if(e.key === "Escape"){
       closeModal();
       closeCart();
     }
@@ -1511,33 +1545,18 @@ document.addEventListener(
 
 
 /* =========================================
-   CLEAR FILTERS
+   CLEAR COLOR
 ========================================= */
-
-const clearStockBtn =
-  $("#clearStockBtn");
-
-if (clearStockBtn) {
-  clearStockBtn.addEventListener(
-    "click",
-    () => {
-      currentStock = "all";
-
-      renderStockFilters();
-      sendFiltersToFirebase();
-    }
-  );
-}
-
 
 const clearColorBtn =
   $("#clearColorBtn");
 
-if (clearColorBtn) {
+if(clearColorBtn){
   clearColorBtn.addEventListener(
     "click",
-    () => {
-      currentColor = "all";
+    ()=>{
+      currentColor =
+        "all";
 
       renderColorFilters();
       sendFiltersToFirebase();
@@ -1551,14 +1570,18 @@ if (clearColorBtn) {
 ========================================= */
 
 window.setProductsFromFirebase =
-  function(firebaseProducts) {
-    if (
-      !Array.isArray(firebaseProducts)
-    ) {
+  function(firebaseProducts){
+
+    if(
+      !Array.isArray(
+        firebaseProducts
+      )
+    ){
       return;
     }
 
-    products = firebaseProducts;
+    products =
+      firebaseProducts;
 
     renderProducts();
     renderCart();
@@ -1570,4 +1593,11 @@ $("#year").textContent =
   new Date().getFullYear();
 
 
-setSiteLanguage(siteLang);
+/*
+  UI starts immediately as Contact Lenses.
+  Firebase file also starts with Contact Lenses,
+  so there is no flash of another category.
+*/
+setSiteLanguage(
+  siteLang
+);

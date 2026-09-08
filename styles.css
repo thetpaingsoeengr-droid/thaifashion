@@ -681,56 +681,122 @@ html[lang="my"] .filter-title{
   border-radius:14px;
 }
 
-.admin-link{font-size:11px;color:var(--muted);opacity:.6}.admin-link:hover{opacity:1}
-/* =========================================
-   OUT OF STOCK STYLE
-========================================= */
 
-/* Product card stock badge */
+/* ==========================================================
+   V21 CATEGORY-FIRST SHOP LAYOUT
+   - No customer Availability filter
+   - Default Contact Lenses
+   - Colors shown only for Contact Lenses
+   - One stock status label only (top-right)
+========================================================== */
+
+.category-title-row{
+  margin-top:22px;
+}
+
+.category-scroller{
+  padding-top:12px;
+  padding-bottom:12px;
+}
+
+/* Color area drops below categories */
+#colorFilterBlock{
+  margin-top:4px;
+}
+
+/* Single product status label: top-right only */
+.stock-status{
+  position:absolute;
+  top:12px;
+  right:12px;
+  left:auto;
+  z-index:3;
+  padding:7px 10px;
+  border-radius:999px;
+  font-size:10px;
+  font-weight:800;
+  letter-spacing:.03em;
+  background:#171717;
+  color:#fff;
+  border:1px solid #171717;
+}
+
+.stock-status.preorder{
+  background:#fff;
+  color:#171717;
+  border:1px solid var(--line);
+}
+
 .stock-status.outofstock{
-  background:#eeeeee;
-  color:#666666;
-  border:1px solid #dddddd;
+  background:#ececec;
+  color:#666;
+  border:1px solid #d9d9d9;
 }
 
-/* Product modal stock badge */
+/* Out-of-stock modal status */
 .modal-stock-pill.outofstock{
-  background:#eeeeee;
-  color:#666666;
-  border:1px solid #dddddd;
+  background:#ececec;
+  color:#666;
+  border:1px solid #d9d9d9;
 }
 
-/* Out of stock product image slightly faded */
+/* Out-of-stock product stays visible but looks unavailable */
 .product-card:has(.stock-status.outofstock) .product-image{
-  opacity:.65;
+  opacity:.68;
 }
 
-/* Keep product name / price readable */
-.product-card:has(.stock-status.outofstock) .product-info{
-  opacity:.85;
-}
-
-/* Add to Bag button when disabled */
+/* Add to Bag is disabled for out-of-stock items */
 #addToCartBtn:disabled{
   background:#d9d9d9;
-  color:#777777;
-  cursor:not-allowed;
+  color:#777;
   opacity:1;
+  cursor:not-allowed;
+  pointer-events:none;
 }
 
-/* Prevent disabled button interaction */
-#addToCartBtn:disabled:hover{
-  background:#d9d9d9;
-  transform:none;
+/* 10-product pagination */
+.load-more-wrap{
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  padding:34px 0 8px;
 }
 
-/* Out of stock filter chip */
-.stock-chip[data-stock="outofstock"]{
-  border-color:#dddddd;
+.load-more-btn{
+  min-width:150px;
 }
 
-.stock-chip[data-stock="outofstock"].active{
-  background:#666666;
-  color:#ffffff;
-  border-color:#666666;
+.load-more-btn:disabled{
+  opacity:.55;
+  cursor:wait;
+}
+
+.load-more-info{
+  margin:0;
+  font-size:11px;
+  color:var(--muted);
+}
+
+/* Old left-side badge is intentionally not used anymore */
+.product-card .badge{
+  display:none !important;
+}
+
+@media(max-width:600px){
+  .category-title-row{
+    margin-top:18px;
+  }
+
+  .stock-status{
+    top:9px;
+    right:9px;
+    padding:6px 8px;
+    font-size:9px;
+  }
+
+  .load-more-wrap{
+    padding-top:26px;
+  }
 }
