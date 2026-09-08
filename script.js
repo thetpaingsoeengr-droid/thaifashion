@@ -458,7 +458,7 @@ function renderProducts(){
     );
 
   productGrid.innerHTML =
-    list.map(p => {
+    list.map((p,index) => {
 
       const isPreorder =
         p.stockStatus === "preorder";
@@ -504,7 +504,10 @@ function renderProducts(){
                     src="${p.image}"
                     alt="${p.name}"
                     class="real-product-image"
-                    loading="lazy"
+                    loading="${index < 4 ? "eager" : "lazy"}"
+                    decoding="async"
+                    fetchpriority="${index < 2 ? "high" : "auto"}"
+                    onload="this.classList.add('is-loaded')"
                   >
                 `
                 : ""
@@ -690,6 +693,7 @@ function openProduct(id){
           src="${selectedProduct.image}"
           alt="${selectedProduct.name}"
           class="modal-real-image"
+          decoding="async"
         >
       `
       : "";
@@ -883,6 +887,8 @@ function renderCart(){
                     src="${cartImage}"
                     alt="${x.name}"
                     class="cart-real-image"
+                    loading="lazy"
+                    decoding="async"
                   >
                 `
                 : ""

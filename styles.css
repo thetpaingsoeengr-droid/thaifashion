@@ -814,3 +814,77 @@ html[lang="my"] .filter-title{
     font-size:11px;
   }
 }
+
+
+/* ===== V23 NO SEARCH ===== */
+.shop-tools-no-search{
+  display:flex;
+  justify-content:flex-end;
+}
+
+.shop-tools-no-search #sortSelect{
+  width:220px;
+}
+
+@media(max-width:600px){
+  .shop-tools-no-search{
+    justify-content:stretch;
+  }
+
+  .shop-tools-no-search #sortSelect{
+    width:100%;
+    display:block;
+  }
+}
+
+
+/* ===== V24 SPEED OPTIMIZATION =====
+   Keeps the same design while reducing image/render work. */
+
+/* Browser can skip layout/paint work for off-screen cards. */
+.product-card{
+  content-visibility:auto;
+  contain-intrinsic-size:320px 440px;
+}
+
+/* Prevent image layout jumps and keep rendering isolated. */
+.product-image{
+  contain:layout paint;
+  background:var(--soft);
+}
+
+.real-product-image{
+  opacity:0;
+  transition:opacity .16s ease;
+  backface-visibility:hidden;
+}
+
+.real-product-image.is-loaded{
+  opacity:1;
+}
+
+/* If JS is disabled or the browser restores an image from cache,
+   still show it once it has completed loading. */
+.real-product-image[complete]{
+  opacity:1;
+}
+
+/* Keep modal/cart rendering lightweight. */
+.modal-real-image,
+.cart-real-image{
+  backface-visibility:hidden;
+}
+
+/* Reduce work for long pages below the fold. */
+.how-order,
+footer{
+  content-visibility:auto;
+  contain-intrinsic-size:400px;
+}
+
+/* Respect users who prefer less motion. */
+@media (prefers-reduced-motion: reduce){
+  .real-product-image{
+    transition:none;
+  }
+}
