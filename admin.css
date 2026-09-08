@@ -18,3 +18,8 @@ input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px
 .admin-product-info{min-width:0;display:grid;gap:4px}.admin-product-info span,.admin-product-info small{color:var(--muted);font-size:12px}
 .admin-actions{display:flex;gap:7px}.admin-actions button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 11px;font-weight:700}.delete-btn{color:#a13d3d}
 @media(max-width:650px){.admin-header,.panel-heading{align-items:flex-start;flex-direction:column}.product-form{grid-template-columns:1fr}.span-2{grid-column:auto}.admin-product{grid-template-columns:58px minmax(0,1fr)}.admin-thumb{width:58px;height:58px}.admin-actions{grid-column:1/-1}}
+
+.image-upload-box{border:1px dashed var(--line);border-radius:16px;padding:12px;background:var(--bg)}
+.image-preview{display:block;width:100%;max-width:280px;aspect-ratio:1/1;object-fit:cover;border-radius:14px;margin-bottom:10px;background:var(--soft)}
+.upload-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+#pImageFile{padding:10px;background:var(--bg)}

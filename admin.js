@@ -362,6 +362,11 @@ function resetForm(){
 
   $("#pWaiting").value="2 weeks";
 
+  $("#pImage").value="";
+  $("#pImageFile").value="";
+  showImagePreview("");
+  $("#uploadStatus").textContent="No new image selected.";
+
   msg($("#formMessage"),"");
 }
 
@@ -418,7 +423,7 @@ $("#productForm").addEventListener(
 
     e.preventDefault();
 
-    const p=payload();
+    let p=payload();
 
     if(!p.name){
       return msg(
@@ -432,6 +437,11 @@ $("#productForm").addEventListener(
     msg($("#formMessage"),"Saving…");
 
     try{
+
+      const imageFile=$("#pImageFile").files?.[0];
+      if(imageFile){
+        p.imageUrl = await uploadProductImage(imageFile);
+      }
 
       const id=$("#editId").value;
 
@@ -703,6 +713,12 @@ async function editProduct(id){
     p.imageUrl||
     p.image||
     "";
+
+  $("#pImageFile").value="";
+  showImagePreview($("#pImage").value);
+  $("#uploadStatus").textContent = $("#pImage").value
+    ? "Current product image. Choose a new file to replace it."
+    : "No image saved for this product.";
 
 
   $("#pDescription").value=
