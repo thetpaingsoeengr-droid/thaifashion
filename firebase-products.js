@@ -28,10 +28,23 @@ const db = getFirestore(app);
 
 
 /* =========================================
-   PAGINATION
+   SETTINGS
 ========================================= */
 
 const PAGE_SIZE = 10;
+
+/*
+  Filter cache:
+  If the customer switches back to a category/color
+  already opened during this page visit, show it
+  immediately without another Firestore read.
+
+  Cache expires after 10 minutes.
+*/
+const CACHE_TTL_MS = 10 * 60 * 1000;
+
+const filterCache = new Map();
+
 
 let lastVisible = null;
 let loadedProducts = [];
@@ -42,13 +55,85 @@ let hasMore = true;
 
 /* =========================================
    DEFAULT FILTER
-   Website opens on Contact Lenses.
 ========================================= */
 
 let activeFilters = {
   category: "Contact Lenses",
   color: "all"
 };
+
+
+/* =========================================
+   CACHE HELPERS
+========================================= */
+
+function getCacheKey(filters = activeFilters){
+
+  return [
+    filters.category || "Contact Lenses",
+    filters.color || "all"
+  ].join("::");
+}
+
+
+function readFilterCache(){
+
+  const key =
+    getCacheKey();
+
+  const cached =
+    filterCache.get(key);
+
+  if(!cached){
+    return null;
+  }
+
+
+  if(
+    Date.now() - cached.savedAt >
+    CACHE_TTL_MS
+  ){
+    filterCache.delete(key);
+    return null;
+  }
+
+
+  return cached;
+}
+
+
+function saveFilterCache(totalCount){
+
+  const key =
+    getCacheKey();
+
+  filterCache.set(
+    key,
+    {
+      savedAt:
+        Date.now(),
+
+      products:
+        loadedProducts.map(
+          product => ({
+            ...product
+          })
+        ),
+
+      hasMore,
+
+      /*
+        DocumentSnapshot stays in memory,
+        allowing Load More to continue
+        immediately from the cached page.
+      */
+      lastVisible,
+
+      totalCount:
+        Number(totalCount || 0)
+    }
+  );
+}
 
 
 /* =========================================
@@ -65,11 +150,12 @@ function normalizeProduct(snap){
 
 
   if(typeof powers === "string"){
+
     powers =
       powers.trim()
         ? powers
             .split(",")
-            .map(x=>x.trim())
+            .map(x => x.trim())
             .filter(Boolean)
         : null;
   }
@@ -166,19 +252,13 @@ function normalizeProduct(snap){
     stockStatus,
 
     waitingPeriod:
-      stockStatus ===
-      "preorder"
+      stockStatus === "preorder"
         ? (
             d.waitingPeriod ||
             "2 weeks"
           )
         : "",
 
-    /*
-      badge remains in Firestore/Admin
-      for future use, but the customer
-      product card no longer renders it.
-    */
     badge:
       d.badge || "",
 
@@ -209,7 +289,7 @@ function normalizeProduct(snap){
 
 
 /* =========================================
-   SEND DATA TO WEBSITE
+   WEBSITE BRIDGE
 ========================================= */
 
 function updateWebsite(){
@@ -235,66 +315,28 @@ function updateWebsite(){
 }
 
 
-/* =========================================
-   FIRESTORE QUERY
-   CATEGORY IS ALWAYS SELECTED.
-   COLOR IS OPTIONAL FOR CONTACT LENSES.
-========================================= */
-
-function buildCountQuery(){
-  const productsRef = collection(db, "products");
-  const constraints = [];
-
-  constraints.push(
-    where("category", "==", activeFilters.category)
-  );
+function updateWebsiteTotalCount(total){
 
   if(
-    activeFilters.category === "Contact Lenses" &&
-    activeFilters.color !== "all"
+    typeof window.setFirebaseTotalCount ===
+    "function"
   ){
-    constraints.push(
-      where("colorKey", "==", activeFilters.color)
+    window.setFirebaseTotalCount(
+      Number(total || 0)
     );
-  }
-
-  return query(productsRef, ...constraints);
-}
-
-async function updateTotalCount(){
-  try{
-    const countSnap = await getCountFromServer(
-      buildCountQuery()
-    );
-
-    const total = Number(countSnap.data().count || 0);
-
-    if(typeof window.setFirebaseTotalCount === "function"){
-      window.setFirebaseTotalCount(total);
-    }
-  }catch(error){
-    console.error("Could not count Firestore products:", error);
-    if(typeof window.setFirebaseTotalCount === "function"){
-      window.setFirebaseTotalCount(0);
-    }
   }
 }
 
-function buildQuery(){
 
-  const productsRef =
-    collection(
-      db,
-      "products"
-    );
+/* =========================================
+   FILTER CONSTRAINTS
+========================================= */
 
+function baseConstraints(){
 
   const constraints = [];
 
 
-  /*
-    CATEGORY
-  */
   constraints.push(
     where(
       "category",
@@ -304,14 +346,11 @@ function buildQuery(){
   );
 
 
-  /*
-    COLOR
-    Only used for Contact Lenses.
-  */
   if(
     activeFilters.category === "Contact Lenses" &&
     activeFilters.color !== "all"
   ){
+
     constraints.push(
       where(
         "colorKey",
@@ -322,10 +361,53 @@ function buildQuery(){
   }
 
 
-  /*
-    PAGINATION
-  */
+  return constraints;
+}
+
+
+/* =========================================
+   COUNT QUERY
+========================================= */
+
+function buildCountQuery(){
+
+  return query(
+    collection(
+      db,
+      "products"
+    ),
+    ...baseConstraints()
+  );
+}
+
+
+async function fetchTotalCount(){
+
+  const countSnap =
+    await getCountFromServer(
+      buildCountQuery()
+    );
+
+
+  return Number(
+    countSnap.data().count || 0
+  );
+}
+
+
+/* =========================================
+   PRODUCT QUERY
+========================================= */
+
+function buildProductsQuery(){
+
+  const constraints = [
+    ...baseConstraints()
+  ];
+
+
   if(lastVisible){
+
     constraints.push(
       startAfter(
         lastVisible
@@ -334,11 +416,6 @@ function buildQuery(){
   }
 
 
-  /*
-    Fetch 11:
-    show 10,
-    use #11 only to know if more exists.
-  */
   constraints.push(
     limit(
       PAGE_SIZE + 1
@@ -347,14 +424,17 @@ function buildQuery(){
 
 
   return query(
-    productsRef,
+    collection(
+      db,
+      "products"
+    ),
     ...constraints
   );
 }
 
 
 /* =========================================
-   LOAD PRODUCTS
+   LOAD NEXT PAGE
 ========================================= */
 
 async function loadProducts(){
@@ -384,7 +464,7 @@ async function loadProducts(){
 
     const snapshot =
       await getDocs(
-        buildQuery()
+        buildProductsQuery()
       );
 
 
@@ -458,6 +538,21 @@ async function loadProducts(){
 
     updateWebsite();
 
+
+    /*
+      Keep the current filter result cached after
+      Load More too, so going away and coming back
+      restores the already-loaded pages instantly.
+    */
+    const existingCache =
+      readFilterCache();
+
+    saveFilterCache(
+      existingCache
+        ? existingCache.totalCount
+        : loadedProducts.length
+    );
+
   }catch(error){
 
     console.error(
@@ -466,12 +561,127 @@ async function loadProducts(){
     );
 
 
-    /*
-      Do not bring back old/unfiltered data
-      if a query fails.
-    */
     hasMore =
       false;
+
+    updateWebsite();
+
+  }finally{
+
+    loading =
+      false;
+
+
+    if(
+      typeof window.setFirebaseLoading ===
+      "function"
+    ){
+      window.setFirebaseLoading(
+        false
+      );
+    }
+  }
+}
+
+
+/* =========================================
+   FIRST PAGE
+   COUNT + PRODUCTS RUN IN PARALLEL
+========================================= */
+
+async function loadFreshFilter(){
+
+  loading =
+    true;
+
+
+  if(
+    typeof window.setFirebaseLoading ===
+    "function"
+  ){
+    window.setFirebaseLoading(
+      true
+    );
+  }
+
+
+  try{
+
+    /*
+      Firestore count and first 11 docs are independent,
+      so run both requests together instead of one-by-one.
+    */
+    const [
+      totalCount,
+      productsSnapshot
+    ] =
+      await Promise.all([
+        fetchTotalCount(),
+        getDocs(
+          buildProductsQuery()
+        )
+      ]);
+
+
+    updateWebsiteTotalCount(
+      totalCount
+    );
+
+
+    const docs =
+      productsSnapshot.docs;
+
+
+    hasMore =
+      docs.length >
+      PAGE_SIZE;
+
+
+    const pageDocs =
+      docs.slice(
+        0,
+        PAGE_SIZE
+      );
+
+
+    loadedProducts =
+      pageDocs.map(
+        normalizeProduct
+      );
+
+
+    lastVisible =
+      pageDocs.length > 0
+        ? pageDocs[
+            pageDocs.length - 1
+          ]
+        : null;
+
+
+    updateWebsite();
+
+
+    saveFilterCache(
+      totalCount
+    );
+
+  }catch(error){
+
+    console.error(
+      "Firestore first-page load failed:",
+      error
+    );
+
+
+    loadedProducts =
+      [];
+
+    lastVisible =
+      null;
+
+    hasMore =
+      false;
+
 
     updateWebsite();
 
@@ -508,8 +718,7 @@ async function applyFilters(
 
 
   const nextColor =
-    nextCategory ===
-    "Contact Lenses"
+    nextCategory === "Contact Lenses"
       ? (
           filters.color ??
           activeFilters.color ??
@@ -528,8 +737,43 @@ async function applyFilters(
 
 
   /*
-    New query:
-    reset 10-product pagination.
+    CACHE HIT:
+    Restore instantly without Firestore request.
+  */
+  const cached =
+    readFilterCache();
+
+
+  if(cached){
+
+    loadedProducts =
+      cached.products.map(
+        product => ({
+          ...product
+        })
+      );
+
+    lastVisible =
+      cached.lastVisible;
+
+    hasMore =
+      cached.hasMore;
+
+
+    updateWebsiteTotalCount(
+      cached.totalCount
+    );
+
+
+    updateWebsite();
+
+    return;
+  }
+
+
+  /*
+    CACHE MISS:
+    Reset and fetch fresh data.
   */
   lastVisible =
     null;
@@ -543,9 +787,8 @@ async function applyFilters(
 
   updateWebsite();
 
-  await updateTotalCount();
 
-  await loadProducts();
+  await loadFreshFilter();
 }
 
 
@@ -592,5 +835,4 @@ window.resetFirebaseProductFilters =
    INITIAL LOAD
 ========================================= */
 
-updateTotalCount();
-loadProducts();
+loadFreshFilter();
