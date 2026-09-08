@@ -23,7 +23,6 @@ const $ = s => document.querySelector(s);
 
 const productGrid = $("#productGrid");
 const categoryFilters = $("#categoryFilters");
-const searchInput = $("#searchInput");
 const sortSelect = $("#sortSelect");
 
 
@@ -128,8 +127,6 @@ const i18n = {
     footerTagline:"Fashion lenses & beauty finds.",
     selectEmirateOption:"Select emirate",
     addressError:"Please complete all required (*) delivery fields.",
-
-    searchPlaceholder:"Search products…",
     namePlaceholder:"Your full name",
     phonePlaceholder:"05X XXX XXXX",
     areaPlaceholder:"e.g. Muwaileh, Al Nahda",
@@ -213,8 +210,6 @@ const i18n = {
     footerTagline:"Fashion lenses နဲ့ Beauty ပစ္စည်းများ",
     selectEmirateOption:"Emirate ရွေးပါ",
     addressError:"လိုအပ်သော (*) လိပ်စာအချက်အလက်များကို အပြည့်အစုံဖြည့်ပါ။",
-
-    searchPlaceholder:"ပစ္စည်းရှာရန်…",
     namePlaceholder:"အမည်အပြည့်အစုံ",
     phonePlaceholder:"05X XXX XXXX",
     areaPlaceholder:"ဥပမာ - Muwaileh, Al Nahda",
@@ -268,17 +263,7 @@ function localizedCategory(raw){
 ========================================= */
 
 function filteredProducts(){
-  const q =
-    searchInput.value
-      .trim()
-      .toLowerCase();
-
-  let list =
-    products.filter(p =>
-      (p.name || "")
-        .toLowerCase()
-        .includes(q)
-    );
+  let list = [...products];
 
   const sort =
     sortSelect.value;
@@ -1368,7 +1353,6 @@ function setSiteLanguage(lang){
   });
 
   const placeholders = {
-    searchInput:t.searchPlaceholder,
     customerName:t.namePlaceholder,
     customerPhone:t.phonePlaceholder,
     customerArea:t.areaPlaceholder,
@@ -1423,31 +1407,12 @@ document
   });
 
 
-searchInput.addEventListener(
-  "input",
-  renderProducts
-);
-
 
 sortSelect.addEventListener(
   "change",
   renderProducts
 );
 
-
-$("#searchFocusBtn")
-  .addEventListener(
-    "click",
-    ()=>{
-      location.hash =
-        "shop";
-
-      setTimeout(
-        ()=>searchInput.focus(),
-        300
-      );
-    }
-  );
 
 
 $("#openCartBtn")
