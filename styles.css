@@ -1095,3 +1095,80 @@ body.alt-font{
     font-size:14px;
   }
 }
+
+
+/* ==========================================================
+   V28 COMPACT CATEGORY-FIRST SHOP
+========================================================== */
+
+/* Hide old bulky shop intro / result sorting UI if legacy markup remains */
+.shop-section .eyebrow,
+.shop-section .shop-eyebrow,
+.shop-section .shop-title,
+.shop-section .product-count,
+.shop-section .results-count,
+.shop-section .sort-wrap,
+.shop-section .sort-select,
+#sortSelect{
+  display:none !important;
+}
+
+/* Start directly with categories */
+.shop-section{
+  padding-top:18px !important;
+}
+
+.category-section,
+.categories-section,
+.category-filter{
+  margin-top:0 !important;
+}
+
+/* Keep all 3 categories visible on mobile */
+.category-tabs,
+.category-buttons,
+.categories,
+.category-row{
+  display:grid !important;
+  grid-template-columns:repeat(3,minmax(0,1fr)) !important;
+  gap:8px !important;
+  width:100% !important;
+  overflow:visible !important;
+}
+
+.category-tab,
+.category-btn,
+.category-button{
+  min-width:0 !important;
+  width:100% !important;
+  min-height:42px !important;
+  padding:9px 6px !important;
+  border-radius:14px !important;
+  font-size:12px !important;
+  line-height:1.25 !important;
+  text-align:center !important;
+  white-space:normal !important;
+}
+
+/* No See all control */
+.see-all,
+.categories-see-all,
+.category-see-all{
+  display:none !important;
+}
+
+@media(max-width:380px){
+  .category-tabs,
+  .category-buttons,
+  .categories,
+  .category-row{
+    gap:6px !important;
+  }
+
+  .category-tab,
+  .category-btn,
+  .category-button{
+    padding:8px 4px !important;
+    font-size:11px !important;
+  }
+}
