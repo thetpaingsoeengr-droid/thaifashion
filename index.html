@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=28" />
+  <link rel="stylesheet" href="styles.css?v=26" />
 </head>
 
 <body>
@@ -41,7 +41,7 @@
           aria-label="Change font"
           title="Change font"
         >
-          <span class="font-en">A</span><span class="font-mm">က</span>
+          Aa
         </button>
 
         <button
@@ -67,7 +67,9 @@
 
       <div class="section-heading">
         <div>
-<p class="results-text total-products-text">
+          <p class="eyebrow" id="shopEyebrow">SHOP</p>
+          <h2 id="latestProductsTitle">Latest products</h2>
+          <p class="results-text total-products-text">
             <span id="resultCount">0</span>
             <span id="productsWord">products</span>
           </p>
@@ -76,7 +78,14 @@
 
 
       <div class="shop-tools shop-tools-no-search">
-</div>
+        <select id="sortSelect" aria-label="Sort products">
+          <option id="sortFeatured" value="featured">Featured</option>
+          <option id="sortLow" value="low">Price: low to high</option>
+          <option id="sortHigh" value="high">Price: high to low</option>
+          <option id="sortName" value="name">Name: A–Z</option>
+        </select>
+
+      </div>
 
 
       <!-- CATEGORIES FIRST -->
@@ -326,7 +335,7 @@
   <div class="toast hidden" id="toast">Added to bag</div>
 
 
-  <script src="script.js?v=28"></script>
+  <script src="script.js?v=26"></script>
   <script type="module" src="firebase-products.js?v=16"></script>
 
 </body>
