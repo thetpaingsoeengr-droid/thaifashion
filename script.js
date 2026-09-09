@@ -459,7 +459,10 @@ function renderColorFilters(){
           }"
           data-color="${c.key}"
         >
-          <span class="color-dot"></span>
+          <span
+            class="color-dot lens-color-${c.key}"
+            aria-hidden="true"
+          ></span>
           <span>${c[labels]}</span>
         </button>
       `)
