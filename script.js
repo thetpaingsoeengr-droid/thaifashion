@@ -252,10 +252,25 @@ function applySiteFontMode(){
   const btn = $("#fontToggleBtn");
 
   if(btn){
+    const isMyanmarFont =
+      siteFontMode === "alt";
+
     btn.classList.toggle(
       "active",
-      siteFontMode === "alt"
+      isMyanmarFont
     );
+
+    btn.setAttribute(
+      "aria-label",
+      isMyanmarFont
+        ? "Use English font"
+        : "Use Myanmar font"
+    );
+
+    btn.title =
+      isMyanmarFont
+        ? "English font"
+        : "Myanmar font";
   }
 }
 

@@ -1049,3 +1049,49 @@ body:not(.alt-font){
     font-size:24px;
   }
 }
+
+
+/* ==========================================================
+   V27 FONT BUTTON — ENGLISH / MYANMAR
+========================================================== */
+
+.font-toggle-btn{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  font-weight:700;
+}
+
+.font-toggle-btn .font-en{
+  font-family:"DM Sans",sans-serif;
+  font-size:15px;
+  line-height:1;
+}
+
+.font-toggle-btn .font-mm{
+  font-family:"Noto Sans Myanmar",sans-serif;
+  font-size:15px;
+  line-height:1;
+}
+
+/* Default website font = English-friendly */
+body:not(.alt-font){
+  font-family:"DM Sans","Noto Sans Myanmar",sans-serif;
+}
+
+/* Tap Aက button = Myanmar font first */
+body.alt-font{
+  font-family:"Noto Sans Myanmar","DM Sans",sans-serif;
+}
+
+.font-toggle-btn.active{
+  background:var(--soft);
+}
+
+@media(max-width:600px){
+  .font-toggle-btn .font-en,
+  .font-toggle-btn .font-mm{
+    font-size:14px;
+  }
+}
