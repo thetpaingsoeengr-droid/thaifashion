@@ -515,8 +515,13 @@ function renderProducts(){
   const list =
     filteredProducts();
 
-  $("#resultCount").textContent =
-    firebaseTotalCount;
+  const resultCountEl =
+    $("#resultCount");
+
+  if(resultCountEl){
+    resultCountEl.textContent =
+      firebaseTotalCount;
+  }
 
   $("#emptyState")
     .classList
