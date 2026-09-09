@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=26" />
+  <link rel="stylesheet" href="styles.css?v=29" />
 </head>
 
 <body>
@@ -64,39 +64,15 @@
 
   <main>
 <section class="shop-section" id="shop">
-
-      <div class="section-heading">
-        <div>
-          <p class="eyebrow" id="shopEyebrow">SHOP</p>
-          <h2 id="latestProductsTitle">Latest products</h2>
-          <p class="results-text total-products-text">
-            <span id="resultCount">0</span>
-            <span id="productsWord">products</span>
-          </p>
+      <!-- COMPACT CATEGORIES -->
+      <section class="compact-category-section" aria-labelledby="categoryFilterTitle">
+        <div class="compact-category-heading">
+          <span class="filter-title" id="categoryFilterTitle">Categories</span>
         </div>
-      </div>
+        <div class="category-scroller compact-category-grid" id="categoryFilters"></div>
+      </section>
 
-
-      <div class="shop-tools shop-tools-no-search">
-        <select id="sortSelect" aria-label="Sort products">
-          <option id="sortFeatured" value="featured">Featured</option>
-          <option id="sortLow" value="low">Price: low to high</option>
-          <option id="sortHigh" value="high">Price: high to low</option>
-          <option id="sortName" value="name">Name: A–Z</option>
-        </select>
-
-      </div>
-
-
-      <!-- CATEGORIES FIRST -->
-      <div class="filter-title-row category-title-row">
-        <span class="filter-title" id="categoryFilterTitle">Categories</span>
-      </div>
-
-      <div class="category-scroller" id="categoryFilters"></div>
-
-
-      <!-- COLORS ONLY SHOW FOR CONTACT LENSES -->
+<!-- COLORS ONLY SHOW FOR CONTACT LENSES -->
       <div class="filter-block" id="colorFilterBlock">
 
         <div class="filter-title-row">
@@ -335,7 +311,7 @@
   <div class="toast hidden" id="toast">Added to bag</div>
 
 
-  <script src="script.js?v=26"></script>
+  <script src="script.js?v=29"></script>
   <script type="module" src="firebase-products.js?v=16"></script>
 
 </body>

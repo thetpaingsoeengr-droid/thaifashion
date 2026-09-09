@@ -142,7 +142,7 @@ const i18n = {
 
     categoryLenses:"Contact Lenses",
     categoryAccessories:"Lens Accessories",
-    categoryBeauty:"Beauty",
+    categoryBeauty:"Beauty Products",
 
     bagItems:n=>`Items in your bag (${n})`,
     cartEmpty:"Your bag is empty.",
@@ -300,7 +300,7 @@ function filteredProducts(){
   let list = [...products];
 
   const sort =
-    sortSelect.value;
+    sortSelect ? sortSelect.value : "featured";
 
   if(sort === "low"){
     list.sort((a,b)=>a.price-b.price);
@@ -349,20 +349,59 @@ function sendFiltersToFirebase(){
    CATEGORY FILTER
 ========================================= */
 
+function categoryIcon(category){
+  if(category === "Contact Lenses"){
+    return `
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <circle cx="24" cy="32" r="15"></circle>
+        <circle cx="40" cy="32" r="15"></circle>
+        <circle cx="24" cy="32" r="7"></circle>
+        <circle cx="40" cy="32" r="7"></circle>
+      </svg>
+    `;
+  }
+
+  if(category === "Accessories"){
+    return `
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <rect x="15" y="15" width="20" height="30" rx="5"></rect>
+        <path d="M20 15V9h10v6"></path>
+        <ellipse cx="45" cy="39" rx="10" ry="7"></ellipse>
+        <path d="M42 23l9 9"></path>
+      </svg>
+    `;
+  }
+
+  return `
+    <svg viewBox="0 0 64 64" aria-hidden="true">
+      <path d="M22 46h20l-2-19H24z"></path>
+      <rect x="27" y="12" width="10" height="15" rx="3"></rect>
+      <path d="M20 46c-4 0-7 3-7 7h38c0-4-3-7-7-7"></path>
+      <path d="M45 18l6-6"></path>
+      <circle cx="50" cy="13" r="3"></circle>
+    </svg>
+  `;
+}
+
 function renderCategories(){
   categoryFilters.innerHTML =
     categories()
       .map(category => `
         <button
           type="button"
-          class="category-chip ${
+          class="category-chip compact-category-card ${
             currentCategory === category
               ? "active"
               : ""
           }"
           data-category="${category}"
         >
-          ${localizedCategory(category)}
+          <span class="category-icon">
+            ${categoryIcon(category)}
+          </span>
+          <span class="category-label">
+            ${localizedCategory(category)}
+          </span>
         </button>
       `)
       .join("");
@@ -378,10 +417,6 @@ function renderCategories(){
           currentCategory =
             btn.dataset.category;
 
-          /*
-            Colors only belong to Contact Lenses.
-            Reset color when user opens another category.
-          */
           if(currentCategory !== "Contact Lenses"){
             currentColor = "all";
           }
@@ -1445,13 +1480,6 @@ document
       )
     );
   });
-
-
-
-sortSelect.addEventListener(
-  "change",
-  renderProducts
-);
 
 
 
