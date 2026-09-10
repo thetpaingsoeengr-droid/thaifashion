@@ -141,13 +141,13 @@ const i18n = {
     yourOrderLabel:"YOUR ORDER",
     shoppingBagTitle:"Shopping bag",
     subtotalLabel:"Subtotal",
-    deliveryInstruction:"Please add your delivery details before ordering.",
+    deliveryInstruction:"Name and phone number are required. Other delivery details are optional.",
 
     fullNameLabel:"Full Name *",
     phoneLabel:"Phone Number *",
-    emirateLabel:"Emirate *",
-    areaLabel:"Area / Community *",
-    buildingLabel:"Building / Villa *",
+    emirateLabel:"Emirate",
+    areaLabel:"Area / Community",
+    buildingLabel:"Building / Villa",
     streetLabel:"Street / Apartment",
     landmarkLabel:"Landmark",
     notesLabel:"Delivery Notes",
@@ -160,7 +160,7 @@ const i18n = {
 
     footerTagline:"Fashion lenses & beauty finds.",
     selectEmirateOption:"Select emirate",
-    addressError:"Please complete all required (*) delivery fields.",
+    addressError:"Please enter your full name and phone number.",
     namePlaceholder:"Your full name",
     phonePlaceholder:"05X XXX XXXX",
     areaPlaceholder:"e.g. Muwaileh, Al Nahda",
@@ -224,13 +224,13 @@ const i18n = {
     yourOrderLabel:"သင့်အော်ဒါ",
     shoppingBagTitle:"ဈေးဝယ်အိတ်",
     subtotalLabel:"ပစ္စည်းစုစုပေါင်း",
-    deliveryInstruction:"မှာယူရန်အတွက် ပို့ဆောင်ရမည့်လိပ်စာကို ဖြည့်ပေးပါ။",
+    deliveryInstruction:"အမည်နဲ့ ဖုန်းနံပါတ်သာ မဖြစ်မနေဖြည့်ရန်လိုပါတယ်။ ကျန်တဲ့ delivery အချက်အလက်များက optional ပါ။",
 
     fullNameLabel:"အမည်အပြည့်အစုံ *",
     phoneLabel:"ဖုန်းနံပါတ် *",
-    emirateLabel:"Emirate *",
-    areaLabel:"Area / Community *",
-    buildingLabel:"Building / Villa *",
+    emirateLabel:"Emirate",
+    areaLabel:"Area / Community",
+    buildingLabel:"Building / Villa",
     streetLabel:"Street / Apartment",
     landmarkLabel:"အနီးအနား Landmark",
     notesLabel:"ပို့ဆောင်မှု မှတ်ချက်",
@@ -243,7 +243,7 @@ const i18n = {
 
     footerTagline:"Fashion lenses နဲ့ Beauty ပစ္စည်းများ",
     selectEmirateOption:"Emirate ရွေးပါ",
-    addressError:"လိုအပ်သော (*) လိပ်စာအချက်အလက်များကို အပြည့်အစုံဖြည့်ပါ။",
+    addressError:"အမည်နဲ့ ဖုန်းနံပါတ်ကို ဖြည့်ပေးပါ။",
     namePlaceholder:"အမည်အပြည့်အစုံ",
     phonePlaceholder:"05X XXX XXXX",
     areaPlaceholder:"ဥပမာ - Muwaileh, Al Nahda",
@@ -1234,10 +1234,7 @@ function orderWhatsApp(){
 
   const requiredMissing =
     !name ||
-    !phone ||
-    !emirate ||
-    !area ||
-    !building;
+    !phone;
 
   $("#addressError")
     .classList
@@ -1251,13 +1248,7 @@ function orderWhatsApp(){
     const firstMissing =
       !name
         ? $("#customerName")
-        : !phone
-          ? $("#customerPhone")
-          : !emirate
-            ? $("#customerEmirate")
-            : !area
-              ? $("#customerArea")
-              : $("#customerBuilding");
+        : $("#customerPhone");
 
     firstMissing.focus();
 
@@ -1310,9 +1301,15 @@ function orderWhatsApp(){
   const addressLines = [
     `Name: ${name}`,
     `Phone: ${phone}`,
-    `Emirate: ${emirate}`,
-    `Area / Community: ${area}`,
-    `Building / Villa: ${building}`,
+    emirate
+      ? `Emirate: ${emirate}`
+      : "",
+    area
+      ? `Area / Community: ${area}`
+      : "",
+    building
+      ? `Building / Villa: ${building}`
+      : "",
     street
       ? `Street / Apartment: ${street}`
       : "",
