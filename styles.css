@@ -1366,3 +1366,19 @@ body:not(.alt-font){
     min-width:24px !important;
   }
 }
+
+/* ==========================================================
+   V39 MOBILE PRODUCT GRID STABILITY FIX
+========================================================== */
+.product-grid{grid-template-columns:repeat(4,minmax(0,1fr));width:100%;min-width:0}
+.product-card{width:100%;min-width:0;max-width:100%;overflow:hidden}
+.product-image,.product-info,.real-product-image{width:100%;min-width:0;max-width:100%}
+@media(max-width:900px){.product-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+@media(max-width:600px){
+.product-grid{display:grid!important;grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important;width:100%!important;min-width:0!important;gap:22px 10px!important;align-items:start}
+.product-card{width:auto!important;min-width:0!important;max-width:100%!important;contain:none;content-visibility:visible}
+.product-image{width:100%!important;min-width:0!important;max-width:100%!important;overflow:hidden!important}
+.product-info,.product-title,.product-category,.product-price{min-width:0!important;max-width:100%!important}
+.product-title{overflow-wrap:anywhere}
+.real-product-image{width:100%!important;height:100%!important;max-width:100%!important;object-fit:cover}
+}
