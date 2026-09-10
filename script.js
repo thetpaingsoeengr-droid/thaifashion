@@ -42,6 +42,7 @@ let products = [];
 */
 let currentCategory = "Contact Lenses";
 let currentColor = "all";
+let currentPower = "";
 
 let cart = JSON.parse(
   localStorage.getItem("tfl_cart") || "[]"
@@ -120,6 +121,9 @@ const i18n = {
     colorFilterTitle:"Shop by color",
     clearColorBtn:"Clear",
     categoryFilterTitle:"Categories",
+    powerSearchLabel:"Find your power",
+    powerSearchHint:"Enter a lens power to show only lenses available in that power.",
+    powerSearchPlaceholder:"e.g. -1.00, -2.50, -4.50",
 
     stockIn:"In Stock",
     stockPre:"Pre-order",
@@ -203,6 +207,9 @@ const i18n = {
     colorFilterTitle:"အရောင်အလိုက် ရွေးရန်",
     clearColorBtn:"ရှင်းမည်",
     categoryFilterTitle:"အမျိုးအစားများ",
+    powerSearchLabel:"Power အလိုက်ရှာရန်",
+    powerSearchHint:"လိုချင်တဲ့ Power ကိုရိုက်ထည့်ပါ။ အဲဒီ Power ရှိတဲ့ Lens တွေပဲ ပြပါမယ်။",
+    powerSearchPlaceholder:"ဥပမာ -1.00, -2.50, -4.50",
 
     stockIn:"ပစ္စည်းအသင့်ရှိ",
     stockPre:"ကြိုတင်မှာယူ",
@@ -354,8 +361,70 @@ function localizedCategory(raw){
 
 
 /* =========================================
+   POWER SEARCH
+   Contact Lenses only
+========================================= */
+
+function normalizePowerSearch(value){
+  const raw = String(value ?? "").trim();
+
+  if(!raw) return "";
+
+  const cleaned = raw
+    .replace(/\s+/g, "")
+    .replace(",", ".");
+
+  const number = Number(cleaned);
+
+  if(!Number.isFinite(number)){
+    return cleaned;
+  }
+
+  if(number === 0){
+    return "0.00";
+  }
+
+  const signed =
+    number > 0
+      ? -number
+      : number;
+
+  return signed.toFixed(2);
+}
+
+function renderPowerSearchArea(){
+  const block = $("#powerSearchBlock");
+  const input = $("#powerSearchInput");
+  const clearBtn = $("#clearPowerBtn");
+
+  if(!block || !input) return;
+
+  const show =
+    currentCategory === "Contact Lenses";
+
+  block.classList.toggle(
+    "hidden",
+    !show
+  );
+
+  input.value =
+    currentPower;
+
+  input.placeholder =
+    tr().powerSearchPlaceholder;
+
+  if(clearBtn){
+    clearBtn.classList.toggle(
+      "hidden",
+      !currentPower
+    );
+  }
+}
+
+
+/* =========================================
    SEARCH + SORT
-   Search currently works on loaded products.
+   Products are already filtered by Firebase.
 ========================================= */
 
 function filteredProducts(){
@@ -402,7 +471,11 @@ function sendFiltersToFirebase(){
     color:
       currentCategory === "Contact Lenses"
         ? currentColor
-        : "all"
+        : "all",
+    power:
+      currentCategory === "Contact Lenses"
+        ? currentPower
+        : ""
   });
 }
 
@@ -481,9 +554,11 @@ function renderCategories(){
 
           if(currentCategory !== "Contact Lenses"){
             currentColor = "all";
+            currentPower = "";
           }
 
           renderCategories();
+          renderPowerSearchArea();
           renderColorArea();
           sendFiltersToFirebase();
         }
@@ -1489,6 +1564,8 @@ function setSiteLanguage(lang){
     "colorFilterTitle",
     "clearColorBtn",
     "categoryFilterTitle",
+    "powerSearchLabel",
+    "powerSearchHint",
     "howEyebrow",
     "howTitle",
     "step1Title",
@@ -1545,7 +1622,8 @@ function setSiteLanguage(lang){
     customerBuilding:t.buildingPlaceholder,
     customerStreet:t.streetPlaceholder,
     customerLandmark:t.landmarkPlaceholder,
-    customerNotes:t.notesPlaceholder
+    customerNotes:t.notesPlaceholder,
+    powerSearchInput:t.powerSearchPlaceholder
   };
 
   Object.entries(placeholders)
@@ -1570,6 +1648,7 @@ function setSiteLanguage(lang){
     });
 
   renderCategories();
+  renderPowerSearchArea();
   renderColorArea();
   renderProducts();
   renderCart();
@@ -1714,6 +1793,97 @@ document.addEventListener(
     }
   }
 );
+
+
+/* =========================================
+   POWER SEARCH EVENTS
+========================================= */
+
+const powerSearchInput =
+  $("#powerSearchInput");
+
+const clearPowerBtn =
+  $("#clearPowerBtn");
+
+let powerSearchTimer = null;
+
+if(powerSearchInput){
+  powerSearchInput.addEventListener(
+    "input",
+    ()=>{
+      window.clearTimeout(
+        powerSearchTimer
+      );
+
+      powerSearchTimer =
+        window.setTimeout(
+          ()=>{
+            const nextPower =
+              normalizePowerSearch(
+                powerSearchInput.value
+              );
+
+            if(
+              nextPower === currentPower
+            ){
+              return;
+            }
+
+            currentPower =
+              nextPower;
+
+            powerSearchInput.value =
+              currentPower;
+
+            renderPowerSearchArea();
+            sendFiltersToFirebase();
+          },
+          550
+        );
+    }
+  );
+
+  powerSearchInput.addEventListener(
+    "keydown",
+    e=>{
+      if(e.key !== "Enter") return;
+
+      e.preventDefault();
+
+      window.clearTimeout(
+        powerSearchTimer
+      );
+
+      currentPower =
+        normalizePowerSearch(
+          powerSearchInput.value
+        );
+
+      powerSearchInput.value =
+        currentPower;
+
+      renderPowerSearchArea();
+      sendFiltersToFirebase();
+    }
+  );
+}
+
+if(clearPowerBtn){
+  clearPowerBtn.addEventListener(
+    "click",
+    ()=>{
+      currentPower = "";
+
+      if(powerSearchInput){
+        powerSearchInput.value = "";
+        powerSearchInput.focus();
+      }
+
+      renderPowerSearchArea();
+      sendFiltersToFirebase();
+    }
+  );
+}
 
 
 /* =========================================

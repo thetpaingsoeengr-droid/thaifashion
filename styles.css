@@ -1382,3 +1382,105 @@ body:not(.alt-font){
 .product-title{overflow-wrap:anywhere}
 .real-product-image{width:100%!important;height:100%!important;max-width:100%!important;object-fit:cover}
 }
+
+
+/* ==========================================================
+   V40 POWER SEARCH
+   Visible only in Contact Lenses.
+========================================================== */
+
+.power-search-block{
+  margin:4px 0 12px;
+}
+
+.power-search-label{
+  display:block;
+  margin-bottom:8px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  color:var(--muted);
+}
+
+.power-search-box{
+  display:flex;
+  align-items:center;
+  width:100%;
+  min-height:46px;
+  padding:0 12px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+}
+
+.power-search-box:focus-within{
+  border-color:#171717;
+  box-shadow:inset 0 0 0 1px #171717;
+}
+
+.power-search-icon{
+  flex:none;
+  margin-right:8px;
+  font-size:20px;
+  line-height:1;
+  color:var(--muted);
+}
+
+.power-search-box input{
+  flex:1;
+  min-width:0;
+  width:100%;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--ink);
+  padding:11px 0;
+}
+
+.power-search-box input::placeholder{
+  color:#aaa39d;
+}
+
+.power-search-clear{
+  flex:none;
+  width:30px;
+  height:30px;
+  border:0;
+  border-radius:50%;
+  background:var(--soft);
+  color:var(--ink);
+  font-size:20px;
+  line-height:1;
+}
+
+.power-search-hint{
+  margin:6px 4px 0;
+  font-size:10px;
+  line-height:1.45;
+  color:var(--muted);
+}
+
+html[lang="my"] .power-search-label{
+  letter-spacing:0;
+  text-transform:none;
+}
+
+@media(max-width:600px){
+  .power-search-block{
+    margin-top:2px;
+    margin-bottom:10px;
+  }
+
+  .power-search-box{
+    min-height:44px;
+  }
+
+  .power-search-label{
+    font-size:11px;
+  }
+
+  .power-search-hint{
+    font-size:9px;
+  }
+}

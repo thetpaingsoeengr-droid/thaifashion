@@ -59,7 +59,8 @@ let hasMore = true;
 
 let activeFilters = {
   category: "Contact Lenses",
-  color: "all"
+  color: "all",
+  power: ""
 };
 
 
@@ -71,7 +72,8 @@ function getCacheKey(filters = activeFilters){
 
   return [
     filters.category || "Contact Lenses",
-    filters.color || "all"
+    filters.color || "all",
+    filters.power || ""
   ].join("::");
 }
 
@@ -369,6 +371,21 @@ function baseConstraints(){
   }
 
 
+  if(
+    activeFilters.category === "Contact Lenses" &&
+    activeFilters.power
+  ){
+
+    constraints.push(
+      where(
+        "powers",
+        "array-contains",
+        activeFilters.power
+      )
+    );
+  }
+
+
   return constraints;
 }
 
@@ -564,7 +581,7 @@ async function loadProducts(){
   }catch(error){
 
     console.error(
-      "Firestore category/color query failed:",
+      "Firestore category/color/power query failed:",
       error
     );
 
@@ -735,12 +752,25 @@ async function applyFilters(
       : "all";
 
 
+  const nextPower =
+    nextCategory === "Contact Lenses"
+      ? String(
+          filters.power ??
+          activeFilters.power ??
+          ""
+        ).trim()
+      : "";
+
+
   activeFilters = {
     category:
       nextCategory,
 
     color:
-      nextColor
+      nextColor,
+
+    power:
+      nextPower
   };
 
 
@@ -814,7 +844,11 @@ window.setFirebaseProductFilters =
 
       color:
         filters.color ??
-        activeFilters.color
+        activeFilters.color,
+
+      power:
+        filters.power ??
+        activeFilters.power
     });
   };
 
@@ -834,7 +868,10 @@ window.resetFirebaseProductFilters =
         "Contact Lenses",
 
       color:
-        "all"
+        "all",
+
+      power:
+        ""
     });
   };
 

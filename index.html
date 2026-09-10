@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=31" />
+  <link rel="stylesheet" href="styles.css?v=40" />
 </head>
 
 <body>
@@ -71,6 +71,38 @@
         </div>
         <div class="category-scroller compact-category-grid" id="categoryFilters"></div>
       </section>
+
+
+      <!-- POWER SEARCH: CONTACT LENSES ONLY -->
+      <div class="power-search-block" id="powerSearchBlock">
+        <label class="power-search-label" id="powerSearchLabel" for="powerSearchInput">
+          Find your power
+        </label>
+
+        <div class="power-search-box">
+          <span class="power-search-icon" aria-hidden="true">⌕</span>
+          <input
+            id="powerSearchInput"
+            type="text"
+            inputmode="decimal"
+            autocomplete="off"
+            placeholder="e.g. -1.00, -2.50, -4.50"
+            aria-label="Search contact lenses by power"
+          />
+          <button
+            type="button"
+            class="power-search-clear hidden"
+            id="clearPowerBtn"
+            aria-label="Clear power search"
+          >
+            ×
+          </button>
+        </div>
+
+        <p class="power-search-hint" id="powerSearchHint">
+          Enter a lens power to show only lenses available in that power.
+        </p>
+      </div>
 
 <!-- COLORS ONLY SHOW FOR CONTACT LENSES -->
       <div class="filter-block" id="colorFilterBlock">
@@ -311,8 +343,8 @@
   <div class="toast hidden" id="toast">Added to bag</div>
 
 
-  <script src="script.js?v=38"></script>
-  <script type="module" src="firebase-products.js?v=37"></script>
+  <script src="script.js?v=40"></script>
+  <script type="module" src="firebase-products.js?v=40"></script>
 
 </body>
 </html>
