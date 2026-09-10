@@ -864,6 +864,8 @@ function addToCart(){
       key,
       id:selectedProduct.id,
       name:selectedProduct.name,
+      brand:selectedProduct.brand || "",
+      size:selectedProduct.size || "",
       price:selectedProduct.price,
       qty,
       power,
@@ -1181,15 +1183,36 @@ function orderWhatsApp(){
 
   const lines =
     cart.map(
-      (x,i)=>
-        `${i+1}. ${x.name}` +
-        `${
-          x.power
-            ? ` | Power ${x.power}`
-            : ""
-        }` +
-        ` | Qty ${x.qty}` +
-        ` | ${money(x.price*x.qty)}`
+      (x,i)=>{
+
+        const liveProduct =
+          products.find(
+            p => String(p.id) === String(x.id)
+          );
+
+        const brand =
+          x.brand ||
+          liveProduct?.brand ||
+          "";
+
+        const size =
+          x.size ||
+          liveProduct?.size ||
+          "";
+
+        return (
+          `${i+1}. ${x.name}` +
+          `${brand ? ` | Brand: ${brand}` : ""}` +
+          `${size ? ` | Size: ${size}` : ""}` +
+          `${
+            x.power
+              ? ` | Power ${x.power}`
+              : ""
+          }` +
+          ` | Qty ${x.qty}` +
+          ` | ${money(x.price*x.qty)}`
+        );
+      }
     );
 
   const total =

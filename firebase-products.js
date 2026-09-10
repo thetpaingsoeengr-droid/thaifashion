@@ -230,6 +230,14 @@ function normalizeProduct(snap){
       d.nameMM ||
       "",
 
+    brand:
+      d.brand ||
+      "",
+
+    size:
+      d.size ||
+      "",
+
     price:
       Number(
         d.price || 0

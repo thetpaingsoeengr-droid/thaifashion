@@ -428,6 +428,10 @@ function payload(){
 
     nameMM:$("#pNameMM").value.trim(),
 
+    brand:$("#pBrand").value.trim(),
+
+    size:$("#pSize").value.trim(),
+
     price:Number($("#pPrice").value||0),
 
     category:$("#pCategory").value,
@@ -706,6 +710,8 @@ onSnapshot(
               AED ${Number(p.price||0).toFixed(0)}
               • ${stockText}
               • ${esc(p.colorKey||"")}
+              ${p.brand ? ` • ${esc(p.brand)}` : ""}
+              ${p.size ? ` • ${esc(p.size)}` : ""}
             </span>
 
             <small>
@@ -787,6 +793,10 @@ async function editProduct(id){
   $("#pName").value=p.name||"";
 
   $("#pNameMM").value=p.nameMM||"";
+
+  $("#pBrand").value=p.brand||"";
+
+  $("#pSize").value=p.size||"";
 
   $("#pPrice").value=p.price??0;
 
@@ -954,6 +964,10 @@ $("#importBtn").addEventListener(
             name:p.name||"",
 
             nameMM:p.nameMM||"",
+
+            brand:p.brand||"",
+
+            size:p.size||"",
 
             price:Number(p.price||0),
 
