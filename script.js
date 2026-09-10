@@ -1,3 +1,29 @@
+
+/* V34 product Brand + Size display */
+(function(){
+  if(document.getElementById("tfl-v34-product-details-style")) return;
+  const style = document.createElement("style");
+  style.id = "tfl-v34-product-details-style";
+  style.textContent = `
+    .product-details-mini{
+      display:flex;
+      flex-wrap:wrap;
+      gap:4px 10px;
+      margin-top:6px;
+      font-size:12px;
+      line-height:1.45;
+      color:#6f6964;
+    }
+    .product-details-mini span{
+      white-space:nowrap;
+    }
+    .modal-product-details{
+      color:#4f4a46;
+    }
+  `;
+  document.head.appendChild(style);
+})();
+
 const WHATSAPP_NUMBER = "971544608059";
 
 let products = [];
@@ -625,6 +651,17 @@ function renderProducts(){
             </div>
 
             ${
+              p.brand || p.size
+                ? `
+                  <div class="product-details-mini">
+                    ${p.brand ? `<span><strong>Brand:</strong> ${p.brand}</span>` : ""}
+                    ${p.size ? `<span><strong>Size:</strong> ${p.size}</span>` : ""}
+                  </div>
+                `
+                : ""
+            }
+
+            ${
               isPreorder
                 ? `
                   <div class="preorder-note">
@@ -739,6 +776,16 @@ function openProduct(id){
       ${stockText}
     </span>
     ${waitText}
+    ${
+      selectedProduct.brand || selectedProduct.size
+        ? `
+          <div class="modal-product-details" style="width:100%;margin-top:12px;font-size:14px;line-height:1.8;">
+            ${selectedProduct.brand ? `<div><strong>Brand:</strong> ${selectedProduct.brand}</div>` : ""}
+            ${selectedProduct.size ? `<div><strong>Size:</strong> ${selectedProduct.size}</div>` : ""}
+          </div>
+        `
+        : ""
+    }
   `;
 
   $("#modalDescription").textContent =
