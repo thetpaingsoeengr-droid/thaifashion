@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product • Thai Fashion Lenses</title>
+  <meta name="theme-color" content="#ffffff">
+  <link rel="stylesheet" href="product.css?v=42">
+</head>
+<body>
+  <header class="pd-header">
+    <a class="pd-back" href="index.html" aria-label="Back to shop">‹</a>
+    <a class="pd-brand" href="index.html">Thai Fashion Lenses ♡</a>
+    <div class="pd-actions">
+      <button id="pdLangBtn" class="pd-icon-btn" type="button" aria-label="Change language">က</button>
+      <a class="pd-cart-link" href="index.html?cart=open" aria-label="Shopping cart">
+        🛍
+        <span id="pdCartCount">0</span>
+      </a>
+    </div>
+  </header>
+
+  <main class="pd-shell">
+    <div id="pdLoading" class="pd-state">Loading product…</div>
+    <div id="pdError" class="pd-state pd-error hidden">
+      Product could not be found.
+      <a href="index.html">Back to shop</a>
+    </div>
+
+    <article id="pdProduct" class="pd-product hidden">
+      <section class="pd-gallery">
+        <div class="pd-main-image">
+          <img id="pdImage" alt="">
+          <span id="pdStockBadge" class="pd-stock-badge"></span>
+        </div>
+      </section>
+
+      <section class="pd-info">
+        <div id="pdCategory" class="pd-category"></div>
+        <h1 id="pdName"></h1>
+        <div id="pdPrice" class="pd-price"></div>
+
+        <div id="pdWait" class="pd-wait hidden"></div>
+
+        <div id="pdSpecs" class="pd-specs hidden"></div>
+
+        <section id="pdPowerSection" class="pd-option-section hidden">
+          <div class="pd-section-title" id="pdPowerTitle">Choose Power</div>
+          <div id="pdPowerOptions" class="pd-power-options"></div>
+        </section>
+
+        <div class="pd-qty-row">
+          <span id="pdQtyLabel">Quantity</span>
+          <div class="pd-qty-control">
+            <button id="pdMinus" type="button">−</button>
+            <input id="pdQty" type="number" min="1" value="1" inputmode="numeric">
+            <button id="pdPlus" type="button">+</button>
+          </div>
+        </div>
+
+        <button id="pdAddBtn" class="pd-add-btn" type="button">
+          Add to Bag
+        </button>
+
+        <a id="pdViewBag" class="pd-view-bag" href="index.html?cart=open">
+          View Bag
+        </a>
+
+        <section id="pdDescriptionSection" class="pd-description-section hidden">
+          <h2 id="pdDescriptionTitle">Description</h2>
+          <p id="pdDescription"></p>
+        </section>
+      </section>
+    </article>
+  </main>
+
+  <div id="pdToast" class="pd-toast hidden">Added to bag</div>
+
+  <script type="module" src="product.js?v=42"></script>
+</body>
+</html>

@@ -819,9 +819,10 @@ function renderProducts(){
 
       card.addEventListener(
         "click",
-        ()=>openProduct(
-          card.dataset.id
-        )
+        ()=>{
+          window.location.href =
+            `product.html?id=${encodeURIComponent(card.dataset.id)}`;
+        }
       );
 
     });
@@ -1962,3 +1963,7 @@ applySiteFontMode();
 setSiteLanguage(
   siteLang
 );
+
+window.addEventListener("load", openCartFromUrlIfRequested);
+
+window.addEventListener("load", openCartFromUrlIfRequested);
