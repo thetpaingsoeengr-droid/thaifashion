@@ -1484,3 +1484,52 @@ html[lang="my"] .power-search-label{
     font-size:9px;
   }
 }
+
+
+/* V41 - SHOW ALL AVAILABLE POWERS ON PRODUCT CARDS */
+.product-powers{
+  margin-top:8px;
+  width:100%;
+  min-width:0;
+}
+.product-powers-label{
+  margin-bottom:5px;
+  font-size:10px;
+  line-height:1.3;
+  font-weight:800;
+  color:var(--muted);
+}
+.product-power-chips{
+  display:flex;
+  flex-wrap:wrap;
+  gap:4px;
+  width:100%;
+  min-width:0;
+}
+.product-power-chip{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-height:24px;
+  padding:3px 7px;
+  border:1px solid var(--line);
+  border-radius:999px;
+  background:#fff;
+  color:var(--ink);
+  font-size:10px;
+  line-height:1;
+  white-space:nowrap;
+}
+html[lang="my"] .product-powers-label{
+  font-weight:700;
+}
+@media(max-width:600px){
+  .product-powers{ margin-top:7px; }
+  .product-powers-label{ font-size:9px; }
+  .product-power-chips{ gap:3px; }
+  .product-power-chip{
+    min-height:22px;
+    padding:3px 6px;
+    font-size:9px;
+  }
+}

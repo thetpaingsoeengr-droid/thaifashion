@@ -773,6 +773,23 @@ function renderProducts(){
             }
 
             ${
+              Array.isArray(p.powers) && p.powers.length
+                ? `
+                  <div class="product-powers">
+                    <div class="product-powers-label">
+                      ${siteLang === "mm" ? "ရနိုင်သော Power" : "Available Power"}
+                    </div>
+                    <div class="product-power-chips">
+                      ${p.powers.map(power => `
+                        <span class="product-power-chip">${power}</span>
+                      `).join("")}
+                    </div>
+                  </div>
+                `
+                : ""
+            }
+
+            ${
               isPreorder
                 ? `
                   <div class="preorder-note">
