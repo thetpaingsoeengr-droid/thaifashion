@@ -696,7 +696,7 @@ function renderProducts(){
 
       return `
         <article
-          class="product-card"
+          class="product-card rounded-product-card"
           data-id="${p.id}"
         >
 
