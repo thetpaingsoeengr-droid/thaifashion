@@ -30,7 +30,23 @@ const text = {
     description:"Description",
     viewBag:"View Bag",
     added:"Added to bag",
-    wait:"Waiting period"
+    wait:"Waiting period",
+    wishlistAdd:"Add to Wishlist",
+    wishlistRemove:"Remove from Wishlist",
+    share:"Share",
+    copied:"Link copied",
+    lensCare:"Complete Your Lens Care",
+    addQuick:"Add to Bag",
+    quoteTitle:"Look Good, Feel Confident",
+    quoteText:"Small change, a brighter you ✨",
+    originalTitle:"100% Original Products",
+    originalText:"Sourced from trusted brands",
+    deliveryTitle:"Fast Delivery Across UAE",
+    deliveryText:"Cash on Delivery Available",
+    secureTitle:"Secure Shopping",
+    secureText:"Your data is safe with us",
+    trustedTitle:"Trusted by Customers",
+    trustedText:"Simple shopping, friendly support"
   },
   mm:{
     choosePower:"Power ရွေးပါ",
@@ -42,7 +58,23 @@ const text = {
     description:"အသေးစိတ်ဖော်ပြချက်",
     viewBag:"Bag ကြည့်မည်",
     added:"Bag ထဲထည့်ပြီးပါပြီ",
-    wait:"စောင့်ဆိုင်းချိန်"
+    wait:"စောင့်ဆိုင်းချိန်",
+    wishlistAdd:"Wishlist ထဲထည့်မည်",
+    wishlistRemove:"Wishlist မှဖယ်မည်",
+    share:"Share",
+    copied:"Link ကူးပြီးပါပြီ",
+    lensCare:"Lens Care ပစ္စည်းများ",
+    addQuick:"Bag ထဲထည့်မည်",
+    quoteTitle:"လှပမှုနဲ့ ယုံကြည်မှု",
+    quoteText:"အသေးစားပြောင်းလဲမှုက ပိုလင်းလက်တဲ့သင် ✨",
+    originalTitle:"မူရင်းပစ္စည်းများ",
+    originalText:"ယုံကြည်ရသော brand များမှ",
+    deliveryTitle:"UAE အတွင်း မြန်ဆန်စွာပို့ဆောင်မှု",
+    deliveryText:"Cash on Delivery ရရှိနိုင်",
+    secureTitle:"လုံခြုံသော Shopping",
+    secureText:"သင့်အချက်အလက်များကို လုံခြုံစွာထိန်းသိမ်းထားသည်",
+    trustedTitle:"Customer များယုံကြည်ရွေးချယ်",
+    trustedText:"လွယ်ကူသော shopping နှင့် friendly support"
   }
 };
 
@@ -89,11 +121,28 @@ function applyLanguage(){
   $("#pdQtyLabel").textContent = t().quantity;
   $("#pdViewBag").textContent = t().viewBag;
   $("#pdDescriptionTitle").textContent = t().description;
+  $("#pdShareText").textContent = t().share;
+  $("#pdLensCareTitle").textContent = t().lensCare;
+  $("#pdQuoteTitle").textContent = t().quoteTitle;
+  $("#pdQuoteText").textContent = t().quoteText;
+  $("#pdTrustOriginalTitle").textContent = t().originalTitle;
+  $("#pdTrustOriginalText").textContent = t().originalText;
+  $("#pdTrustDeliveryTitle").textContent = t().deliveryTitle;
+  $("#pdTrustDeliveryText").textContent = t().deliveryText;
+  $("#pdTrustSecureTitle").textContent = t().secureTitle;
+  $("#pdTrustSecureText").textContent = t().secureText;
+  $("#pdTrustTrustedTitle").textContent = t().trustedTitle;
+  $("#pdTrustTrustedText").textContent = t().trustedText;
+  updateWishlistButton();
   if(product){
     renderProduct();
     const recSection = $("#pdRecommendations");
     if(recSection && !recSection.classList.contains("hidden")){
       loadRecommendations();
+    }
+    const careSection = $("#pdLensCare");
+    if(careSection && !careSection.classList.contains("hidden")){
+      loadLensCare();
     }
   }
 }
@@ -161,6 +210,119 @@ function renderProduct(){
   const add = $("#pdAddBtn");
   add.disabled = isOut;
   add.textContent = isOut ? t().out : t().add;
+}
+
+
+function getWishlist(){
+  try{
+    const data = JSON.parse(localStorage.getItem("tfl_wishlist") || "[]");
+    return Array.isArray(data) ? data : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function isWishlisted(id){
+  return getWishlist().some(x=>x.id === id);
+}
+
+function updateWishlistButton(){
+  const btn = $("#pdWishlistBtn");
+  const icon = $("#pdWishlistIcon");
+  const label = $("#pdWishlistText");
+  if(!btn || !icon || !label) return;
+
+  const active = !!product && isWishlisted(product.id);
+  btn.classList.toggle("active", active);
+  icon.textContent = active ? "♥" : "♡";
+  label.textContent = active ? t().wishlistRemove : t().wishlistAdd;
+}
+
+function toggleWishlist(){
+  if(!product) return;
+  let list = getWishlist();
+  const idx = list.findIndex(x=>x.id === product.id);
+
+  if(idx >= 0){
+    list.splice(idx,1);
+  }else{
+    list.push({
+      id:product.id,
+      name:product.name,
+      nameMM:product.nameMM || "",
+      brand:product.brand || "",
+      price:product.price,
+      image:product.image || ""
+    });
+  }
+
+  localStorage.setItem("tfl_wishlist", JSON.stringify(list));
+  updateWishlistButton();
+}
+
+async function shareProduct(){
+  if(!product) return;
+
+  const shareData = {
+    title: product.name,
+    text: `${product.name} - ${money(product.price)}`,
+    url: window.location.href
+  };
+
+  try{
+    if(navigator.share){
+      await navigator.share(shareData);
+      return;
+    }
+
+    await navigator.clipboard.writeText(window.location.href);
+    $("#pdToast").textContent = t().copied;
+    $("#pdToast").classList.remove("hidden");
+    setTimeout(()=>$("#pdToast").classList.add("hidden"),1600);
+  }catch(err){
+    if(err && err.name === "AbortError") return;
+
+    try{
+      await navigator.clipboard.writeText(window.location.href);
+      $("#pdToast").textContent = t().copied;
+      $("#pdToast").classList.remove("hidden");
+      setTimeout(()=>$("#pdToast").classList.add("hidden"),1600);
+    }catch(e){
+      console.error("Share failed:", e);
+    }
+  }
+}
+
+function addSimpleProductToBag(p){
+  if(!p || p.stockStatus === "outofstock") return;
+
+  const key = `${p.id}-na`;
+  let cart = [];
+  try{ cart = JSON.parse(localStorage.getItem("tfl_cart") || "[]"); }catch(e){}
+
+  const existing = cart.find(x=>x.key === key);
+  if(existing){
+    existing.qty += 1;
+  }else{
+    cart.push({
+      key,
+      id:p.id,
+      name:p.name,
+      brand:p.brand || "",
+      size:p.size || "",
+      price:p.price,
+      qty:1,
+      power:null,
+      image:p.image || null
+    });
+  }
+
+  localStorage.setItem("tfl_cart", JSON.stringify(cart));
+  updateCartCount();
+
+  $("#pdToast").textContent = t().added;
+  $("#pdToast").classList.remove("hidden");
+  setTimeout(()=>$("#pdToast").classList.add("hidden"),1600);
 }
 
 function addToBag(){
@@ -280,6 +442,69 @@ async function loadRecommendations(){
   }
 }
 
+
+function lensCareCard(p){
+  const name = lang === "mm" && p.nameMM ? p.nameMM : p.name;
+  const isOut = p.stockStatus === "outofstock";
+
+  return `
+    <article class="pd-care-card">
+      <a href="product.html?id=${encodeURIComponent(p.id)}" aria-label="${name}">
+        <div class="pd-care-image">
+          ${p.image ? `<img src="${p.image}" alt="${name}" loading="lazy" decoding="async">` : ""}
+        </div>
+      </a>
+      <div class="pd-care-body">
+        <div class="pd-care-name">${name}</div>
+        <div class="pd-care-price">${money(p.price)}</div>
+        <button class="pd-care-add"
+                type="button"
+                data-care-id="${p.id}"
+                ${isOut ? "disabled" : ""}>
+          ${isOut ? t().out : t().addQuick}
+        </button>
+      </div>
+    </article>
+  `;
+}
+
+async function loadLensCare(){
+  const section = $("#pdLensCare");
+  const track = $("#pdLensCareTrack");
+
+  try{
+    const q = query(
+      collection(db,"products"),
+      where("category","==","Accessories"),
+      limit(8)
+    );
+
+    const snap = await getDocs(q);
+    const items = snap.docs
+      .map(s=>normalizeProduct(s.id,s.data()))
+      .filter(p=>p.id !== (product ? product.id : ""))
+      .slice(0,6);
+
+    if(!items.length){
+      section.classList.add("hidden");
+      return;
+    }
+
+    track.innerHTML = items.map(lensCareCard).join("");
+    section.classList.remove("hidden");
+
+    track.querySelectorAll(".pd-care-add").forEach(btn=>{
+      btn.addEventListener("click", ()=>{
+        const p = items.find(x=>x.id === btn.dataset.careId);
+        addSimpleProductToBag(p);
+      });
+    });
+  }catch(err){
+    console.error("Lens care:",err);
+    section.classList.add("hidden");
+  }
+}
+
 async function loadProduct(){
   const id = new URLSearchParams(location.search).get("id");
   if(!id){
@@ -296,7 +521,9 @@ async function loadProduct(){
     $("#pdLoading").classList.add("hidden");
     $("#pdProduct").classList.remove("hidden");
     renderProduct();
+    updateWishlistButton();
     await loadRecommendations();
+    await loadLensCare();
   }catch(err){
     console.error(err);
     $("#pdLoading").classList.add("hidden");
@@ -316,6 +543,8 @@ $("#pdPlus").addEventListener("click", ()=>{
   $("#pdQty").value = Math.max(1,(parseInt($("#pdQty").value)||1)+1);
 });
 $("#pdAddBtn").addEventListener("click",addToBag);
+$("#pdWishlistBtn").addEventListener("click",toggleWishlist);
+$("#pdShareBtn").addEventListener("click",shareProduct);
 
 updateCartCount();
 applyLanguage();

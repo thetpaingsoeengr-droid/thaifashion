@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Product • Thai Fashion Lenses</title>
   <meta name="theme-color" content="#ffffff">
-  <link rel="stylesheet" href="product.css?v=44">
+  <link rel="stylesheet" href="product.css?v=48">
 </head>
 <body>
   <header class="pd-header">
@@ -66,6 +66,17 @@
           View Bag
         </a>
 
+        <div class="pd-social-actions">
+          <button id="pdWishlistBtn" class="pd-social-btn" type="button">
+            <span id="pdWishlistIcon">♡</span>
+            <span id="pdWishlistText">Add to Wishlist</span>
+          </button>
+          <button id="pdShareBtn" class="pd-social-btn" type="button">
+            <span>↗</span>
+            <span id="pdShareText">Share</span>
+          </button>
+        </div>
+
         <section id="pdDescriptionSection" class="pd-description-section hidden">
           <h2 id="pdDescriptionTitle">Description</h2>
           <p id="pdDescription"></p>
@@ -79,10 +90,56 @@
       </div>
       <div id="pdRecommendationsTrack" class="pd-recommendations-track"></div>
     </section>
+
+    <section id="pdLensCare" class="pd-lens-care hidden">
+      <div class="pd-section-row">
+        <h2 id="pdLensCareTitle">Complete Your Lens Care</h2>
+      </div>
+      <div id="pdLensCareTrack" class="pd-lens-care-track"></div>
+    </section>
+
+    <section class="pd-quote-card">
+      <div class="pd-quote-icon">♡</div>
+      <div>
+        <strong id="pdQuoteTitle">Look Good, Feel Confident</strong>
+        <p id="pdQuoteText">Small change, a brighter you ✨</p>
+      </div>
+    </section>
+
+    <section class="pd-trust-card">
+      <div class="pd-trust-item">
+        <div class="pd-trust-icon">◇</div>
+        <div>
+          <strong id="pdTrustOriginalTitle">100% Original Products</strong>
+          <span id="pdTrustOriginalText">Sourced from trusted brands</span>
+        </div>
+      </div>
+      <div class="pd-trust-item">
+        <div class="pd-trust-icon">▱</div>
+        <div>
+          <strong id="pdTrustDeliveryTitle">Fast Delivery Across UAE</strong>
+          <span id="pdTrustDeliveryText">Cash on Delivery Available</span>
+        </div>
+      </div>
+      <div class="pd-trust-item">
+        <div class="pd-trust-icon">✓</div>
+        <div>
+          <strong id="pdTrustSecureTitle">Secure Shopping</strong>
+          <span id="pdTrustSecureText">Your data is safe with us</span>
+        </div>
+      </div>
+      <div class="pd-trust-item">
+        <div class="pd-trust-icon">♡</div>
+        <div>
+          <strong id="pdTrustTrustedTitle">Trusted by Customers</strong>
+          <span id="pdTrustTrustedText">Simple shopping, friendly support</span>
+        </div>
+      </div>
+    </section>
   </main>
 
   <div id="pdToast" class="pd-toast hidden">Added to bag</div>
 
-  <script type="module" src="product.js?v=44"></script>
+  <script type="module" src="product.js?v=48"></script>
 </body>
 </html>
