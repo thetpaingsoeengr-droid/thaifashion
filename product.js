@@ -1,5 +1,5 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
-import { getFirestore, doc, getDoc } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
+import { getFirestore, doc, getDoc, collection, query, where, limit, getDocs } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAzEoJkHMqML0nWw9GPkCVKQt8cFnaNjYo",
@@ -67,6 +67,7 @@ function normalizeProduct(id,d){
     size:d.size || "",
     price:Number(d.price || 0),
     category:d.category || "Contact Lenses",
+    colorKey:d.colorKey || d.colour || d.color || "",
     stockStatus:d.stockStatus || "instock",
     waitingPeriod:d.waitingPeriod || "",
     image:String(d.imageUrl || d.imageURL || d.image || "").trim(),
@@ -88,7 +89,13 @@ function applyLanguage(){
   $("#pdQtyLabel").textContent = t().quantity;
   $("#pdViewBag").textContent = t().viewBag;
   $("#pdDescriptionTitle").textContent = t().description;
-  if(product) renderProduct();
+  if(product){
+    renderProduct();
+    const recSection = $("#pdRecommendations");
+    if(recSection && !recSection.classList.contains("hidden")){
+      loadRecommendations();
+    }
+  }
 }
 
 function renderProduct(){
@@ -191,6 +198,88 @@ function addToBag(){
   setTimeout(()=>$("#pdToast").classList.add("hidden"),1800);
 }
 
+
+function recommendationTitle(){
+  return product && product.category === "Contact Lenses"
+    ? (lang === "mm" ? "နောက်ထပ် အရောင်များ" : "Explore More Colours")
+    : (lang === "mm" ? "နောက်ထပ် ပစ္စည်းများ" : "Explore More Products");
+}
+
+function recommendationCard(p){
+  const name = lang === "mm" && p.nameMM ? p.nameMM : p.name;
+  const stockText =
+    p.stockStatus === "outofstock" ? t().out :
+    p.stockStatus === "preorder" ? t().pre :
+    t().in;
+
+  return `
+    <a class="pd-rec-card" href="product.html?id=${encodeURIComponent(p.id)}">
+      <div class="pd-rec-image">
+        ${p.image ? `<img src="${p.image}" alt="${name}" loading="lazy" decoding="async">` : ""}
+        <span class="pd-rec-stock">${stockText}</span>
+      </div>
+      <div class="pd-rec-body">
+        <div class="pd-rec-brand">${p.brand || "&nbsp;"}</div>
+        <div class="pd-rec-name">${name}</div>
+        <div class="pd-rec-price">${money(p.price)}</div>
+        ${
+          product.category === "Contact Lenses" && p.colorKey
+            ? `<div class="pd-rec-colour">${p.colorKey}</div>`
+            : ""
+        }
+      </div>
+    </a>
+  `;
+}
+
+async function loadRecommendations(){
+  const section = $("#pdRecommendations");
+  const track = $("#pdRecommendationsTrack");
+
+  if(!product){
+    section.classList.add("hidden");
+    return;
+  }
+
+  try{
+    // Same-category only. Fetch a few extra so current product can be removed
+    // and Contact Lenses can prioritize different colours.
+    const q = query(
+      collection(db,"products"),
+      where("category","==",product.category),
+      limit(12)
+    );
+
+    const snap = await getDocs(q);
+    let items = snap.docs
+      .map(s=>normalizeProduct(s.id,s.data()))
+      .filter(p=>p.id !== product.id);
+
+    if(product.category === "Contact Lenses"){
+      // Prioritize products whose colour differs from the current lens.
+      items.sort((a,b)=>{
+        const aDifferent = a.colorKey && a.colorKey !== product.colorKey ? 0 : 1;
+        const bDifferent = b.colorKey && b.colorKey !== product.colorKey ? 0 : 1;
+        return aDifferent - bDifferent;
+      });
+    }
+
+    items = items.slice(0,6);
+
+    if(!items.length){
+      section.classList.add("hidden");
+      return;
+    }
+
+    $("#pdRecommendationsTitle").textContent = recommendationTitle();
+    track.innerHTML = items.map(recommendationCard).join("");
+    section.classList.remove("hidden");
+  }catch(err){
+    console.error("Recommendations:",err);
+    section.classList.add("hidden");
+  }
+}
+
 async function loadProduct(){
   const id = new URLSearchParams(location.search).get("id");
   if(!id){
@@ -207,6 +296,7 @@ async function loadProduct(){
     $("#pdLoading").classList.add("hidden");
     $("#pdProduct").classList.remove("hidden");
     renderProduct();
+    await loadRecommendations();
   }catch(err){
     console.error(err);
     $("#pdLoading").classList.add("hidden");
