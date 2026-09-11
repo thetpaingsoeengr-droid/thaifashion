@@ -1964,6 +1964,27 @@ setSiteLanguage(
   siteLang
 );
 
-window.addEventListener("load", openCartFromUrlIfRequested);
+
+/* =========================================
+   V43 - OPEN CART AFTER RETURN FROM PRODUCT
+========================================= */
+function openCartFromUrlIfRequested(){
+  const params = new URLSearchParams(window.location.search);
+
+  if(params.get("cart") !== "open"){
+    return;
+  }
+
+  window.setTimeout(()=>{
+    openCart();
+
+    const cleanUrl =
+      window.location.pathname +
+      window.location.hash;
+
+    window.history.replaceState({}, "", cleanUrl);
+  }, 120);
+}
 
 window.addEventListener("load", openCartFromUrlIfRequested);
+
