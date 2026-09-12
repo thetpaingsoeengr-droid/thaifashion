@@ -26,7 +26,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=55" />
+  <link rel="stylesheet" href="styles.css?v=56" />
 </head>
 
 <body>
@@ -295,7 +295,7 @@
       </div>
 
       <p class="shipping-note" id="deliveryInstruction">
-        Please add your delivery details before ordering.
+        Name and phone number are required. Other delivery details are optional.
       </p>
 
 
@@ -312,7 +312,7 @@
         </label>
 
         <label>
-          <span id="emirateLabel">Emirate *</span>
+          <span id="emirateLabel">Emirate</span>
 
           <select id="customerEmirate">
             <option id="selectEmirateOption" value="">Select emirate</option>
@@ -327,12 +327,12 @@
         </label>
 
         <label>
-          <span id="areaLabel">Area / Community *</span>
+          <span id="areaLabel">Area / Community</span>
           <input id="customerArea" type="text" placeholder="e.g. Muwaileh, Al Nahda" />
         </label>
 
         <label>
-          <span id="buildingLabel">Building / Villa *</span>
+          <span id="buildingLabel">Building / Villa</span>
           <input id="customerBuilding" type="text" placeholder="Building name / Villa no." />
         </label>
 
@@ -352,7 +352,7 @@
         </label>
 
         <p class="form-error hidden" id="addressError">
-          Please complete all required (*) delivery fields.
+          Please enter your full name and phone number.
         </p>
 
       </div>
@@ -370,8 +370,8 @@
   <div class="toast hidden" id="toast">Added to bag</div>
 
 
-  <script src="script.js?v=55"></script>
-  <script type="module" src="firebase-products.js?v=55"></script>
+  <script src="script.js?v=56"></script>
+  <script type="module" src="firebase-products.js?v=56"></script>
 
 </body>
 </html>

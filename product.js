@@ -225,7 +225,12 @@ function normalizeProduct(id,d){
 
 function updateCartCount(){
   let cart = [];
-  try{ cart = JSON.parse(localStorage.getItem("tfl_cart") || "[]"); }catch(e){}
+  try{
+    const parsed = JSON.parse(safeLocalGet("tfl_cart", "[]") || "[]");
+    cart = Array.isArray(parsed) ? parsed : [];
+  }catch(e){
+    cart = [];
+  }
   $("#pdCartCount").textContent = cart.reduce((n,x)=>n+(Number(x.qty)||0),0);
 }
 
@@ -294,7 +299,7 @@ function renderProduct(){
   thumbs.querySelectorAll(".pd-thumb").forEach(btn=>{
     btn.addEventListener("click",()=>{
       const index = Number(btn.dataset.imageIndex || 0);
-      img.src = galleryImages[index];
+      img.src = optimizeCloudinaryImage(galleryImages[index], 1200);
       thumbs.querySelectorAll(".pd-thumb").forEach(x=>x.classList.remove("active"));
       btn.classList.add("active");
     });
@@ -443,7 +448,12 @@ function addSimpleProductToBag(p){
 
   const key = `${p.id}-na`;
   let cart = [];
-  try{ cart = JSON.parse(localStorage.getItem("tfl_cart") || "[]"); }catch(e){}
+  try{
+    const parsed = JSON.parse(safeLocalGet("tfl_cart", "[]") || "[]");
+    cart = Array.isArray(parsed) ? parsed : [];
+  }catch(e){
+    cart = [];
+  }
 
   const existing = cart.find(x=>x.key === key);
   if(existing){
@@ -478,7 +488,12 @@ function addToBag(){
   const key = `${product.id}-${power || "na"}`;
 
   let cart = [];
-  try{ cart = JSON.parse(localStorage.getItem("tfl_cart") || "[]"); }catch(e){}
+  try{
+    const parsed = JSON.parse(safeLocalGet("tfl_cart", "[]") || "[]");
+    cart = Array.isArray(parsed) ? parsed : [];
+  }catch(e){
+    cart = [];
+  }
 
   const existing = cart.find(x=>x.key === key);
   if(existing){
@@ -524,7 +539,7 @@ function recommendationCard(p){
     <article class="pd-rec-card">
       <a class="pd-rec-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="${name}">
         <div class="pd-rec-image">
-          ${p.image ? `<img src="${p.image}" alt="${name}" loading="lazy" decoding="async">` : ""}
+          ${p.image ? `<img src="${optimizeCloudinaryImage(p.image, 520)}" alt="${name}" loading="lazy" decoding="async">` : ""}
           <span class="pd-rec-stock">${stockText}</span>
         </div>
         <div class="pd-rec-body">
@@ -629,7 +644,7 @@ function lensCareCard(p){
     <article class="pd-care-card">
       <a href="product.html?id=${encodeURIComponent(p.id)}" aria-label="${name}">
         <div class="pd-care-image">
-          ${p.image ? `<img src="${p.image}" alt="${name}" loading="lazy" decoding="async">` : ""}
+          ${p.image ? `<img src="${optimizeCloudinaryImage(p.image, 520)}" alt="${name}" loading="lazy" decoding="async">` : ""}
         </div>
       </a>
       <div class="pd-care-body">

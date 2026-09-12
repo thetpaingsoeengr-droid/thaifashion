@@ -65,9 +65,14 @@ let currentCategory = "Contact Lenses";
 let currentColor = "all";
 let currentPower = "";
 
-let cart = JSON.parse(
-  localStorage.getItem("tfl_cart") || "[]"
-);
+let cart = (() => {
+  try{
+    const parsed = JSON.parse(safeLocalGet("tfl_cart", "[]") || "[]");
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(e){
+    return [];
+  }
+})();
 
 let selectedProduct = null;
 
@@ -1099,7 +1104,7 @@ function addToCart(){
 
 
 function saveCart(){
-  localStorage.setItem(
+  safeLocalSet(
     "tfl_cart",
     JSON.stringify(cart)
   );
@@ -1616,7 +1621,7 @@ function setSiteLanguage(lang){
       ? "mm"
       : "en";
 
-  localStorage.setItem(
+  safeLocalSet(
     "tfl_language",
     siteLang
   );

@@ -1,0 +1,27 @@
+Thai Fashion Lenses v56 - Customer Flow QA
+
+Automated checks:
+[PASS] Name and phone are the only required checkout fields
+[PASS] WhatsApp checkout number present
+[PASS] WhatsApp order includes quantity
+[PASS] Power search uses Firestore array-contains
+[PASS] Load More remains wired
+[PASS] Out-of-stock Add to Bag is disabled on product detail
+[PASS] Wishlist page and header remain present
+[PASS] Product detail returns to cart flow
+[PASS] Cart storage is protected from malformed localStorage
+[PASS] Cloudinary optimized image delivery retained
+[PASS] script.js syntax
+[PASS] wishlist.js syntax
+[PASS] admin.js syntax
+[PASS] firebase-products.js syntax
+[PASS] product.js syntax
+
+Manual browser checks still recommended after GitHub upload:
+- Contact Lenses / Accessories / Beauty category switch
+- Color + power filter with real Firestore products
+- Product 2-image gallery
+- Wishlist add/remove
+- Add to Bag and quantity changes
+- Name + phone only WhatsApp checkout
+- English/Myanmar switch on phone
