@@ -1,4 +1,25 @@
 
+/* V55 - safe local storage helpers */
+function safeLocalGet(key, fallback = null){
+  try{
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : value;
+  }catch(e){
+    console.warn("Local storage read failed:", key);
+    return fallback;
+  }
+}
+function safeLocalSet(key, value){
+  try{
+    localStorage.setItem(key, value);
+    return true;
+  }catch(e){
+    console.warn("Local storage write failed:", key);
+    return false;
+  }
+}
+
+
 /* V36 Brand + Size customer display */
 (function(){
   if(document.getElementById("tfl-v36-brand-size-style")) return;
@@ -1965,6 +1986,22 @@ if(clearColorBtn){
 
 
 
+
+/* V55 - Cloudinary delivery optimization */
+function optimizeCloudinaryImage(url, width = 700){
+  if(!url || typeof url !== "string") return url || "";
+  if(!url.includes("res.cloudinary.com/") || !url.includes("/image/upload/")) return url;
+
+  const safeWidth = Math.max(160, Math.min(Number(width) || 700, 1600));
+  if(url.includes("/image/upload/f_auto,q_auto")) return url;
+
+  return url.replace(
+    "/image/upload/",
+    `/image/upload/f_auto,q_auto,c_limit,w_${safeWidth}/`
+  );
+}
+
+
 /* =========================================
    V53 - WISHLIST HEADER COUNT
 ========================================= */
@@ -2076,3 +2113,21 @@ function openCartFromUrlIfRequested(){
 
 window.addEventListener("load", openCartFromUrlIfRequested);
 
+
+
+/* V55 - graceful broken-image fallback */
+function installImageFallbacks(root = document){
+  root.querySelectorAll("img").forEach(img=>{
+    if(img.dataset.fallbackReady) return;
+    img.dataset.fallbackReady = "1";
+    img.addEventListener("error", ()=>{
+      img.classList.add("image-load-failed");
+      img.removeAttribute("src");
+      img.alt = img.alt || "Product image unavailable";
+    }, {once:true});
+  });
+}
+
+const v55ImageObserver = new MutationObserver(()=>installImageFallbacks());
+v55ImageObserver.observe(document.documentElement,{childList:true,subtree:true});
+window.addEventListener("DOMContentLoaded",()=>installImageFallbacks());

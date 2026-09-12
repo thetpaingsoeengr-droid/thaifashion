@@ -558,3 +558,12 @@ body{
   color:#fff;
   font-size:10px;
 }
+
+
+/* V55 - reliability states */
+img.image-load-failed{
+  background:
+    linear-gradient(135deg,#f7f4f2 25%,#fbfaf9 25%,#fbfaf9 50%,#f7f4f2 50%,#f7f4f2 75%,#fbfaf9 75%);
+  background-size:18px 18px;
+  min-height:120px;
+}

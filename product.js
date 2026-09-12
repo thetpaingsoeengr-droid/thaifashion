@@ -1,3 +1,24 @@
+
+/* V55 - safe local storage helpers */
+function safeLocalGet(key, fallback = null){
+  try{
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : value;
+  }catch(e){
+    console.warn("Local storage read failed:", key);
+    return fallback;
+  }
+}
+function safeLocalSet(key, value){
+  try{
+    localStorage.setItem(key, value);
+    return true;
+  }catch(e){
+    console.warn("Local storage write failed:", key);
+    return false;
+  }
+}
+
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-app.js";
 import { getFirestore, doc, getDoc, collection, query, where, limit, getDocs } from "https://www.gstatic.com/firebasejs/12.18.0/firebase-firestore.js";
 
@@ -108,6 +129,22 @@ function setCartReturnLinks(){
 
 
 
+
+/* V55 - Cloudinary delivery optimization */
+function optimizeCloudinaryImage(url, width = 700){
+  if(!url || typeof url !== "string") return url || "";
+  if(!url.includes("res.cloudinary.com/") || !url.includes("/image/upload/")) return url;
+
+  const safeWidth = Math.max(160, Math.min(Number(width) || 700, 1600));
+  if(url.includes("/image/upload/f_auto,q_auto")) return url;
+
+  return url.replace(
+    "/image/upload/",
+    `/image/upload/f_auto,q_auto,c_limit,w_${safeWidth}/`
+  );
+}
+
+
 /* V54 - Dynamic product SEO/social metadata */
 function setMetaTag(selector, key, value){
   let el = document.querySelector(selector);
@@ -143,8 +180,8 @@ function updateProductSeo(p){
 
   const image = String(p.image || "").trim();
   if(image){
-    setMetaTag('meta[property="og:image"]', "content", image);
-    setMetaTag('meta[name="twitter:image"]', "content", image);
+    setMetaTag('meta[property="og:image"]', "content", optimizeCloudinaryImage(image, 1200));
+    setMetaTag('meta[name="twitter:image"]', "content", optimizeCloudinaryImage(image, 1200));
   }
 
   setMetaTag('meta[property="og:url"]', "content", window.location.href);
@@ -363,7 +400,7 @@ function toggleWishlist(){
     });
   }
 
-  localStorage.setItem("tfl_wishlist", JSON.stringify(list));
+  safeLocalSet("tfl_wishlist", JSON.stringify(list));
   updateWishlistButton();
   updateWishlistCount();
 }
@@ -425,7 +462,7 @@ function addSimpleProductToBag(p){
     });
   }
 
-  localStorage.setItem("tfl_cart", JSON.stringify(cart));
+  safeLocalSet("tfl_cart", JSON.stringify(cart));
   updateCartCount();
 
   $("#pdToast").textContent = t().added;
@@ -460,7 +497,7 @@ function addToBag(){
     });
   }
 
-  localStorage.setItem("tfl_cart", JSON.stringify(cart));
+  safeLocalSet("tfl_cart", JSON.stringify(cart));
   updateCartCount();
 
   $("#pdToast").textContent = t().added;
@@ -705,3 +742,21 @@ window.addEventListener("storage", event=>{
   }
 });
 updateWishlistCount();
+
+
+/* V55 - graceful broken-image fallback */
+function installImageFallbacks(root = document){
+  root.querySelectorAll("img").forEach(img=>{
+    if(img.dataset.fallbackReady) return;
+    img.dataset.fallbackReady = "1";
+    img.addEventListener("error", ()=>{
+      img.classList.add("image-load-failed");
+      img.removeAttribute("src");
+      img.alt = img.alt || "Product image unavailable";
+    }, {once:true});
+  });
+}
+
+const v55ProductImageObserver = new MutationObserver(()=>installImageFallbacks());
+v55ProductImageObserver.observe(document.documentElement,{childList:true,subtree:true});
+window.addEventListener("DOMContentLoaded",()=>installImageFallbacks());

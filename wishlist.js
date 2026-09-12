@@ -1,3 +1,40 @@
+
+/* V55 - safe local storage helpers */
+function safeLocalGet(key, fallback = null){
+  try{
+    const value = localStorage.getItem(key);
+    return value === null ? fallback : value;
+  }catch(e){
+    console.warn("Local storage read failed:", key);
+    return fallback;
+  }
+}
+function safeLocalSet(key, value){
+  try{
+    localStorage.setItem(key, value);
+    return true;
+  }catch(e){
+    console.warn("Local storage write failed:", key);
+    return false;
+  }
+}
+
+
+/* V55 - Cloudinary delivery optimization */
+function optimizeCloudinaryImage(url, width = 700){
+  if(!url || typeof url !== "string") return url || "";
+  if(!url.includes("res.cloudinary.com/") || !url.includes("/image/upload/")) return url;
+
+  const safeWidth = Math.max(160, Math.min(Number(width) || 700, 1600));
+  if(url.includes("/image/upload/f_auto,q_auto")) return url;
+
+  return url.replace(
+    "/image/upload/",
+    `/image/upload/f_auto,q_auto,c_limit,w_${safeWidth}/`
+  );
+}
+
+
 const $ = s => document.querySelector(s);
 
 let lang = localStorage.getItem("tfl_language") || "en";
@@ -39,7 +76,7 @@ function getWishlist(){
 }
 
 function saveWishlist(list){
-  localStorage.setItem("tfl_wishlist", JSON.stringify(list));
+  safeLocalSet("tfl_wishlist", JSON.stringify(list));
 }
 
 function money(value){
@@ -83,7 +120,7 @@ function render(){
   grid.innerHTML = list.map(item=>{
     const id = encodeURIComponent(item.id || "");
     const image = item.image
-      ? `<img src="${escapeHtml(item.image)}" alt="${escapeHtml(displayName(item))}" loading="lazy" decoding="async">`
+      ? `<img src="${escapeHtml(optimizeCloudinaryImage(item.image, 600))}" alt="${escapeHtml(displayName(item))}" loading="lazy" decoding="async">`
       : "";
 
     return `
@@ -126,7 +163,7 @@ function render(){
 
 $("#wlLangBtn").addEventListener("click",()=>{
   lang = lang === "en" ? "mm" : "en";
-  localStorage.setItem("tfl_language", lang);
+  safeLocalSet("tfl_language", lang);
   render();
 });
 
@@ -143,3 +180,21 @@ window.addEventListener("pageshow",()=>{
 });
 
 render();
+
+
+/* V55 - graceful broken-image fallback */
+function installImageFallbacks(root = document){
+  root.querySelectorAll("img").forEach(img=>{
+    if(img.dataset.fallbackReady) return;
+    img.dataset.fallbackReady = "1";
+    img.addEventListener("error", ()=>{
+      img.classList.add("image-load-failed");
+      img.removeAttribute("src");
+      img.alt = img.alt || "Product image unavailable";
+    }, {once:true});
+  });
+}
+
+const v55WishlistImageObserver = new MutationObserver(()=>installImageFallbacks());
+v55WishlistImageObserver.observe(document.documentElement,{childList:true,subtree:true});
+window.addEventListener("DOMContentLoaded",()=>installImageFallbacks());
