@@ -226,8 +226,10 @@ const oldProducts = [
 
 const $ = s => document.querySelector(s);
 
-const CLOUDINARY_CLOUD_NAME = "hygs5upi";
-const CLOUDINARY_UPLOAD_PRESET = "thai_fashion_products";
+const CLOUDINARY_SIGNER_URL =
+  "https://thai-fashion-upload-signer.thetpaingsoe-engr97.workers.dev/";
+
+const ADMIN_UID = "FRsokJmwbeSgrUnuiF3hMPSgrST2";
 
 let selectedImageObjectUrl = "";
 
@@ -298,38 +300,93 @@ async function compressProductImage(file){
   );
 }
 
-async function uploadProductImage(file){
+async function getCloudinarySignature(){
+  const user = auth.currentUser;
+
+  if(!user){
+    throw new Error("Admin login expired. Please sign in again.");
+  }
+
+  if(user.uid !== ADMIN_UID){
+    throw new Error("This account is not authorized to upload images.");
+  }
+
+  const idToken = await user.getIdToken(true);
+
+  const response = await fetch(CLOUDINARY_SIGNER_URL, {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${idToken}`,
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({})
+  });
+
+  let data = {};
+  try{
+    data = await response.json();
+  }catch{}
+
+  if(!response.ok){
+    throw new Error(
+      data?.error ||
+      "Secure image authorization failed."
+    );
+  }
+
+  const timestamp = Number(data.timestamp);
+  const signature = String(data.signature || "").trim();
+  const apiKey = String(data.apiKey || "").trim();
+  const cloudName = String(data.cloudName || "").trim();
+  const folder = String(data.folder || "").trim();
+
+  if(!timestamp || !signature || !apiKey || !cloudName){
+    throw new Error("Secure upload configuration is incomplete.");
+  }
+
+  return {
+    timestamp,
+    signature,
+    apiKey,
+    cloudName,
+    folder
+  };
+}
+
+
+async function uploadSignedCloudinary(file, statusElement){
   if(!file){
-    return $("#pImage").value.trim();
+    throw new Error("No image selected.");
   }
 
-  const allowedTypes = [
-    "image/jpeg",
-    "image/png",
-    "image/webp"
-  ];
-
-  if(!allowedTypes.includes(file.type)){
-    throw new Error("Please choose a JPG, PNG or WebP image.");
+  if(statusElement){
+    statusElement.textContent = "Optimizing image…";
   }
 
-  const maxBytes = 10 * 1024 * 1024;
-
-  if(file.size > maxBytes){
-    throw new Error("Image is too large. Please use an image under 10 MB.");
-  }
-
-  $("#uploadStatus").textContent = "Uploading image to Cloudinary…";
-
-  $("#uploadStatus").textContent = "Optimizing image…";
   const optimizedFile = await compressProductImage(file);
+
+  if(statusElement){
+    statusElement.textContent = "Authorizing secure upload…";
+  }
+
+  const signed = await getCloudinarySignature();
 
   const formData = new FormData();
   formData.append("file", optimizedFile);
-  formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+  formData.append("api_key", signed.apiKey);
+  formData.append("timestamp", String(signed.timestamp));
+  formData.append("signature", signed.signature);
+
+  if(signed.folder){
+    formData.append("folder", signed.folder);
+  }
+
+  if(statusElement){
+    statusElement.textContent = "Uploading image securely…";
+  }
 
   const response = await fetch(
-    `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+    `https://api.cloudinary.com/v1_1/${signed.cloudName}/image/upload`,
     {
       method: "POST",
       body: formData
@@ -341,7 +398,7 @@ async function uploadProductImage(file){
   if(!response.ok){
     throw new Error(
       data?.error?.message ||
-      "Cloudinary image upload failed."
+      "Cloudinary secure image upload failed."
     );
   }
 
@@ -351,9 +408,23 @@ async function uploadProductImage(file){
     throw new Error("Cloudinary did not return an image URL.");
   }
 
+  return secureUrl;
+}
+
+
+async function uploadProductImage(file){
+  if(!file){
+    return $("#pImage").value.trim();
+  }
+
+  const secureUrl = await uploadSignedCloudinary(
+    file,
+    $("#uploadStatus")
+  );
+
   $("#pImage").value = secureUrl;
   showImagePreview(secureUrl);
-  $("#uploadStatus").textContent = "Image uploaded successfully.";
+  $("#uploadStatus").textContent = "Image uploaded securely.";
 
   return secureUrl;
 }
@@ -382,7 +453,7 @@ $("#pImageFile").addEventListener("change",()=>{
   $("#removeImageBtn").classList.remove("hidden");
 
   $("#uploadStatus").textContent =
-    `Selected: ${file.name}. It will upload when you save.`;
+    `Selected: ${file.name}. It will upload securely when you save.`;
 });
 
 $("#removeImageBtn").addEventListener("click",()=>{
@@ -432,7 +503,7 @@ $("#pImageFile2").addEventListener("change",()=>{
   selectedImageObjectUrl2 = URL.createObjectURL(file);
   showImagePreview2(selectedImageObjectUrl2);
   $("#uploadStatus2").textContent =
-    `Selected: ${file.name}. It will be optimized and uploaded when you save.`;
+    `Selected: ${file.name}. It will be optimized and uploaded securely when you save.`;
 });
 
 $("#removeImageBtn2").addEventListener("click",()=>{
@@ -487,13 +558,25 @@ $("#logoutBtn").addEventListener("click",()=>{
 });
 
 
-onAuthStateChanged(auth,user=>{
-  $("#loginView").classList.toggle("hidden",!!user);
-  $("#dashboard").classList.toggle("hidden",!user);
+onAuthStateChanged(auth,async user=>{
+  const isAdmin = !!user && user.uid === ADMIN_UID;
 
-  if(user){
+  $("#loginView").classList.toggle("hidden",isAdmin);
+  $("#dashboard").classList.toggle("hidden",!isAdmin);
+
+  if(isAdmin){
     $("#adminIdentity").textContent =
       user.email || "Authenticated admin";
+    msg($("#loginMessage"),"");
+    return;
+  }
+
+  if(user && !isAdmin){
+    msg(
+      $("#loginMessage"),
+      "This account is not authorized for this admin panel."
+    );
+    await signOut(auth);
   }
 });
 
@@ -680,22 +763,14 @@ $("#productForm").addEventListener(
 
       const imageFile2=$("#pImageFile2").files?.[0];
       if(imageFile2){
-        $("#uploadStatus2").textContent = "Optimizing & uploading image 2…";
-        const optimized2 = await compressProductImage(imageFile2);
-        const formData2 = new FormData();
-        formData2.append("file", optimized2);
-        formData2.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
-
-        const response2 = await fetch(
-          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
-          {method:"POST",body:formData2}
+        const secureUrl2 = await uploadSignedCloudinary(
+          imageFile2,
+          $("#uploadStatus2")
         );
-        const data2 = await response2.json();
-        if(!response2.ok){
-          throw new Error(data2?.error?.message || "Second image upload failed.");
-        }
-        $("#pImage2").value = String(data2.secure_url || "").trim();
-        $("#uploadStatus2").textContent = "Image 2 uploaded successfully.";
+
+        $("#pImage2").value = secureUrl2;
+        showImagePreview2(secureUrl2);
+        $("#uploadStatus2").textContent = "Image 2 uploaded securely.";
       }
 
       p.images = [
