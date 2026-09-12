@@ -193,6 +193,15 @@ function normalizeProduct(snap){
       .replace(/\.JPEG$/i, ".jpeg")
       .replace(/\.PNG$/i, ".png");
 
+  const images =
+    Array.isArray(d.images)
+      ? d.images.map(x=>String(x||"").trim()).filter(Boolean).slice(0,2)
+      : [];
+
+  if(!images.length && image){
+    images.push(image);
+  }
+
 
   let stockStatus =
     "instock";
@@ -281,7 +290,8 @@ function normalizeProduct(snap){
       d.type ||
       "",
 
-    image,
+    image:images[0] || image,
+    images,
 
     desc:
       d.description ||

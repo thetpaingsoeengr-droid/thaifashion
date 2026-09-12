@@ -251,6 +251,53 @@ function showImagePreview(src){
   }
 }
 
+
+async function compressProductImage(file){
+  const allowedTypes = ["image/jpeg","image/png","image/webp"];
+  if(!allowedTypes.includes(file.type)){
+    throw new Error("Please choose a JPG, PNG or WebP image.");
+  }
+
+  const maxBytes = 10 * 1024 * 1024;
+  if(file.size > maxBytes){
+    throw new Error("Image is too large. Please use an image under 10 MB.");
+  }
+
+  const bitmap = await createImageBitmap(file);
+  const maxSide = 1600;
+  const scale = Math.min(1, maxSide / Math.max(bitmap.width, bitmap.height));
+  const width = Math.max(1, Math.round(bitmap.width * scale));
+  const height = Math.max(1, Math.round(bitmap.height * scale));
+
+  const canvas = document.createElement("canvas");
+  canvas.width = width;
+  canvas.height = height;
+
+  const ctx = canvas.getContext("2d", {alpha:false});
+  ctx.fillStyle = "#ffffff";
+  ctx.fillRect(0,0,width,height);
+  ctx.drawImage(bitmap,0,0,width,height);
+  if(bitmap.close) bitmap.close();
+
+  const blob = await new Promise((resolve,reject)=>{
+    canvas.toBlob(
+      b => b ? resolve(b) : reject(new Error("Image compression failed.")),
+      "image/jpeg",
+      0.84
+    );
+  });
+
+  const baseName = (file.name || "product")
+    .replace(/\.[^.]+$/, "")
+    .replace(/[^a-z0-9_-]+/gi, "-");
+
+  return new File(
+    [blob],
+    `${baseName}.jpg`,
+    {type:"image/jpeg", lastModified:Date.now()}
+  );
+}
+
 async function uploadProductImage(file){
   if(!file){
     return $("#pImage").value.trim();
@@ -274,8 +321,11 @@ async function uploadProductImage(file){
 
   $("#uploadStatus").textContent = "Uploading image to Cloudinary…";
 
+  $("#uploadStatus").textContent = "Optimizing image…";
+  const optimizedFile = await compressProductImage(file);
+
   const formData = new FormData();
-  formData.append("file", file);
+  formData.append("file", optimizedFile);
   formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
 
   const response = await fetch(
@@ -346,6 +396,56 @@ $("#removeImageBtn").addEventListener("click",()=>{
 
   showImagePreview("");
   $("#uploadStatus").textContent = "Image removed. Save product to apply.";
+});
+
+
+let selectedImageObjectUrl2 = "";
+
+function showImagePreview2(url){
+  const img = $("#pImagePreview2");
+  const removeBtn = $("#removeImageBtn2");
+  if(!img || !removeBtn) return;
+
+  if(url){
+    img.src = url;
+    img.classList.remove("hidden");
+    removeBtn.classList.remove("hidden");
+  }else{
+    img.removeAttribute("src");
+    img.classList.add("hidden");
+    removeBtn.classList.add("hidden");
+  }
+}
+
+$("#pImageFile2").addEventListener("change",()=>{
+  const file = $("#pImageFile2").files?.[0];
+
+  if(!file){
+    showImagePreview2($("#pImage2").value.trim());
+    return;
+  }
+
+  if(selectedImageObjectUrl2){
+    URL.revokeObjectURL(selectedImageObjectUrl2);
+  }
+
+  selectedImageObjectUrl2 = URL.createObjectURL(file);
+  showImagePreview2(selectedImageObjectUrl2);
+  $("#uploadStatus2").textContent =
+    `Selected: ${file.name}. It will be optimized and uploaded when you save.`;
+});
+
+$("#removeImageBtn2").addEventListener("click",()=>{
+  $("#pImageFile2").value = "";
+  $("#pImage2").value = "";
+
+  if(selectedImageObjectUrl2){
+    URL.revokeObjectURL(selectedImageObjectUrl2);
+    selectedImageObjectUrl2 = "";
+  }
+
+  showImagePreview2("");
+  $("#uploadStatus2").textContent = "Image 2 removed. Save product to apply.";
 });
 
 
@@ -459,6 +559,11 @@ function payload(){
 
     imageUrl:$("#pImage").value.trim(),
 
+    images:[
+      $("#pImage").value.trim(),
+      $("#pImage2").value.trim()
+    ].filter(Boolean),
+
     description:$("#pDescription").value.trim(),
 
     descriptionMM:$("#pDescriptionMM").value.trim(),
@@ -489,9 +594,13 @@ function resetForm(){
   $("#pWaiting").value="2 weeks";
 
   $("#pImage").value="";
+  $("#pImage2").value="";
   $("#pImageFile").value="";
+  $("#pImageFile2").value="";
   showImagePreview("");
+  showImagePreview2("");
   $("#uploadStatus").textContent="No new image selected.";
+  $("#uploadStatus2").textContent="No second image selected.";
 
   msg($("#formMessage"),"");
 }
@@ -568,6 +677,32 @@ $("#productForm").addEventListener(
       if(imageFile){
         p.imageUrl = await uploadProductImage(imageFile);
       }
+
+      const imageFile2=$("#pImageFile2").files?.[0];
+      if(imageFile2){
+        $("#uploadStatus2").textContent = "Optimizing & uploading image 2…";
+        const optimized2 = await compressProductImage(imageFile2);
+        const formData2 = new FormData();
+        formData2.append("file", optimized2);
+        formData2.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+
+        const response2 = await fetch(
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {method:"POST",body:formData2}
+        );
+        const data2 = await response2.json();
+        if(!response2.ok){
+          throw new Error(data2?.error?.message || "Second image upload failed.");
+        }
+        $("#pImage2").value = String(data2.secure_url || "").trim();
+        $("#uploadStatus2").textContent = "Image 2 uploaded successfully.";
+      }
+
+      p.images = [
+        p.imageUrl || $("#pImage").value.trim(),
+        $("#pImage2").value.trim()
+      ].filter(Boolean);
+      p.imageUrl = p.images[0] || "";
 
       const id=$("#editId").value;
 
@@ -841,16 +976,29 @@ async function editProduct(id){
       : (p.powers||"");
 
 
+  const savedImages = Array.isArray(p.images) ? p.images.filter(Boolean) : [];
+
   $("#pImage").value=
+    savedImages[0] ||
     p.imageUrl||
     p.image||
     "";
 
+  $("#pImage2").value=
+    savedImages[1] ||
+    "";
+
   $("#pImageFile").value="";
+  $("#pImageFile2").value="";
   showImagePreview($("#pImage").value);
+  showImagePreview2($("#pImage2").value);
   $("#uploadStatus").textContent = $("#pImage").value
-    ? "Current product image. Choose a new file to replace it."
-    : "No image saved for this product.";
+    ? "Current product image 1. Choose a new file to replace it."
+    : "No image 1 saved for this product.";
+
+  $("#uploadStatus2").textContent = $("#pImage2").value
+    ? "Current product image 2. Choose a new file to replace it."
+    : "No image 2 saved for this product.";
 
 
   $("#pDescription").value=

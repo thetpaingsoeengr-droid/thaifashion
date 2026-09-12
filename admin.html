@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Thai Fashion Lenses — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=2">
+  <link rel="stylesheet" href="admin.css?v=51">
 </head>
 <body>
   <main class="admin-shell">
@@ -35,7 +35,7 @@
       </header>
 
       <div class="notice">
-        <strong>Product photos:</strong> choose an image below. It will upload to Cloudinary automatically and the secure image URL will be saved to Firestore.
+        <strong>Product photos:</strong> choose up to two images below. They are automatically resized/compressed and uploaded to Cloudinary and the secure image URL will be saved to Firestore.
       </div>
 
       <section class="panel">
@@ -83,18 +83,33 @@
             <input id="pPowers" placeholder="0.00, -1.00, -2.00, -4.50">
             <small>Leave emptyno-powero-power / Plano lens.</small>
           </label>
-          <label class="span-2">Product image
+          <label>Product image 1
             <input id="pImageFile" type="file" accept="image/jpeg,image/png,image/webp">
-            <small>JPG, PNG or WebP. The image uploads automatically when you save the product.</small>
+            <small>Main/cover image. Auto resized & compressed before upload.</small>
           </label>
-          <div class="span-2 image-upload-box">
-            <img id="pImagePreview" class="image-preview hidden" alt="Product image preview">
+          <label>Product image 2
+            <input id="pImageFile2" type="file" accept="image/jpeg,image/png,image/webp">
+            <small>Optional second image. Auto resized & compressed before upload.</small>
+          </label>
+
+          <div class="image-upload-box">
+            <img id="pImagePreview" class="image-preview hidden" alt="Product image 1 preview">
             <div class="upload-meta">
               <span id="uploadStatus" class="muted">No new image selected.</span>
-              <button id="removeImageBtn" type="button" class="secondary hidden">Remove image</button>
+              <button id="removeImageBtn" type="button" class="secondary hidden">Remove image 1</button>
             </div>
           </div>
+
+          <div class="image-upload-box">
+            <img id="pImagePreview2" class="image-preview hidden" alt="Product image 2 preview">
+            <div class="upload-meta">
+              <span id="uploadStatus2" class="muted">No second image selected.</span>
+              <button id="removeImageBtn2" type="button" class="secondary hidden">Remove image 2</button>
+            </div>
+          </div>
+
           <input id="pImage" type="hidden">
+          <input id="pImage2" type="hidden">
           <label class="span-2">English Description<textarea id="pDescription" rows="3"></textarea></label>
           <label class="span-2">Myanmar Description<textarea id="pDescriptionMM" rows="3"></textarea></label>
           <button type="submit" class="save-btn span-2" id="saveBtn">Save product</button>
@@ -112,6 +127,6 @@
       </section>
     </section>
   </main>
-  <script type="module" src="admin.js?v=3"></script>
+  <script type="module" src="admin.js?v=51"></script>
 </body>
 </html>

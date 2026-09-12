@@ -117,6 +117,12 @@ function normalizeProduct(id,d){
   if(Array.isArray(powers) && !powers.length) powers = null;
   if(d.hasPower === false) powers = null;
 
+  const images = Array.isArray(d.images)
+    ? d.images.map(x=>String(x||"").trim()).filter(Boolean).slice(0,2)
+    : [];
+  const legacyImage = String(d.imageUrl || d.imageURL || d.image || "").trim();
+  if(!images.length && legacyImage) images.push(legacyImage);
+
   return {
     id,
     name:d.name || "Unnamed Product",
@@ -128,7 +134,8 @@ function normalizeProduct(id,d){
     colorKey:d.colorKey || d.colour || d.color || "",
     stockStatus:d.stockStatus || "instock",
     waitingPeriod:d.waitingPeriod || "",
-    image:String(d.imageUrl || d.imageURL || d.image || "").trim(),
+    image:images[0] || legacyImage,
+    images,
     desc:d.desc || d.description || "",
     descMM:d.descMM || d.descriptionMM || "",
     powers
@@ -190,6 +197,27 @@ function renderProduct(){
     img.removeAttribute("src");
     img.alt = product.name;
   }
+
+  const thumbs = $("#pdThumbnails");
+  const galleryImages = Array.isArray(product.images) ? product.images : [];
+  thumbs.classList.toggle("hidden", galleryImages.length < 2);
+  thumbs.innerHTML = galleryImages.map((url,index)=>`
+    <button type="button"
+            class="pd-thumb ${index===0 ? "active" : ""}"
+            data-image-index="${index}"
+            aria-label="View product image ${index+1}">
+      <img src="${url}" alt="${product.name} ${index+1}">
+    </button>
+  `).join("");
+
+  thumbs.querySelectorAll(".pd-thumb").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      const index = Number(btn.dataset.imageIndex || 0);
+      img.src = galleryImages[index];
+      thumbs.querySelectorAll(".pd-thumb").forEach(x=>x.classList.remove("active"));
+      btn.classList.add("active");
+    });
+  });
 
   const badge = $("#pdStockBadge");
   badge.textContent = isOut ? t().out : isPre ? t().pre : t().in;
