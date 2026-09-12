@@ -1290,6 +1290,26 @@ function closeCart(){
 
   document.body.style.overflow =
     "";
+
+  // If the cart was opened from a product-detail page,
+  // return to that exact product instead of leaving the customer on Home.
+  const returnTo =
+    sessionStorage.getItem(
+      "tfl_cart_return_to"
+    );
+
+  if(
+    returnTo &&
+    returnTo.startsWith("product.html?")
+  ){
+    sessionStorage.removeItem(
+      "tfl_cart_return_to"
+    );
+
+    window.location.replace(
+      returnTo
+    );
+  }
 }
 
 
