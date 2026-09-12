@@ -12,7 +12,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&family=Playfair+Display:wght@600;700&display=swap" rel="stylesheet">
 
-  <link rel="stylesheet" href="styles.css?v=51" />
+  <link rel="stylesheet" href="styles.css?v=53" />
 </head>
 
 <body>
@@ -43,6 +43,19 @@
         >
           Aa
         </button>
+
+        <a
+          class="wishlist-icon-btn"
+          id="wishlistHeaderBtn"
+          href="wishlist.html"
+          aria-label="Open wishlist"
+          title="Wishlist"
+        >
+          <svg viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.6l-1-1a5.5 5.5 0 0 0-7.8 7.8l1 1L12 21l7.8-7.6 1-1a5.5 5.5 0 0 0 0-7.8z"/>
+          </svg>
+          <span class="wishlist-count-badge" id="wishlistCount">0</span>
+        </a>
 
         <button
           class="cart-icon-btn"
@@ -343,8 +356,8 @@
   <div class="toast hidden" id="toast">Added to bag</div>
 
 
-  <script src="script.js?v=51"></script>
-  <script type="module" src="firebase-products.js?v=51"></script>
+  <script src="script.js?v=53"></script>
+  <script type="module" src="firebase-products.js?v=53"></script>
 
 </body>
 </html>

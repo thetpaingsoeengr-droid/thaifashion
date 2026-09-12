@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Wishlist • Thai Fashion Lenses</title>
+  <meta name="theme-color" content="#ffffff">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Allura&family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="wishlist.css?v=53">
+</head>
+<body>
+  <header class="wl-header">
+    <a class="wl-back" href="index.html" aria-label="Back to shop">‹</a>
+    <a class="wl-brand" href="index.html">Thai Fashion Lenses ♡</a>
+    <button id="wlLangBtn" class="wl-lang" type="button" aria-label="Change language">က</button>
+  </header>
+
+  <main class="wl-shell">
+    <div class="wl-heading">
+      <div>
+        <p class="wl-eyebrow" id="wlEyebrow">SAVED FOR LATER</p>
+        <h1 id="wlTitle">My Wishlist</h1>
+      </div>
+      <span class="wl-total" id="wlTotal">0 items</span>
+    </div>
+
+    <section id="wlGrid" class="wl-grid"></section>
+
+    <section id="wlEmpty" class="wl-empty hidden">
+      <div class="wl-empty-heart">♡</div>
+      <h2 id="wlEmptyTitle">Your wishlist is empty</h2>
+      <p id="wlEmptyText">Save products you love and find them here anytime.</p>
+      <a class="wl-shop-btn" id="wlShopBtn" href="index.html">Shop Products</a>
+    </section>
+  </main>
+
+  <script src="wishlist.js?v=53"></script>
+</body>
+</html>

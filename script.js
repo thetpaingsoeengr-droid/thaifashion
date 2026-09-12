@@ -1964,6 +1964,37 @@ if(clearColorBtn){
 }
 
 
+
+/* =========================================
+   V53 - WISHLIST HEADER COUNT
+========================================= */
+function getWishlistItems(){
+  try{
+    const data = JSON.parse(localStorage.getItem("tfl_wishlist") || "[]");
+    return Array.isArray(data) ? data : [];
+  }catch(e){
+    return [];
+  }
+}
+
+function updateWishlistHeaderCount(){
+  const badge = document.getElementById("wishlistCount");
+  if(!badge) return;
+
+  const count = getWishlistItems().length;
+  badge.textContent = count;
+  badge.classList.toggle("hidden", count === 0);
+}
+
+window.addEventListener("storage", event=>{
+  if(event.key === "tfl_wishlist"){
+    updateWishlistHeaderCount();
+  }
+});
+
+window.addEventListener("pageshow", updateWishlistHeaderCount);
+
+
 /* =========================================
    FIREBASE DATA BRIDGE
 ========================================= */
@@ -2002,6 +2033,7 @@ applySiteFontMode();
 setSiteLanguage(
   siteLang
 );
+updateWishlistHeaderCount();
 
 
 /* =========================================

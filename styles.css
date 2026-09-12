@@ -1851,3 +1851,58 @@ html[lang="my"] .product-powers-label{
     font-size:13px !important;
   }
 }
+
+
+/* V53 - WISHLIST HEADER */
+.wishlist-icon-btn{
+  position:relative;
+  width:42px;
+  height:42px;
+  border:0;
+  background:transparent;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  padding:8px;
+  color:var(--ink);
+}
+.wishlist-icon-btn:hover{
+  background:var(--soft);
+}
+.wishlist-icon-btn svg{
+  width:25px;
+  height:25px;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.8;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.wishlist-count-badge{
+  position:absolute;
+  top:0;
+  right:-1px;
+  min-width:18px;
+  height:18px;
+  padding:0 5px;
+  border-radius:999px;
+  background:#171717;
+  color:#fff;
+  display:grid;
+  place-items:center;
+  font-size:10px;
+  font-weight:800;
+  line-height:1;
+  border:2px solid #fff;
+}
+@media(max-width:600px){
+  .wishlist-icon-btn{
+    width:38px;
+    height:38px;
+    padding:7px;
+  }
+  .wishlist-icon-btn svg{
+    width:23px;
+    height:23px;
+  }
+}

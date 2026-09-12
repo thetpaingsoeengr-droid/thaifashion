@@ -521,3 +521,40 @@ body{
     border-radius:10px;
   }
 }
+
+
+/* V53 - PRODUCT HEADER WISHLIST */
+.pd-wishlist-link{
+  width:38px;
+  height:38px;
+  border:1px solid var(--line);
+  border-radius:50%;
+  background:#fff;
+  color:var(--ink);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-decoration:none;
+  position:relative;
+  font-weight:800;
+}
+.pd-heart{
+  font-size:22px;
+  line-height:1;
+  transform:translateY(-1px);
+}
+#pdWishlistCount{
+  position:absolute;
+  right:-4px;
+  top:-4px;
+  min-width:18px;
+  height:18px;
+  padding:0 4px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:999px;
+  background:var(--ink);
+  color:#fff;
+  font-size:10px;
+}

@@ -276,6 +276,15 @@ function getWishlist(){
   }
 }
 
+function updateWishlistCount(){
+  const badge = $("#pdWishlistCount");
+  if(!badge) return;
+
+  const count = getWishlist().length;
+  badge.textContent = count;
+  badge.classList.toggle("hidden", count === 0);
+}
+
 function isWishlisted(id){
   return getWishlist().some(x=>x.id === id);
 }
@@ -312,6 +321,7 @@ function toggleWishlist(){
 
   localStorage.setItem("tfl_wishlist", JSON.stringify(list));
   updateWishlistButton();
+  updateWishlistCount();
 }
 
 async function shareProduct(){
@@ -639,3 +649,14 @@ updateCartCount();
 setCartReturnLinks();
 applyLanguage();
 loadProduct();
+
+
+/* V53 - keep header wishlist count in sync */
+window.addEventListener("pageshow", updateWishlistCount);
+window.addEventListener("storage", event=>{
+  if(event.key === "tfl_wishlist"){
+    updateWishlistCount();
+    updateWishlistButton();
+  }
+});
+updateWishlistCount();
