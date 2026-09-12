@@ -36,6 +36,30 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const $ = s => document.querySelector(s);
 
+/* V61 - Back returns to the exact previous shop history entry. */
+function installSmartBackButton(){
+  const backBtn = document.getElementById("pdBackBtn");
+  if(!backBtn) return;
+
+  backBtn.addEventListener("click", event=>{
+    const referrer = document.referrer || "";
+    let cameFromThisSite = false;
+
+    try{
+      cameFromThisSite =
+        Boolean(referrer) &&
+        new URL(referrer).origin === window.location.origin;
+    }catch(e){}
+
+    if(cameFromThisSite && window.history.length > 1){
+      event.preventDefault();
+      window.history.back();
+    }
+  });
+}
+
+installSmartBackButton();
+
 let product = null;
 let selectedPower = null;
 let lang = localStorage.getItem("tfl_language") || "en";

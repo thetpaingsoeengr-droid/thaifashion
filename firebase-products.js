@@ -57,10 +57,31 @@ let hasMore = true;
    DEFAULT FILTER
 ========================================= */
 
+const TFL_LISTING_STATE_KEY = "tfl_listing_state_v61";
+
+function readInitialListingState(){
+  try{
+    const raw = sessionStorage.getItem(TFL_LISTING_STATE_KEY);
+    if(!raw) return null;
+    const state = JSON.parse(raw);
+    return state && typeof state === "object" ? state : null;
+  }catch(e){
+    return null;
+  }
+}
+
+const initialListingState = readInitialListingState();
+
 let activeFilters = {
-  category: "Contact Lenses",
-  color: "all",
-  power: ""
+  category: initialListingState?.category || "Contact Lenses",
+  color:
+    (initialListingState?.category || "Contact Lenses") === "Contact Lenses"
+      ? (initialListingState?.color || "all")
+      : "all",
+  power:
+    (initialListingState?.category || "Contact Lenses") === "Contact Lenses"
+      ? String(initialListingState?.power || "")
+      : ""
 };
 
 
@@ -890,4 +911,20 @@ window.resetFirebaseProductFilters =
    INITIAL LOAD
 ========================================= */
 
-loadFreshFilter();
+async function initialLoadV61(){
+  await loadFreshFilter();
+
+  const targetCount = Math.max(
+    PAGE_SIZE,
+    Number(initialListingState?.loadedCount || PAGE_SIZE)
+  );
+
+  while(
+    loadedProducts.length < targetCount &&
+    hasMore
+  ){
+    await loadProducts();
+  }
+}
+
+initialLoadV61();

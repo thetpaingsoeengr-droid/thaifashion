@@ -20,6 +20,61 @@ function safeLocalSet(key, value){
 }
 
 
+/* =========================================
+   V61 - RETURN TO LAST SHOP POSITION
+========================================= */
+const TFL_LISTING_STATE_KEY = "tfl_listing_state_v61";
+
+function readListingState(){
+  try{
+    const raw = sessionStorage.getItem(TFL_LISTING_STATE_KEY);
+    if(!raw) return null;
+
+    const state = JSON.parse(raw);
+    if(!state || typeof state !== "object") return null;
+
+    return state;
+  }catch(e){
+    return null;
+  }
+}
+
+function saveListingState(){
+  try{
+    sessionStorage.setItem(
+      TFL_LISTING_STATE_KEY,
+      JSON.stringify({
+        category: currentCategory,
+        color: currentColor,
+        power: currentPower,
+        loadedCount: Array.isArray(products) ? products.length : 0,
+        scrollY: Math.max(0, Math.round(window.scrollY || 0)),
+        savedAt: Date.now()
+      })
+    );
+  }catch(e){}
+}
+
+const initialListingState = readListingState();
+let listingScrollRestored = false;
+
+function restoreListingScrollIfReady(){
+  if(listingScrollRestored || !initialListingState) return;
+
+  const needed = Math.max(0, Number(initialListingState.loadedCount || 0));
+  if(needed && products.length < needed) return;
+
+  listingScrollRestored = true;
+
+  const y = Math.max(0, Number(initialListingState.scrollY || 0));
+
+  // Give the restored product cards/images a moment to occupy their final layout.
+  [0, 80, 220, 500].forEach(delay=>{
+    window.setTimeout(()=>window.scrollTo(0, y), delay);
+  });
+}
+
+
 /* V36 Brand + Size customer display */
 (function(){
   if(document.getElementById("tfl-v36-brand-size-style")) return;
@@ -61,9 +116,16 @@ let products = [];
   DEFAULT CATEGORY:
   Website opens directly on Contact Lenses.
 */
-let currentCategory = "Contact Lenses";
-let currentColor = "all";
-let currentPower = "";
+let currentCategory =
+  initialListingState?.category || "Contact Lenses";
+let currentColor =
+  currentCategory === "Contact Lenses"
+    ? (initialListingState?.color || "all")
+    : "all";
+let currentPower =
+  currentCategory === "Contact Lenses"
+    ? String(initialListingState?.power || "")
+    : "";
 
 let cart = (() => {
   try{
@@ -846,6 +908,7 @@ function renderProducts(){
       card.addEventListener(
         "click",
         ()=>{
+          saveListingState();
           window.location.href =
             `product.html?id=${encodeURIComponent(card.dataset.id)}`;
         }
@@ -2058,6 +2121,7 @@ window.setProductsFromFirebase =
     renderProducts();
     renderCart();
     updateLoadMoreButton();
+    restoreListingScrollIfReady();
   };
 
 

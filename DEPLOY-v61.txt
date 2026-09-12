@@ -1,0 +1,21 @@
+Thai Fashion Lenses v61 — Restore Previous Product Listing Position
+
+What changed:
+- Product detail Back button now uses browser history when the customer came from this site.
+- Before opening a product, the shop saves category, color, power, number of loaded products, and scroll position in sessionStorage.
+- If the browser reloads the shop instead of restoring it from back/forward cache, Firestore reloads enough product batches and returns to the saved scroll position.
+- Existing v60 domain, security, Cloudinary, wishlist, cart, SEO and performance features are retained.
+
+Upload/replace:
+- index.html
+- script.js
+- firebase-products.js
+- product.html
+- product.js
+- DEPLOY-v61.txt (optional)
+
+Expected flow:
+1. Browse/filter products and press Load More as needed.
+2. Scroll to a product and open it.
+3. Tap the top-left Back arrow.
+4. Customer returns to the same filter/list depth and scroll position instead of the top of the home page.
