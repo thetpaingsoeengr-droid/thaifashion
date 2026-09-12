@@ -1,0 +1,17 @@
+Thai Fashion Lenses v60 — Final Domain Setup
+Official domain: https://thaifashionlens.com
+
+Included:
+- Canonical URLs on the custom domain
+- Open Graph URLs on the custom domain
+- robots.txt
+- sitemap.xml
+- GitHub Pages CNAME
+- v60 cache bust
+- Existing security, wishlist, colour display, cart and performance features retained
+
+Notes:
+- Wishlist is intentionally not in the sitemap because it is a personal/localStorage page.
+- Individual products are loaded dynamically from Firestore, so they are not statically listed in this sitemap.
+- Per-product social previews may still require prerender/server rendering because some social crawlers do not execute JavaScript.
+- Real favicon/logo/social-image assets can be added later when supplied.
