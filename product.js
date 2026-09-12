@@ -107,6 +107,50 @@ function setCartReturnLinks(){
 }
 
 
+
+/* V54 - Dynamic product SEO/social metadata */
+function setMetaTag(selector, key, value){
+  let el = document.querySelector(selector);
+  if(!el){
+    el = document.createElement("meta");
+    const propertyMatch = selector.match(/property="([^"]+)"/);
+    const nameMatch = selector.match(/name="([^"]+)"/);
+    if(propertyMatch) el.setAttribute("property", propertyMatch[1]);
+    if(nameMatch) el.setAttribute("name", nameMatch[1]);
+    document.head.appendChild(el);
+  }
+  el.setAttribute(key, value);
+}
+
+function updateProductSeo(p){
+  if(!p) return;
+
+  const name = String(p.name || "Product").trim();
+  const brand = String(p.brand || "").trim();
+  const title = `${name}${brand ? " | " + brand : ""} | Thai Fashion Lenses UAE`;
+  const description = String(
+    p.desc ||
+    `${name}${brand ? " by " + brand : ""}. View details, available powers and shopping options from Thai Fashion Lenses UAE.`
+  ).replace(/\s+/g, " ").trim().slice(0, 160);
+
+  document.title = title;
+  setMetaTag('meta[name="description"]', "content", description);
+  setMetaTag('meta[property="og:title"]', "content", title);
+  setMetaTag('meta[property="og:description"]', "content", description);
+  setMetaTag('meta[property="og:type"]', "content", "product");
+  setMetaTag('meta[name="twitter:title"]', "content", title);
+  setMetaTag('meta[name="twitter:description"]', "content", description);
+
+  const image = String(p.image || "").trim();
+  if(image){
+    setMetaTag('meta[property="og:image"]', "content", image);
+    setMetaTag('meta[name="twitter:image"]', "content", image);
+  }
+
+  setMetaTag('meta[property="og:url"]', "content", window.location.href);
+}
+
+
 function normalizeProduct(id,d){
   let powers = d.powers ?? null;
   if(typeof powers === "string"){
@@ -617,6 +661,7 @@ async function loadProduct(){
     if(!snap.exists()) throw new Error("Not found");
 
     product = normalizeProduct(snap.id,snap.data());
+    updateProductSeo(product);
     $("#pdLoading").classList.add("hidden");
     $("#pdProduct").classList.remove("hidden");
     renderProduct();
