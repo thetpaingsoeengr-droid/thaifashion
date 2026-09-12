@@ -567,3 +567,9 @@ img.image-load-failed{
   background-size:18px 18px;
   min-height:120px;
 }
+
+
+/* V58 - Colour spec emphasis */
+.pd-specs .pd-spec strong{
+  word-break: break-word;
+}

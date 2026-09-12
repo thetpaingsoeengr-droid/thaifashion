@@ -188,6 +188,15 @@ function updateProductSeo(p){
 }
 
 
+
+function formatColourName(value){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+  return raw
+    .replace(/[-_]+/g, " ")
+    .replace(/\b\w/g, ch => ch.toUpperCase());
+}
+
 function normalizeProduct(id,d){
   let powers = d.powers ?? null;
   if(typeof powers === "string"){
@@ -277,7 +286,7 @@ function renderProduct(){
 
   const img = $("#pdImage");
   if(product.image){
-    img.src = product.image;
+    img.src = optimizeCloudinaryImage(product.image, 1200);
     img.alt = product.name;
   }else{
     img.removeAttribute("src");
@@ -292,7 +301,7 @@ function renderProduct(){
             class="pd-thumb ${index===0 ? "active" : ""}"
             data-image-index="${index}"
             aria-label="View product image ${index+1}">
-      <img src="${url}" alt="${product.name} ${index+1}">
+      <img src="${optimizeCloudinaryImage(url, 320)}" alt="${product.name} ${index+1}">
     </button>
   `).join("");
 
@@ -314,6 +323,12 @@ function renderProduct(){
 
   const specs = [];
   if(product.brand) specs.push(["Brand", product.brand]);
+  if(product.colorKey){
+    specs.push([
+      lang === "mm" ? "အရောင်" : "Colour",
+      formatColourName(product.colorKey)
+    ]);
+  }
   if(product.size) specs.push([lang === "mm" ? "အရွယ်အစား" : "Size", product.size]);
 
   const specsEl = $("#pdSpecs");
