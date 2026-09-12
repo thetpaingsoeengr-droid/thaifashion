@@ -373,24 +373,37 @@ function recommendationCard(p){
     p.stockStatus === "outofstock" ? t().out :
     p.stockStatus === "preorder" ? t().pre :
     t().in;
+  const isOut = p.stockStatus === "outofstock";
 
   return `
-    <a class="pd-rec-card" href="product.html?id=${encodeURIComponent(p.id)}">
-      <div class="pd-rec-image">
-        ${p.image ? `<img src="${p.image}" alt="${name}" loading="lazy" decoding="async">` : ""}
-        <span class="pd-rec-stock">${stockText}</span>
+    <article class="pd-rec-card">
+      <a class="pd-rec-link" href="product.html?id=${encodeURIComponent(p.id)}">
+        <div class="pd-rec-image">
+          ${p.image ? `<img src="${p.image}" alt="${name}" loading="lazy" decoding="async">` : ""}
+          <span class="pd-rec-stock">${stockText}</span>
+        </div>
+        <div class="pd-rec-body">
+          <div class="pd-rec-brand">${p.brand || "&nbsp;"}</div>
+          <div class="pd-rec-name">${name}</div>
+          <div class="pd-rec-price">${money(p.price)}</div>
+          ${
+            product.category === "Contact Lenses" && p.colorKey
+              ? `<div class="pd-rec-colour">${p.colorKey}</div>`
+              : ""
+          }
+        </div>
+      </a>
+      <div class="pd-rec-action-wrap">
+        <button
+          class="pd-rec-add"
+          type="button"
+          data-rec-id="${p.id}"
+          ${isOut ? "disabled" : ""}
+        >
+          ${isOut ? t().out : t().addQuick}
+        </button>
       </div>
-      <div class="pd-rec-body">
-        <div class="pd-rec-brand">${p.brand || "&nbsp;"}</div>
-        <div class="pd-rec-name">${name}</div>
-        <div class="pd-rec-price">${money(p.price)}</div>
-        ${
-          product.category === "Contact Lenses" && p.colorKey
-            ? `<div class="pd-rec-colour">${p.colorKey}</div>`
-            : ""
-        }
-      </div>
-    </a>
+    </article>
   `;
 }
 
@@ -435,6 +448,27 @@ async function loadRecommendations(){
 
     $("#pdRecommendationsTitle").textContent = recommendationTitle();
     track.innerHTML = items.map(recommendationCard).join("");
+
+    track.querySelectorAll(".pd-rec-add").forEach(btn=>{
+      btn.addEventListener("click", event=>{
+        event.preventDefault();
+        event.stopPropagation();
+
+        const p = items.find(x=>x.id === btn.dataset.recId);
+        if(!p || p.stockStatus === "outofstock") return;
+
+        /* Power lenses need a Power choice first, so go to that product page.
+           Products without Power are added immediately. */
+        if(Array.isArray(p.powers) && p.powers.length){
+          window.location.href =
+            `product.html?id=${encodeURIComponent(p.id)}&add=1`;
+          return;
+        }
+
+        addSimpleProductToBag(p);
+      });
+    });
+
     section.classList.remove("hidden");
   }catch(err){
     console.error("Recommendations:",err);
@@ -522,6 +556,21 @@ async function loadProduct(){
     $("#pdProduct").classList.remove("hidden");
     renderProduct();
     updateWishlistButton();
+
+    const params = new URLSearchParams(window.location.search);
+    if(params.get("add") === "1"){
+      window.setTimeout(()=>{
+        const target =
+          $("#pdPowerSection") && !$("#pdPowerSection").classList.contains("hidden")
+            ? $("#pdPowerSection")
+            : $("#pdAddBtn");
+
+        if(target){
+          target.scrollIntoView({behavior:"smooth", block:"center"});
+        }
+      }, 180);
+    }
+
     await loadRecommendations();
     await loadLensCare();
   }catch(err){

@@ -827,6 +827,18 @@ function renderProducts(){
 
     });
 
+  /* V49: make the + quick-add button work without triggering card navigation.
+     It opens the existing selector modal so power lenses can choose Power first. */
+  productGrid
+    .querySelectorAll(".quick-add")
+    .forEach(btn => {
+      btn.addEventListener("click", event => {
+        event.preventDefault();
+        event.stopPropagation();
+        openProduct(btn.dataset.id);
+      });
+    });
+
   updateLoadMoreButton();
 }
 

@@ -419,3 +419,27 @@ body{
   .pd-quote-card{border-radius:16px}
   .pd-trust-card{border-radius:16px}
 }
+
+
+/* V49 - Explore More Colours Add to Bag */
+.pd-rec-link{
+  display:block;
+  color:inherit;
+  text-decoration:none;
+}
+.pd-rec-action-wrap{
+  padding:0 10px 10px;
+}
+.pd-rec-add{
+  width:100%;
+  min-height:36px;
+  border:0;
+  border-radius:10px;
+  background:#111;
+  color:#fff;
+  font-size:11px;
+  font-weight:800;
+}
+.pd-rec-add:disabled{
+  opacity:.4;
+}
