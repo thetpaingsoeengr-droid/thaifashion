@@ -1,0 +1,48 @@
+Thai Fashion Lenses v57 - Admin Final QA
+
+Automated checks passed: 30/30
+
+[PASS] Firebase admin login present
+[PASS] Exact admin UID restriction present
+[PASS] Unauthorized accounts are signed out
+[PASS] Signed upload Worker endpoint present
+[PASS] Firebase ID token sent to Worker
+[PASS] No unsigned Cloudinary preset remains
+[PASS] Product name field present
+[PASS] Myanmar name field present
+[PASS] Price field present
+[PASS] Category field present
+[PASS] Color field present
+[PASS] Availability field present
+[PASS] Waiting period field present
+[PASS] Badge field present
+[PASS] Powers field present
+[PASS] Brand field present
+[PASS] Size field present
+[PASS] English description field present
+[PASS] Myanmar description field present
+[PASS] Image 1 file field present
+[PASS] Image 2 file field present
+[PASS] Backward-compatible imageUrl save exists
+[PASS] Two-image array save exists
+[PASS] Create product operation exists
+[PASS] Update product operation exists
+[PASS] Delete product operation exists
+[PASS] 1600px max compression retained
+[PASS] JPEG quality 0.84 retained
+[PASS] 10MB source image limit retained
+[PASS] admin.js syntax
+
+Production hardening added:
+[DONE] admin.html is noindex, nofollow, noarchive
+[DONE] Login autocomplete hints added
+[DONE] Admin assets cache-busted to v57
+
+Manual browser checks after GitHub upload:
+1. Login with the authorized Firebase account.
+2. Try a wrong Firebase account; it should be rejected/signed out.
+3. Add one test product with Image 1 only.
+4. Edit it and add Image 2, Brand, Size, Powers, stock status and waiting period.
+5. Change In Stock -> Pre-order -> Out of Stock and confirm customer site updates.
+6. Delete the test product.
+7. Confirm signed Cloudinary image upload still works.
