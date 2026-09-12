@@ -1,0 +1,17 @@
+Thai Fashion Lenses v62 — Store-wide Product Count
+
+Added:
+- Shows the total number of ALL Firestore products to customers.
+- Count ignores active category, color, and power filters.
+- English and Myanmar display supported.
+- Counter stays hidden until a valid count is loaded.
+- v61 restore-position behavior retained.
+- v60 production/domain/security features retained.
+
+Replace these files for the patch:
+- index.html
+- styles.css
+- script.js
+- firebase-products.js
+
+Cache bust updated to v62.

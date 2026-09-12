@@ -141,6 +141,7 @@ let selectedProduct = null;
 let firebaseHasMore = false;
 let firebaseLoading = false;
 let firebaseTotalCount = 0;
+let firebaseStoreTotalCount = null;
 
 const $ = s => document.querySelector(s);
 
@@ -1614,6 +1615,41 @@ function updateLoadMoreButton(){
 }
 
 
+function updateStoreTotalCountDisplay(){
+  const wrap = $("#storeTotalCount");
+  const number = $("#storeTotalNumber");
+  const text = $("#storeTotalText");
+  const suffix = $("#storeTotalSuffix");
+
+  if(!wrap || !number || !text || !suffix) return;
+
+  const total = Number(firebaseStoreTotalCount);
+
+  if(!Number.isFinite(total) || total < 1){
+    wrap.classList.add("hidden");
+    return;
+  }
+
+  number.textContent = total.toLocaleString();
+
+  if(siteLang === "mm"){
+    text.textContent = "စုစုပေါင်း";
+    suffix.textContent = "ပစ္စည်း ရရှိနိုင်ပါတယ်";
+  }else{
+    text.textContent = "Explore";
+    suffix.textContent = total === 1 ? "product" : "products available";
+  }
+
+  wrap.classList.remove("hidden");
+}
+
+window.setFirebaseStoreTotalCount =
+  function(total){
+    firebaseStoreTotalCount = Number(total || 0);
+    updateStoreTotalCountDisplay();
+  };
+
+
 window.setFirebaseTotalCount =
   function(total){
     firebaseTotalCount =
@@ -1799,6 +1835,7 @@ function setSiteLanguage(lang){
   renderProducts();
   renderCart();
   updateLoadMoreButton();
+  updateStoreTotalCountDisplay();
   updateLanguageToggleButton();
 }
 

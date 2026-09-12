@@ -452,6 +452,28 @@ async function fetchTotalCount(){
 
 
 /* =========================================
+   STORE-WIDE PRODUCT COUNT
+   This ignores category/color/power filters.
+========================================= */
+
+async function loadStoreWideProductCount(){
+  try{
+    const countSnap = await getCountFromServer(
+      collection(db, "products")
+    );
+
+    const total = Number(countSnap.data().count || 0);
+
+    if(typeof window.setFirebaseStoreTotalCount === "function"){
+      window.setFirebaseStoreTotalCount(total);
+    }
+  }catch(error){
+    console.error("Firestore store-wide product count failed:", error);
+  }
+}
+
+
+/* =========================================
    PRODUCT QUERY
 ========================================= */
 
@@ -912,6 +934,9 @@ window.resetFirebaseProductFilters =
 ========================================= */
 
 async function initialLoadV61(){
+  // Store-wide count is independent from the active filter, so fetch it in parallel.
+  const storeCountPromise = loadStoreWideProductCount();
+
   await loadFreshFilter();
 
   const targetCount = Math.max(
@@ -925,6 +950,8 @@ async function initialLoadV61(){
   ){
     await loadProducts();
   }
+
+  await storeCountPromise;
 }
 
 initialLoadV61();
