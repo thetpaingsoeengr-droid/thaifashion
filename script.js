@@ -827,18 +827,6 @@ function renderProducts(){
 
     });
 
-  /* V49: make the + quick-add button work without triggering card navigation.
-     It opens the existing selector modal so power lenses can choose Power first. */
-  productGrid
-    .querySelectorAll(".quick-add")
-    .forEach(btn => {
-      btn.addEventListener("click", event => {
-        event.preventDefault();
-        event.stopPropagation();
-        openProduct(btn.dataset.id);
-      });
-    });
-
   updateLoadMoreButton();
 }
 
@@ -1009,6 +997,25 @@ function closeModal(){
 
   document.body.style.overflow =
     "";
+
+  const returnTo =
+    sessionStorage.getItem(
+      "tfl_cart_return_to"
+    );
+
+  if(returnTo){
+    sessionStorage.removeItem(
+      "tfl_cart_return_to"
+    );
+
+    window.setTimeout(
+      ()=>{
+        window.location.href =
+          returnTo;
+      },
+      40
+    );
+  }
 }
 
 
@@ -1985,6 +1992,23 @@ function openCartFromUrlIfRequested(){
 
   if(params.get("cart") !== "open"){
     return;
+  }
+
+  const returnTo = params.get("return");
+
+  // Only allow a local product-page return target.
+  if(
+    returnTo &&
+    returnTo.startsWith("product.html?")
+  ){
+    sessionStorage.setItem(
+      "tfl_cart_return_to",
+      returnTo
+    );
+  }else{
+    sessionStorage.removeItem(
+      "tfl_cart_return_to"
+    );
   }
 
   window.setTimeout(()=>{

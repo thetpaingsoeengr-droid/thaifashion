@@ -81,6 +81,32 @@ const text = {
 function t(){ return text[lang] || text.en; }
 function money(v){ return `AED ${Number(v || 0).toFixed(0)}`; }
 
+function cartIconSvg(){
+  return `
+    <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M3 4h2l2.1 9.1a2 2 0 0 0 2 1.6h7.8a2 2 0 0 0 1.9-1.4L21 7H7"/>
+      <circle cx="10" cy="19" r="1.4"/>
+      <circle cx="18" cy="19" r="1.4"/>
+    </svg>
+  `;
+}
+
+function setCartReturnLinks(){
+  const id = new URLSearchParams(window.location.search).get("id");
+  if(!id) return;
+
+  const returnTo = `product.html?id=${encodeURIComponent(id)}`;
+  const href =
+    `index.html?cart=open&return=${encodeURIComponent(returnTo)}`;
+
+  const headerCart = document.querySelector(".pd-cart-link");
+  if(headerCart) headerCart.href = href;
+
+  const viewBag = $("#pdViewBag");
+  if(viewBag) viewBag.href = href;
+}
+
+
 function normalizeProduct(id,d){
   let powers = d.powers ?? null;
   if(typeof powers === "string"){
@@ -377,7 +403,7 @@ function recommendationCard(p){
 
   return `
     <article class="pd-rec-card">
-      <a class="pd-rec-link" href="product.html?id=${encodeURIComponent(p.id)}">
+      <a class="pd-rec-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="${name}">
         <div class="pd-rec-image">
           ${p.image ? `<img src="${p.image}" alt="${name}" loading="lazy" decoding="async">` : ""}
           <span class="pd-rec-stock">${stockText}</span>
@@ -393,16 +419,17 @@ function recommendationCard(p){
           }
         </div>
       </a>
-      <div class="pd-rec-action-wrap">
-        <button
-          class="pd-rec-add"
-          type="button"
-          data-rec-id="${p.id}"
-          ${isOut ? "disabled" : ""}
-        >
-          ${isOut ? t().out : t().addQuick}
-        </button>
-      </div>
+
+      <button
+        class="pd-rec-cart-btn"
+        type="button"
+        data-rec-id="${p.id}"
+        aria-label="${isOut ? t().out : t().addQuick}"
+        title="${isOut ? t().out : t().addQuick}"
+        ${isOut ? "disabled" : ""}
+      >
+        ${cartIconSvg()}
+      </button>
     </article>
   `;
 }
@@ -448,28 +475,26 @@ async function loadRecommendations(){
 
     $("#pdRecommendationsTitle").textContent = recommendationTitle();
     track.innerHTML = items.map(recommendationCard).join("");
+    section.classList.remove("hidden");
 
-    track.querySelectorAll(".pd-rec-add").forEach(btn=>{
-      btn.addEventListener("click", event=>{
-        event.preventDefault();
-        event.stopPropagation();
+    track.querySelectorAll(".pd-rec-cart-btn").forEach(btn=>{
+      btn.addEventListener("click", e=>{
+        e.preventDefault();
+        e.stopPropagation();
 
         const p = items.find(x=>x.id === btn.dataset.recId);
-        if(!p || p.stockStatus === "outofstock") return;
+        if(!p) return;
 
-        /* Power lenses need a Power choice first, so go to that product page.
-           Products without Power are added immediately. */
+        // Power lenses must go to their detail page so the customer can choose power.
         if(Array.isArray(p.powers) && p.powers.length){
           window.location.href =
-            `product.html?id=${encodeURIComponent(p.id)}&add=1`;
+            `product.html?id=${encodeURIComponent(p.id)}`;
           return;
         }
 
         addSimpleProductToBag(p);
       });
     });
-
-    section.classList.remove("hidden");
   }catch(err){
     console.error("Recommendations:",err);
     section.classList.add("hidden");
@@ -494,8 +519,10 @@ function lensCareCard(p){
         <button class="pd-care-add"
                 type="button"
                 data-care-id="${p.id}"
+                aria-label="${isOut ? t().out : t().addQuick}"
+                title="${isOut ? t().out : t().addQuick}"
                 ${isOut ? "disabled" : ""}>
-          ${isOut ? t().out : t().addQuick}
+          ${cartIconSvg()}
         </button>
       </div>
     </article>
@@ -556,21 +583,6 @@ async function loadProduct(){
     $("#pdProduct").classList.remove("hidden");
     renderProduct();
     updateWishlistButton();
-
-    const params = new URLSearchParams(window.location.search);
-    if(params.get("add") === "1"){
-      window.setTimeout(()=>{
-        const target =
-          $("#pdPowerSection") && !$("#pdPowerSection").classList.contains("hidden")
-            ? $("#pdPowerSection")
-            : $("#pdAddBtn");
-
-        if(target){
-          target.scrollIntoView({behavior:"smooth", block:"center"});
-        }
-      }, 180);
-    }
-
     await loadRecommendations();
     await loadLensCare();
   }catch(err){
@@ -596,5 +608,6 @@ $("#pdWishlistBtn").addEventListener("click",toggleWishlist);
 $("#pdShareBtn").addEventListener("click",shareProduct);
 
 updateCartCount();
+setCartReturnLinks();
 applyLanguage();
 loadProduct();
