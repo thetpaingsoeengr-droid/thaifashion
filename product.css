@@ -573,3 +573,25 @@ img.image-load-failed{
 .pd-specs .pd-spec strong{
   word-break: break-word;
 }
+
+
+/* V59 - product unavailable state */
+.pd-not-found{
+  max-width:520px;
+  margin:70px auto;
+  padding:36px 24px;
+  text-align:center;
+  border:1px solid var(--line);
+  border-radius:24px;
+  background:#fff;
+}
+.pd-not-found h1{
+  margin:0 0 10px;
+  font-size:28px;
+}
+.pd-not-found p{
+  margin:0 auto;
+  max-width:420px;
+  color:var(--muted);
+  line-height:1.6;
+}

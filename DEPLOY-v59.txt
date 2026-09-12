@@ -1,0 +1,17 @@
+Thai Fashion Lenses v59 - Production Cleanup
+
+Completed:
+- Internal QA text files removed from production package.
+- Debugger/console.log leftovers removed.
+- Local page/file references checked.
+- Admin remains noindex/nofollow.
+- v58 product colour display retained.
+- v57 secure signed Cloudinary admin upload retained.
+- v56 customer-flow hardening retained.
+- v55 image/performance optimization retained.
+- v54 SEO/social metadata retained.
+- v53 wishlist retained.
+
+Next:
+Connect the custom domain, then finalize canonical URLs, Open Graph URLs,
+favicon/logo, sitemap/robots configuration, and Google Search Console.
