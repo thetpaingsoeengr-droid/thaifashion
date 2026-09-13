@@ -1,0 +1,16 @@
+Thai Fashion Lenses v65 — Compact power preview
+
+Changes:
+- Product listing cards now show only the first 5 available powers.
+- If more than 5 powers exist, an automatic “+N more” chip is shown.
+- Product detail still shows the full power selection.
+- Admin/Firestore power data is unchanged.
+- All v64 features are retained.
+
+Replace on GitHub:
+- index.html
+- script.js
+- styles.css
+
+Optional:
+- DEPLOY-v65.txt

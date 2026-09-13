@@ -895,9 +895,12 @@ function renderProducts(){
                       ${siteLang === "mm" ? "ရနိုင်သော Power" : "Available Power"}
                     </div>
                     <div class="product-power-chips">
-                      ${p.powers.map(power => `
+                      ${p.powers.slice(0, 5).map(power => `
                         <span class="product-power-chip">${power}</span>
                       `).join("")}
+                      ${p.powers.length > 5 ? `
+                        <span class="product-power-more">+${p.powers.length - 5} ${siteLang === "mm" ? "ခု ထပ်ရှိ" : "more"}</span>
+                      ` : ""}
                     </div>
                   </div>
                 `
