@@ -1,0 +1,6 @@
+Thai Fashion Lenses v66.1 hotfix
+- Removes the v66 meta Content-Security-Policy that caused production image/resource blocking.
+- Keeps v66 XSS escaping and safe image URL protections.
+- Keeps all v65 and earlier features.
+- Firestore exact-admin-UID rule remains managed in Firebase Console; do not loosen it.
+Upload/replace the files in this patch.
