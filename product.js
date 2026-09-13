@@ -377,7 +377,7 @@ function renderProduct(){
 
   const specs = [];
   if(product.brand) specs.push(["Brand", product.brand]);
-  if(product.colorKey){
+  if(product.category === "Contact Lenses" && product.colorKey){
     specs.push([
       lang === "mm" ? "အရောင်" : "Colour",
       formatColourName(product.colorKey)

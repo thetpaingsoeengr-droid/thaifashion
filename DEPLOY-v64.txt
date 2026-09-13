@@ -1,0 +1,18 @@
+Thai Fashion Lenses v64 — Category-specific colour field
+
+Changes:
+- Contact Lenses: Colour field remains available in Admin.
+- Accessories and Beauty: Colour field is hidden and ignored in Admin.
+- Saving Accessories/Beauty stores colorKey as null.
+- Existing Accessories/Beauty products with old colour values continue to work; product detail no longer displays colour for those categories.
+- Customer colour filters remain Contact-Lenses-only.
+- v63 discount pricing, v62 total product count, and v61 return-position behavior are retained.
+
+Patch files to replace:
+- admin.html
+- admin.js
+- product.html
+- product.js
+- index.html
+- wishlist.html
+- DEPLOY-v64.txt (optional)

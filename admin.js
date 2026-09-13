@@ -601,9 +601,22 @@ function powersInput(){
    PRODUCT DATA
 ========================= */
 
+function updateColorFieldVisibility(){
+
+  const isContactLens = $("#pCategory").value === "Contact Lenses";
+  const field = $("#colorField");
+
+  if(field){
+    field.style.display = isContactLens ? "" : "none";
+  }
+
+  $("#pColorKey").disabled = !isContactLens;
+}
+
 function payload(){
 
   const stock=$("#pStock").value;
+  const category=$("#pCategory").value;
 
   return {
 
@@ -621,9 +634,12 @@ function payload(){
       ? Number($("#pDiscountPrice").value)
       : null,
 
-    category:$("#pCategory").value,
+    category,
 
-    colorKey:$("#pColorKey").value,
+    colorKey:
+      category === "Contact Lenses"
+        ? $("#pColorKey").value
+        : null,
 
     stockStatus:stock,
 
@@ -680,6 +696,8 @@ function resetForm(){
 
   $("#pWaiting").value="2 weeks";
 
+  updateColorFieldVisibility();
+
   $("#pImage").value="";
   $("#pImage2").value="";
   $("#pImageFile").value="";
@@ -697,6 +715,15 @@ $("#resetBtn").addEventListener(
   "click",
   resetForm
 );
+
+
+/* =========================
+   CATEGORY-SPECIFIC FIELDS
+========================= */
+
+$("#pCategory").addEventListener("change",()=>{
+  updateColorFieldVisibility();
+});
 
 
 /* =========================
@@ -1029,8 +1056,12 @@ async function editProduct(id){
   $("#pCategory").value=
     p.category||"Contact Lenses";
 
-  $("#pColorKey").value=
-    p.colorKey||"gray";
+  updateColorFieldVisibility();
+
+  if($("#pCategory").value === "Contact Lenses"){
+    $("#pColorKey").value=
+      p.colorKey||"gray";
+  }
 
 
   $("#pStock").value =
@@ -1220,8 +1251,9 @@ $("#importBtn").addEventListener(
               "Contact Lenses",
 
             colorKey:
-              p.colorKey||
-              "clear",
+              (p.category||"Contact Lenses") === "Contact Lenses"
+                ? (p.colorKey||"clear")
+                : null,
 
             stockStatus:
               p.stockStatus==="preorder"

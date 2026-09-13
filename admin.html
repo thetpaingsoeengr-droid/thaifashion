@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Thai Fashion Lenses — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=63">
+  <link rel="stylesheet" href="admin.css?v=64">
 </head>
 <body>
   <main class="admin-shell">
@@ -55,13 +55,14 @@
           <label>Category *
             <select id="pCategory"><option>Contact Lenses</option><option>Accessories</option><option>Beauty</option></select>
           </label>
-          <label>Color *
+          <label id="colorField">Color *
             <select id="pColorKey">
               <option value="gray">Gray</option><option value="brown">Brown</option><option value="green">Green</option>
               <option value="blue">Blue</option><option value="red">Red</option><option value="yellow">Yellow</option>
               <option value="clear">Clear</option><option value="purple">Purple</option><option value="black">Black</option>
               <option value="pink">Pink</option>
             </select>
+          </label>
           <label>Availability *
   <select id="pStock">
     <option value="instock">In Stock</option>
@@ -129,6 +130,6 @@
       </section>
     </section>
   </main>
-  <script type="module" src="admin.js?v=63"></script>
+  <script type="module" src="admin.js?v=64"></script>
 </body>
 </html>
