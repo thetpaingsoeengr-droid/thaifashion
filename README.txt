@@ -46,8 +46,3 @@ You can upload these files to:
 - Netlify
 - GitHub Pages
 - Cloudflare Pages
-
-IMPORTANT
----------
-This is an original storefront inspired by the clean browsing pattern of wishlistoftheday.shop,
-not a direct copy of its branding or assets.
