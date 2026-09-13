@@ -1991,3 +1991,8 @@ img.image-load-failed{
     font-size:8px;
   }
 }
+
+/* V66.2 hotfix: product images must remain visible without inline onload handlers. */
+.real-product-image{
+  opacity:1 !important;
+}

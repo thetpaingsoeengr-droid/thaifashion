@@ -1,0 +1,17 @@
+V66.2 IMAGE VISIBILITY HOTFIX
+
+Root cause fixed:
+V66 security hardening removed the old inline image onload handler, while existing CSS still kept .real-product-image at opacity:0 until the is-loaded class was added.
+That made valid Cloudinary images load but remain invisible.
+
+Fix:
+- Product card images are now visible without inline event handlers.
+- No Firestore rule change is included.
+- V66 text escaping / URL safety hardening remains.
+- All V65/V64/V63/V62/V61 features remain.
+
+Replace from patch:
+- index.html
+- styles.css
+
+If you previously uploaded all V66.1 files, these two files are enough.
