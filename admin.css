@@ -23,3 +23,8 @@ input,select,textarea{width:100%;border:1px solid var(--line);border-radius:12px
 .image-preview{display:block;width:100%;max-width:280px;aspect-ratio:1/1;object-fit:cover;border-radius:14px;margin-bottom:10px;background:var(--soft)}
 .upload-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
 #pImageFile{padding:10px;background:var(--bg)}
+
+
+/* v63 discount pricing */
+.admin-product-info s{color:var(--muted)}
+.admin-product-info span strong{color:#b91c1c}

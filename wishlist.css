@@ -222,3 +222,9 @@ img.image-load-failed{
   background-size:18px 18px;
   min-height:120px;
 }
+
+
+/* v63 discount pricing */
+.wl-price{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.wl-price-old{text-decoration:line-through;color:#8d8d8d;font-weight:600}
+.wl-price-sale{color:#b91c1c;font-weight:900}

@@ -1,0 +1,26 @@
+Thai Fashion Lenses v63 — Discount Price
+
+New feature:
+- Admin has optional Discount Price (AED).
+- Discount must be lower than Regular Price.
+- Customer product cards show regular price struck through, sale price, and auto-calculated % OFF.
+- Product detail, recommendations, lens-care cards, wishlist and cart use/display discount pricing.
+- Cart and WhatsApp subtotal use the discounted payable price.
+- Products without a discount continue to show the normal price only.
+- v62 total-product-count and v61 return-to-list-position behavior are retained.
+
+Upload/replace for patch deployment:
+admin.html
+admin.js
+admin.css
+index.html
+script.js
+firebase-products.js
+styles.css
+product.html
+product.js
+product.css
+wishlist.html
+wishlist.js
+wishlist.css
+DEPLOY-v63.txt (optional)

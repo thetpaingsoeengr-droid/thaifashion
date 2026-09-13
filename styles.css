@@ -1953,3 +1953,12 @@ img.image-load-failed{
   }
   .store-total-count strong{font-size:13px}
 }
+
+
+/* v63 discount pricing */
+.product-price{display:flex;align-items:center;gap:6px;flex-wrap:wrap}
+.price-original{text-decoration:line-through;color:#8d8d8d;font-weight:600;font-size:.9em}
+.price-sale{font-weight:900;color:#b91c1c}
+.price-current{font-weight:900}
+.discount-badge{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;background:#fee2e2;color:#991b1b;font-size:11px;font-weight:800;line-height:1.2;white-space:nowrap}
+.discount-badge.compact{padding:2px 6px;font-size:10px}

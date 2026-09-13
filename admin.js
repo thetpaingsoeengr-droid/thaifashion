@@ -617,6 +617,10 @@ function payload(){
 
     price:Number($("#pPrice").value||0),
 
+    discountPrice: $("#pDiscountPrice").value.trim()
+      ? Number($("#pDiscountPrice").value)
+      : null,
+
     category:$("#pCategory").value,
 
     colorKey:$("#pColorKey").value,
@@ -747,6 +751,13 @@ $("#productForm").addEventListener(
       return msg(
         $("#formMessage"),
         "Product name is required."
+      );
+    }
+
+    if(p.discountPrice !== null && (p.discountPrice <= 0 || p.discountPrice >= p.price)){
+      return msg(
+        $("#formMessage"),
+        "Discount price must be greater than 0 and lower than the regular price."
       );
     }
 
@@ -917,7 +928,9 @@ onSnapshot(
             <strong>${esc(p.name)}</strong>
 
             <span>
-              AED ${Number(p.price||0).toFixed(0)}
+              ${Number(p.discountPrice||0) > 0 && Number(p.discountPrice) < Number(p.price||0)
+                ? `<s>AED ${Number(p.price||0).toFixed(0)}</s> <strong>AED ${Number(p.discountPrice).toFixed(0)}</strong> • ${Math.round((1 - Number(p.discountPrice)/Number(p.price||0))*100)}% OFF`
+                : `AED ${Number(p.price||0).toFixed(0)}`}
               • ${stockText}
               • ${esc(p.colorKey||"")}
               ${p.brand ? ` • ${esc(p.brand)}` : ""}
@@ -1009,6 +1022,9 @@ async function editProduct(id){
   $("#pSize").value=p.size||"";
 
   $("#pPrice").value=p.price??0;
+
+  $("#pDiscountPrice").value=
+    Number(p.discountPrice||0) > 0 ? p.discountPrice : "";
 
   $("#pCategory").value=
     p.category||"Contact Lenses";
@@ -1193,6 +1209,11 @@ $("#importBtn").addEventListener(
             size:p.size||"",
 
             price:Number(p.price||0),
+
+            discountPrice:
+              Number(p.discountPrice||0) > 0 && Number(p.discountPrice) < Number(p.price||0)
+                ? Number(p.discountPrice)
+                : null,
 
             category:
               p.category||

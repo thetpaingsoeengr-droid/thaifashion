@@ -275,6 +275,12 @@ function normalizeProduct(snap){
         d.price || 0
       ),
 
+    discountPrice:
+      Number(d.discountPrice || 0) > 0 &&
+      Number(d.discountPrice || 0) < Number(d.price || 0)
+        ? Number(d.discountPrice)
+        : null,
+
     category:
       d.category ||
       "Contact Lenses",

@@ -133,7 +133,11 @@ function render(){
           <a class="wl-name" href="product.html?id=${id}">
             ${escapeHtml(displayName(item))}
           </a>
-          <div class="wl-price">${money(item.price)}</div>
+          <div class="wl-price">${
+            Number(item.discountPrice||0) > 0 && Number(item.discountPrice) < Number(item.price||0)
+              ? `<span class="wl-price-old">${money(item.price)}</span><span class="wl-price-sale">${money(item.discountPrice)}</span>`
+              : money(item.price)
+          }</div>
           <div class="wl-card-actions">
             <a class="wl-view" href="product.html?id=${id}">
               ${escapeHtml(t().view)}

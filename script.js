@@ -154,6 +154,32 @@ function money(n){
   return `AED ${Number(n).toFixed(0)}`;
 }
 
+function validDiscountPrice(product){
+  const regular = Number(product?.price || 0);
+  const discount = Number(product?.discountPrice || 0);
+  return regular > 0 && discount > 0 && discount < regular ? discount : null;
+}
+
+function effectivePrice(product){
+  return validDiscountPrice(product) ?? Number(product?.price || 0);
+}
+
+function discountPercent(product){
+  const discount = validDiscountPrice(product);
+  const regular = Number(product?.price || 0);
+  return discount ? Math.round((1 - discount / regular) * 100) : 0;
+}
+
+function priceMarkup(product, compact=false){
+  const discount = validDiscountPrice(product);
+  if(!discount) return `<span class="price-current">${money(product.price)}</span>`;
+  return `
+    <span class="price-original">${money(product.price)}</span>
+    <span class="price-sale">${money(discount)}</span>
+    <span class="discount-badge${compact ? " compact" : ""}">${discountPercent(product)}% OFF</span>
+  `;
+}
+
 
 /* =========================================
    CATEGORIES
@@ -523,11 +549,11 @@ function filteredProducts(){
     sortSelect ? sortSelect.value : "featured";
 
   if(sort === "low"){
-    list.sort((a,b)=>a.price-b.price);
+    list.sort((a,b)=>effectivePrice(a)-effectivePrice(b));
   }
 
   if(sort === "high"){
-    list.sort((a,b)=>b.price-a.price);
+    list.sort((a,b)=>effectivePrice(b)-effectivePrice(a));
   }
 
   if(sort === "name"){
@@ -847,7 +873,7 @@ function renderProducts(){
             </div>
 
             <div class="product-price">
-              ${money(p.price)}
+              ${priceMarkup(p, true)}
             </div>
 
             ${
@@ -954,10 +980,8 @@ function openProduct(id){
       selectedProduct.category
     );
 
-  $("#modalPrice").textContent =
-    money(
-      selectedProduct.price
-    );
+  $("#modalPrice").innerHTML =
+    priceMarkup(selectedProduct);
 
   const stockText =
     isPreorder
@@ -1151,7 +1175,7 @@ function addToCart(){
       name:selectedProduct.name,
       brand:selectedProduct.brand || "",
       size:selectedProduct.size || "",
-      price:selectedProduct.price,
+      price:effectivePrice(selectedProduct),
       qty,
       power,
       color:selectedProduct.color,

@@ -126,6 +126,32 @@ const text = {
 function t(){ return text[lang] || text.en; }
 function money(v){ return `AED ${Number(v || 0).toFixed(0)}`; }
 
+function validDiscountPrice(item){
+  const regular = Number(item?.price || 0);
+  const discount = Number(item?.discountPrice || 0);
+  return regular > 0 && discount > 0 && discount < regular ? discount : null;
+}
+
+function effectivePrice(item){
+  return validDiscountPrice(item) ?? Number(item?.price || 0);
+}
+
+function discountPercent(item){
+  const discount = validDiscountPrice(item);
+  const regular = Number(item?.price || 0);
+  return discount ? Math.round((1 - discount / regular) * 100) : 0;
+}
+
+function priceMarkup(item, compact=false){
+  const discount = validDiscountPrice(item);
+  if(!discount) return `<span class="price-current">${money(item.price)}</span>`;
+  return `
+    <span class="price-original">${money(item.price)}</span>
+    <span class="price-sale">${money(discount)}</span>
+    <span class="discount-badge${compact ? " compact" : ""}">${discountPercent(item)}% OFF</span>
+  `;
+}
+
 function cartIconSvg(){
   return `
     <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false">
@@ -244,6 +270,10 @@ function normalizeProduct(id,d){
     brand:d.brand || "",
     size:d.size || "",
     price:Number(d.price || 0),
+    discountPrice:
+      Number(d.discountPrice || 0) > 0 && Number(d.discountPrice || 0) < Number(d.price || 0)
+        ? Number(d.discountPrice)
+        : null,
     category:d.category || "Contact Lenses",
     colorKey:d.colorKey || d.colour || d.color || "",
     stockStatus:d.stockStatus || "instock",
@@ -306,7 +336,7 @@ function renderProduct(){
   document.title = `${product.name} • Thai Fashion Lenses`;
   $("#pdName").textContent = lang === "mm" && product.nameMM ? product.nameMM : product.name;
   $("#pdCategory").textContent = product.category;
-  $("#pdPrice").textContent = money(product.price);
+  $("#pdPrice").innerHTML = priceMarkup(product);
 
   const img = $("#pdImage");
   if(product.image){
@@ -440,6 +470,7 @@ function toggleWishlist(){
       nameMM:product.nameMM || "",
       brand:product.brand || "",
       price:product.price,
+      discountPrice:validDiscountPrice(product),
       image:product.image || ""
     });
   }
@@ -454,7 +485,7 @@ async function shareProduct(){
 
   const shareData = {
     title: product.name,
-    text: `${product.name} - ${money(product.price)}`,
+    text: `${product.name} - ${money(effectivePrice(product))}`,
     url: window.location.href
   };
 
@@ -504,7 +535,7 @@ function addSimpleProductToBag(p){
       name:p.name,
       brand:p.brand || "",
       size:p.size || "",
-      price:p.price,
+      price:effectivePrice(p),
       qty:1,
       power:null,
       image:p.image || null
@@ -544,7 +575,7 @@ function addToBag(){
       name:product.name,
       brand:product.brand || "",
       size:product.size || "",
-      price:product.price,
+      price:effectivePrice(product),
       qty,
       power,
       image:product.image || null
@@ -584,7 +615,7 @@ function recommendationCard(p){
         <div class="pd-rec-body">
           <div class="pd-rec-brand">${p.brand || "&nbsp;"}</div>
           <div class="pd-rec-name">${name}</div>
-          <div class="pd-rec-price">${money(p.price)}</div>
+          <div class="pd-rec-price">${priceMarkup(p, true)}</div>
           ${
             product.category === "Contact Lenses" && p.colorKey
               ? `<div class="pd-rec-colour">${p.colorKey}</div>`
@@ -688,7 +719,7 @@ function lensCareCard(p){
       </a>
       <div class="pd-care-body">
         <div class="pd-care-name">${name}</div>
-        <div class="pd-care-price">${money(p.price)}</div>
+        <div class="pd-care-price">${priceMarkup(p, true)}</div>
         <button class="pd-care-add"
                 type="button"
                 data-care-id="${p.id}"
