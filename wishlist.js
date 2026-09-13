@@ -83,6 +83,16 @@ function money(value){
   return `AED ${Number(value || 0).toFixed(0)}`;
 }
 
+function safeImageUrl(value){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+  try{
+    const u = new URL(raw, window.location.href);
+    if(u.protocol !== "https:" && u.protocol !== "http:") return "";
+    return u.href;
+  }catch(e){ return ""; }
+}
+
 function escapeHtml(value){
   return String(value ?? "")
     .replaceAll("&","&amp;")
@@ -120,7 +130,7 @@ function render(){
   grid.innerHTML = list.map(item=>{
     const id = encodeURIComponent(item.id || "");
     const image = item.image
-      ? `<img src="${escapeHtml(optimizeCloudinaryImage(item.image, 600))}" alt="${escapeHtml(displayName(item))}" loading="lazy" decoding="async">`
+      ? `<img src="${escapeHtml(safeImageUrl(optimizeCloudinaryImage(item.image, 600)))}" alt="${escapeHtml(displayName(item))}" loading="lazy" decoding="async">`
       : "";
 
     return `

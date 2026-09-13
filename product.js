@@ -36,6 +36,22 @@ const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 const $ = s => document.querySelector(s);
 
+/* V66 - escape Firestore data used in generated HTML. */
+function escapeHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[ch]));
+}
+function safeImageUrl(value){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+  try{
+    const u = new URL(raw, window.location.href);
+    if(u.protocol !== "https:" && u.protocol !== "http:") return "";
+    return u.href;
+  }catch(e){ return ""; }
+}
+
 /* V61 - Back returns to the exact previous shop history entry. */
 function installSmartBackButton(){
   const backBtn = document.getElementById("pdBackBtn");
@@ -355,7 +371,7 @@ function renderProduct(){
             class="pd-thumb ${index===0 ? "active" : ""}"
             data-image-index="${index}"
             aria-label="View product image ${index+1}">
-      <img src="${optimizeCloudinaryImage(url, 320)}" alt="${product.name} ${index+1}">
+      <img src="${escapeHtml(safeImageUrl(optimizeCloudinaryImage(url, 320)))}" alt="${escapeHtml(product.name)} ${index+1}">
     </button>
   `).join("");
 
@@ -388,7 +404,7 @@ function renderProduct(){
   const specsEl = $("#pdSpecs");
   specsEl.classList.toggle("hidden", !specs.length);
   specsEl.innerHTML = specs.map(([label,value]) =>
-    `<div class="pd-spec"><small>${label}</small><strong>${value}</strong></div>`
+    `<div class="pd-spec"><small>${escapeHtml(label)}</small><strong>${escapeHtml(value)}</strong></div>`
   ).join("");
 
   const hasPowers = Array.isArray(product.powers) && product.powers.length;
@@ -399,7 +415,7 @@ function renderProduct(){
       selectedPower = product.powers[0];
     }
     $("#pdPowerOptions").innerHTML = product.powers.map(power =>
-      `<button type="button" class="pd-power-btn ${power === selectedPower ? "active" : ""}" data-power="${power}">${power}</button>`
+      `<button type="button" class="pd-power-btn ${power === selectedPower ? "active" : ""}" data-power="${escapeHtml(power)}">${escapeHtml(power)}</button>`
     ).join("");
 
     document.querySelectorAll(".pd-power-btn").forEach(btn=>{
@@ -607,18 +623,18 @@ function recommendationCard(p){
 
   return `
     <article class="pd-rec-card">
-      <a class="pd-rec-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="${name}">
+      <a class="pd-rec-link" href="product.html?id=${encodeURIComponent(p.id)}" aria-label="${escapeHtml(name)}">
         <div class="pd-rec-image">
-          ${p.image ? `<img src="${optimizeCloudinaryImage(p.image, 520)}" alt="${name}" loading="lazy" decoding="async">` : ""}
-          <span class="pd-rec-stock">${stockText}</span>
+          ${p.image ? `<img src="${escapeHtml(safeImageUrl(optimizeCloudinaryImage(p.image, 520)))}" alt="${escapeHtml(name)}" loading="lazy" decoding="async">` : ""}
+          <span class="pd-rec-stock">${escapeHtml(stockText)}</span>
         </div>
         <div class="pd-rec-body">
-          <div class="pd-rec-brand">${p.brand || "&nbsp;"}</div>
-          <div class="pd-rec-name">${name}</div>
+          <div class="pd-rec-brand">${p.brand ? escapeHtml(p.brand) : "&nbsp;"}</div>
+          <div class="pd-rec-name">${escapeHtml(name)}</div>
           <div class="pd-rec-price">${priceMarkup(p, true)}</div>
           ${
             product.category === "Contact Lenses" && p.colorKey
-              ? `<div class="pd-rec-colour">${p.colorKey}</div>`
+              ? `<div class="pd-rec-colour">${escapeHtml(p.colorKey)}</div>`
               : ""
           }
         </div>
@@ -712,13 +728,13 @@ function lensCareCard(p){
 
   return `
     <article class="pd-care-card">
-      <a href="product.html?id=${encodeURIComponent(p.id)}" aria-label="${name}">
+      <a href="product.html?id=${encodeURIComponent(p.id)}" aria-label="${escapeHtml(name)}">
         <div class="pd-care-image">
-          ${p.image ? `<img src="${optimizeCloudinaryImage(p.image, 520)}" alt="${name}" loading="lazy" decoding="async">` : ""}
+          ${p.image ? `<img src="${escapeHtml(safeImageUrl(optimizeCloudinaryImage(p.image, 520)))}" alt="${escapeHtml(name)}" loading="lazy" decoding="async">` : ""}
         </div>
       </a>
       <div class="pd-care-body">
-        <div class="pd-care-name">${name}</div>
+        <div class="pd-care-name">${escapeHtml(name)}</div>
         <div class="pd-care-price">${priceMarkup(p, true)}</div>
         <button class="pd-care-add"
                 type="button"

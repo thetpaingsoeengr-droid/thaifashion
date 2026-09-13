@@ -1,0 +1,12 @@
+Thai Fashion Lenses v66 - Security Hardening
+
+Changes:
+- Added CSP meta policy to customer and admin pages.
+- Escapes Firestore values before inserting them into generated customer HTML.
+- Rejects non-http(s) image URL schemes in generated HTML.
+- Removed inline image onload handler so script CSP can remain strict.
+- Preserves v65 compact powers, v64 category-aware colour, v63 discount pricing, v62 total count, and v61 back-position restore.
+
+IMPORTANT: Firestore rules are managed/deployed separately. Keep the exact-admin-UID write restriction you already restored in Firebase Console.
+
+Upload/replace the patch files, then hard-refresh the site.

@@ -149,6 +149,22 @@ const productGrid = $("#productGrid");
 const categoryFilters = $("#categoryFilters");
 const sortSelect = $("#sortSelect");
 
+/* V66 - escape untrusted Firestore/customer data before HTML rendering. */
+function escapeHtml(value){
+  return String(value ?? "").replace(/[&<>"']/g, ch => ({
+    "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+  }[ch]));
+}
+function safeImageUrl(value){
+  const raw = String(value || "").trim();
+  if(!raw) return "";
+  try{
+    const u = new URL(raw, window.location.href);
+    if(u.protocol !== "https:" && u.protocol !== "http:") return "";
+    return u.href;
+  }catch(e){ return ""; }
+}
+
 
 function money(n){
   return `AED ${Number(n).toFixed(0)}`;
@@ -812,7 +828,7 @@ function renderProducts(){
       return `
         <article
           class="product-card rounded-product-card"
-          data-id="${p.id}"
+          data-id="${escapeHtml(p.id)}"
         >
 
           <div
@@ -830,13 +846,12 @@ function renderProducts(){
               p.image
                 ? `
                   <img
-                    src="${p.image}"
-                    alt="${p.name}"
+                    src="${escapeHtml(safeImageUrl(p.image))}"
+                    alt="${escapeHtml(p.name)}"
                     class="real-product-image"
                     loading="${index < 4 ? "eager" : "lazy"}"
                     decoding="async"
                     fetchpriority="${index < 2 ? "high" : "auto"}"
-                    onload="this.classList.add('is-loaded')"
                   >
                 `
                 : ""
@@ -844,13 +859,13 @@ function renderProducts(){
 
             <!-- ONLY ONE STATUS LABEL -->
             <span class="stock-status ${stockClass}">
-              ${stockText}
+              ${escapeHtml(stockText)}
             </span>
 
             <button
               class="quick-add"
-              aria-label="View ${p.name}"
-              data-id="${p.id}"
+              aria-label="View ${escapeHtml(p.name)}"
+              data-id="${escapeHtml(p.id)}"
             >
               +
             </button>
@@ -860,15 +875,15 @@ function renderProducts(){
           <div class="product-info">
 
             <div class="product-category">
-              ${localizedCategory(p.category)}
+              ${escapeHtml(localizedCategory(p.category))}
             </div>
 
             <div class="product-title">
               ${
                 siteLang === "mm" &&
                 p.nameMM
-                  ? p.nameMM
-                  : p.name
+                  ? escapeHtml(p.nameMM)
+                  : escapeHtml(p.name)
               }
             </div>
 
@@ -880,8 +895,8 @@ function renderProducts(){
               p.brand || p.size
                 ? `
                   <div class="product-details-mini">
-                    ${p.brand ? `<span><strong>${siteLang === "mm" ? "Brand" : "Brand"}:</strong> ${p.brand}</span>` : ""}
-                    ${p.size ? `<span><strong>${siteLang === "mm" ? "အရွယ်အစား" : "Size"}:</strong> ${p.size}</span>` : ""}
+                    ${p.brand ? `<span><strong>${siteLang === "mm" ? "Brand" : "Brand"}:</strong> ${escapeHtml(p.brand)}</span>` : ""}
+                    ${p.size ? `<span><strong>${siteLang === "mm" ? "အရွယ်အစား" : "Size"}:</strong> ${escapeHtml(p.size)}</span>` : ""}
                   </div>
                 `
                 : ""
@@ -896,7 +911,7 @@ function renderProducts(){
                     </div>
                     <div class="product-power-chips">
                       ${p.powers.slice(0, 5).map(power => `
-                        <span class="product-power-chip">${power}</span>
+                        <span class="product-power-chip">${escapeHtml(power)}</span>
                       `).join("")}
                       ${p.powers.length > 5 ? `
                         <span class="product-power-more">+${p.powers.length - 5} ${siteLang === "mm" ? "ခု ထပ်ရှိ" : "more"}</span>
@@ -1012,22 +1027,22 @@ function openProduct(id){
     isPreorder
       ? `
         <span class="modal-waiting">
-          ${waitLabel}
+          ${escapeHtml(waitLabel)}
         </span>
       `
       : "";
 
   $("#modalStockInfo").innerHTML = `
     <span class="modal-stock-pill ${stockClass}">
-      ${stockText}
+      ${escapeHtml(stockText)}
     </span>
     ${waitText}
     ${
       selectedProduct.brand || selectedProduct.size
         ? `
           <div class="modal-product-details">
-            ${selectedProduct.brand ? `<div><strong>Brand:</strong> ${selectedProduct.brand}</div>` : ""}
-            ${selectedProduct.size ? `<div><strong>${siteLang === "mm" ? "အရွယ်အစား" : "Size"}:</strong> ${selectedProduct.size}</div>` : ""}
+            ${selectedProduct.brand ? `<div><strong>Brand:</strong> ${escapeHtml(selectedProduct.brand)}</div>` : ""}
+            ${selectedProduct.size ? `<div><strong>${siteLang === "mm" ? "အရွယ်အစား" : "Size"}:</strong> ${escapeHtml(selectedProduct.size)}</div>` : ""}
           </div>
         `
         : ""
@@ -1060,8 +1075,8 @@ function openProduct(id){
     selectedProduct.image
       ? `
         <img
-          src="${selectedProduct.image}"
-          alt="${selectedProduct.name}"
+          src="${escapeHtml(safeImageUrl(selectedProduct.image))}"
+          alt="${escapeHtml(selectedProduct.name)}"
           class="modal-real-image"
           decoding="async"
         >
@@ -1080,7 +1095,7 @@ function openProduct(id){
       selectedProduct.powers
         .map(
           x =>
-            `<option value="${x}">${x}</option>`
+            `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`
         )
         .join("");
   }
@@ -1275,8 +1290,8 @@ function renderCart(){
               cartImage
                 ? `
                   <img
-                    src="${cartImage}"
-                    alt="${x.name}"
+                    src="${escapeHtml(safeImageUrl(cartImage))}"
+                    alt="${escapeHtml(x.name)}"
                     class="cart-real-image"
                     loading="lazy"
                     decoding="async"
@@ -1289,13 +1304,13 @@ function renderCart(){
 
           <div class="cart-item-main">
 
-            <h4>${x.name}</h4>
+            <h4>${escapeHtml(x.name)}</h4>
 
             <div class="cart-meta">
 
               ${
                 x.power
-                  ? `<span>Power ${x.power}</span>`
+                  ? `<span>Power ${escapeHtml(x.power)}</span>`
                   : ""
               }
 
