@@ -595,6 +595,8 @@ function addSimpleProductToBag(p){
   const existing = cart.find(x=>x.key === key);
   if(existing){
     existing.qty += 1;
+    existing.stockStatus = p.stockStatus || "instock";
+    existing.waitingPeriod = p.waitingPeriod || "";
   }else{
     cart.push({
       key,
@@ -605,7 +607,9 @@ function addSimpleProductToBag(p){
       price:effectivePrice(p),
       qty:1,
       power:null,
-      image:p.image || null
+      image:p.image || null,
+      stockStatus:p.stockStatus || "instock",
+      waitingPeriod:p.waitingPeriod || ""
     });
   }
 
@@ -638,6 +642,8 @@ function addToBag(){
   const existing = cart.find(x=>x.key === key);
   if(existing){
     existing.qty += qty;
+    existing.stockStatus = variant?.stockStatus || product.stockStatus || "instock";
+    existing.waitingPeriod = variant?.waitingPeriod || product.waitingPeriod || "";
   }else{
     cart.push({
       key,
@@ -649,7 +655,9 @@ function addToBag(){
       price:effectivePrice(variant || product),
       qty,
       power,
-      image:variant?.images?.[0] || product.image || null
+      image:variant?.images?.[0] || product.image || null,
+      stockStatus:variant?.stockStatus || product.stockStatus || "instock",
+      waitingPeriod:variant?.waitingPeriod || product.waitingPeriod || ""
     });
   }
 

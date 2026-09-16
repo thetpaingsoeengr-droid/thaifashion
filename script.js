@@ -1190,6 +1190,8 @@ function addToCart(){
 
   if(existing){
     existing.qty += qty;
+    existing.stockStatus = selectedProduct.stockStatus || "instock";
+    existing.waitingPeriod = selectedProduct.waitingPeriod || "";
   }else{
     cart.push({
       key,
@@ -1201,7 +1203,9 @@ function addToCart(){
       qty,
       power,
       color:selectedProduct.color,
-      image:selectedProduct.image || null
+      image:selectedProduct.image || null,
+      stockStatus:selectedProduct.stockStatus || "instock",
+      waitingPeriod:selectedProduct.waitingPeriod || ""
     });
   }
 
@@ -1552,6 +1556,21 @@ function orderWhatsApp(){
           liveProduct?.size ||
           "";
 
+        const stockStatus =
+          x.stockStatus ||
+          liveProduct?.stockStatus ||
+          "instock";
+
+        const waitingPeriod =
+          x.waitingPeriod ||
+          liveProduct?.waitingPeriod ||
+          "";
+
+        const preorderInfo =
+          stockStatus === "preorder"
+            ? ` | PRE-ORDER${waitingPeriod ? ` (${waitingPeriod})` : ""}`
+            : "";
+
         return (
           `${i+1}. ${x.name}` +
           `${brand ? ` | Brand: ${brand}` : ""}` +
@@ -1562,6 +1581,7 @@ function orderWhatsApp(){
               ? ` | Power ${x.power}`
               : ""
           }` +
+          preorderInfo +
           ` | Qty ${x.qty}` +
           ` | ${money(x.price*x.qty)}`
         );
