@@ -606,7 +606,8 @@ function variantRowTemplate(v={}){
   const stock = v.stockStatus || "instock";
   return `
     <div class="variant-row" data-image1="${esc(images[0]||"")}" data-image2="${esc(images[1]||"")}">
-      <label>Colour<input class="v-color" placeholder="e.g. Rose Pink" value="${esc(v.color||"")}"></label>
+      <label>Variant Name *<input class="v-name" placeholder="e.g. Venice / Taylor" value="${esc(v.name||"")}"></label>
+      <label>Colour<input class="v-color" placeholder="e.g. Gray / Brown" value="${esc(v.color||"")}"></label>
       <label>Size<input class="v-size" placeholder="e.g. 5 ml / Small" value="${esc(v.size||"")}"></label>
       <label>Regular Price (AED)<input class="v-price" type="number" min="0" step="1" placeholder="35" value="${v.price ?? ""}"></label>
       <label>Discount Price<input class="v-discount" type="number" min="0" step="1" placeholder="Optional" value="${v.discountPrice ?? ""}"></label>
@@ -628,6 +629,7 @@ function readVariants(){
     const priceRaw=row.querySelector(".v-price").value.trim();
     const discountRaw=row.querySelector(".v-discount").value.trim();
     return {
+      name:row.querySelector(".v-name").value.trim(),
       color:row.querySelector(".v-color").value.trim(),
       size:row.querySelector(".v-size").value.trim(),
       price:priceRaw ? Number(priceRaw) : Number($("#pPrice").value||0),
@@ -638,7 +640,7 @@ function readVariants(){
       _row:row,
       _index:index
     };
-  }).filter(v=>v.color || v.size);
+  }).filter(v=>v.name || v.color || v.size);
 }
 
 async function uploadVariantImages(variants){
@@ -723,6 +725,14 @@ function payload(){
     powers:powersInput(),
 
     variants:readVariants().map(v=>{ const x={...v}; delete x._row; delete x._index; return x; }),
+
+    variantColors: category === "Contact Lenses"
+      ? [...new Set(readVariants().map(v=>String(v.color||"").trim().toLowerCase()).filter(Boolean))]
+      : [],
+
+    searchColors: category === "Contact Lenses"
+      ? [...new Set([$("#pColorKey").value, ...readVariants().map(v=>String(v.color||"").trim().toLowerCase())].filter(Boolean))]
+      : [],
 
     imageUrl:$("#pImage").value.trim(),
 
@@ -855,8 +865,8 @@ $("#productForm").addEventListener(
     }
 
     for(const v of readVariants()){
-      if(!v.color && !v.size){
-        return msg($("#formMessage"), "Each variant needs a colour or size.");
+      if(!v.name){
+        return msg($("#formMessage"), `Variant ${v._index+1}: Variant Name is required.`);
       }
       if(v.discountPrice !== null && (v.discountPrice <= 0 || v.discountPrice >= v.price)){
         return msg($("#formMessage"), `Variant ${v._index+1}: discount price must be lower than regular price.`);
@@ -870,6 +880,12 @@ $("#productForm").addEventListener(
     try{
 
       p.variants = await uploadVariantImages(readVariants());
+      p.variantColors = p.category === "Contact Lenses"
+        ? [...new Set(p.variants.map(v=>String(v.color||"").trim().toLowerCase()).filter(Boolean))]
+        : [];
+      p.searchColors = p.category === "Contact Lenses"
+        ? [...new Set([p.colorKey, ...p.variantColors].filter(Boolean))]
+        : [];
 
       const imageFile=$("#pImageFile").files?.[0];
       if(imageFile){
@@ -1137,7 +1153,7 @@ async function editProduct(id){
 
   if($("#pCategory").value === "Contact Lenses"){
     $("#pColorKey").value=
-      p.colorKey||"gray";
+      p.colorKey||"";
   }
 
 

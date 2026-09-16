@@ -290,7 +290,7 @@ function normalizeProduct(snap){
         d.colorKey ||
         d.colour ||
         d.color ||
-        "clear"
+        ""
       )
         .trim()
         .toLowerCase(),
@@ -317,8 +317,8 @@ function normalizeProduct(snap){
       d.type ||
       "",
 
-    image:images[0] || image,
-    images,
+    image:images[0] || image || ((Array.isArray(d.variants) ? d.variants : []).flatMap(v=>Array.isArray(v?.images)?v.images:[]).find(Boolean) || ""),
+    images: images.length ? images : (()=>{ const u=(Array.isArray(d.variants)?d.variants:[]).flatMap(v=>Array.isArray(v?.images)?v.images:[]).find(Boolean); return u?[u]:[]; })(),
 
     desc:
       d.description ||

@@ -1574,6 +1574,7 @@ function orderWhatsApp(){
         return (
           `${i+1}. ${x.name}` +
           `${brand ? ` | Brand: ${brand}` : ""}` +
+          `${x.variantName ? ` | Variant: ${x.variantName}` : ""}` +
           `${x.color ? ` | Colour: ${x.color}` : ""}` +
           `${size ? ` | Size: ${size}` : ""}` +
           `${

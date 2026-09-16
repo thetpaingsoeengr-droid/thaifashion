@@ -1,0 +1,10 @@
+Thai Fashion Lenses v68 — Named Variants + Optional Main Colour
+
+Changes:
+- Variant identifier is now Variant Name, not Colour.
+- Variant Colour remains a separate field.
+- Main product colour can be blank when variants are used.
+- Non-variant products continue to work normally.
+- If main product has no image, product list/detail falls back to the first variant image available.
+- WhatsApp order includes Variant Name, Colour, and PRE-ORDER waiting period.
+- Existing non-variant colour filtering remains unchanged.

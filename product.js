@@ -285,11 +285,11 @@ function normalizeProduct(id,d){
     const vPrice = Number(v?.price || d.price || 0);
     const vDiscount = Number(v?.discountPrice || 0);
     return {
-      index, color:String(v?.color||"").trim(), size:String(v?.size||"").trim(),
+      index, name:String(v?.name||v?.color||v?.size||`Variant ${index+1}`).trim(), color:String(v?.color||"").trim(), size:String(v?.size||"").trim(),
       price:vPrice, discountPrice:vDiscount > 0 && vDiscount < vPrice ? vDiscount : null,
       stockStatus:v?.stockStatus || "instock", waitingPeriod:String(v?.waitingPeriod||"").trim(), images:vImages
     };
-  }).filter(v=>v.color || v.size) : [];
+  }).filter(v=>v.name || v.color || v.size) : [];
 
   return {
     id,
@@ -362,11 +362,9 @@ function activeVariant(){
   return Array.isArray(product?.variants) && product.variants.length ? product.variants[selectedVariantIndex] || product.variants[0] : null;
 }
 
-function selectVariantBy(color, size){
+function selectVariantByName(name){
   const variants=product?.variants||[];
-  let idx=variants.findIndex(v=>(color==null||v.color===color)&&(size==null||v.size===size));
-  if(idx<0 && color!=null) idx=variants.findIndex(v=>v.color===color);
-  if(idx<0 && size!=null) idx=variants.findIndex(v=>v.size===size);
+  const idx=variants.findIndex(v=>v.name===name);
   if(idx>=0){ selectedVariantIndex=idx; renderProduct(); }
 }
 
@@ -377,16 +375,14 @@ function renderVariantOptions(){
   if(!variants.length) return;
   if(selectedVariantIndex>=variants.length) selectedVariantIndex=0;
   const active=activeVariant();
-  const colors=[...new Set(variants.map(v=>v.color).filter(Boolean))];
-  const colorWrap=$("#pdVariantColorWrap");
-  colorWrap.classList.toggle("hidden", !colors.length);
-  $("#pdVariantColors").innerHTML=colors.map(c=>`<button type="button" class="pd-power-btn pd-variant-btn ${active?.color===c?"active":""}" data-variant-color="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("");
-  const sizes=[...new Set(variants.filter(v=>!colors.length || v.color===active?.color).map(v=>v.size).filter(Boolean))];
+  const nameWrap=$("#pdVariantNameWrap");
+  nameWrap.classList.remove("hidden");
+  $("#pdVariantNames").innerHTML=variants.map((v,i)=>`<button type="button" class="pd-power-btn pd-variant-btn ${i===selectedVariantIndex?"active":""}" data-variant-name="${escapeHtml(v.name)}" ${v.stockStatus==="outofstock"?"disabled":""}>${escapeHtml(v.name)}</button>`).join("");
+  const sizes=[...new Set(variants.map(v=>v.size).filter(Boolean))];
   const sizeWrap=$("#pdVariantSizeWrap");
   sizeWrap.classList.toggle("hidden", !sizes.length);
-  $("#pdVariantSizes").innerHTML=sizes.map(sz=>{ const match=variants.find(v=>(!colors.length||v.color===active?.color)&&v.size===sz); return `<button type="button" class="pd-power-btn pd-variant-btn ${active?.size===sz?"active":""}" data-variant-size="${escapeHtml(sz)}" ${match?.stockStatus==="outofstock"?"disabled":""}>${escapeHtml(sz)}</button>`; }).join("");
-  document.querySelectorAll("[data-variant-color]").forEach(btn=>btn.addEventListener("click",()=>{ const c=btn.dataset.variantColor; const sameSize=variants.find(v=>v.color===c&&v.size===active?.size); selectVariantBy(c,sameSize?active?.size:null); }));
-  document.querySelectorAll("[data-variant-size]").forEach(btn=>btn.addEventListener("click",()=>selectVariantBy(colors.length?active?.color:null,btn.dataset.variantSize)));
+  $("#pdVariantSizes").innerHTML = active?.size ? `<span class="pd-power-btn active">${escapeHtml(active.size)}</span>` : "";
+  document.querySelectorAll("[data-variant-name]").forEach(btn=>btn.addEventListener("click",()=>selectVariantByName(btn.dataset.variantName)));
 }
 
 function renderProduct(){
@@ -401,7 +397,8 @@ function renderProduct(){
   $("#pdPrice").innerHTML = priceMarkup(displayProduct);
 
   const img = $("#pdImage");
-  const displayImages = variant?.images?.length ? variant.images : product.images;
+  const fallbackVariantImages = (product.variants||[]).find(v=>Array.isArray(v.images)&&v.images.length)?.images || [];
+  const displayImages = variant?.images?.length ? variant.images : (product.images?.length ? product.images : fallbackVariantImages);
   const displayImage = displayImages?.[0] || product.image;
   if(displayImage){
     img.src = optimizeCloudinaryImage(displayImage, 1200);
@@ -628,7 +625,7 @@ function addToBag(){
 
   const qty = Math.max(1, parseInt($("#pdQty").value) || 1);
   const power = selectedPower;
-  const variantKey = variant ? `${variant.color||"na"}-${variant.size||"na"}` : "na";
+  const variantKey = variant ? `${variant.name||"na"}-${variant.color||"na"}-${variant.size||"na"}` : "na";
   const key = `${product.id}-${power || "na"}-${variantKey}`;
 
   let cart = [];
@@ -642,6 +639,8 @@ function addToBag(){
   const existing = cart.find(x=>x.key === key);
   if(existing){
     existing.qty += qty;
+    existing.variantName = variant?.name || existing.variantName || "";
+    existing.color = variant?.color || existing.color || product.colorKey || "";
     existing.stockStatus = variant?.stockStatus || product.stockStatus || "instock";
     existing.waitingPeriod = variant?.waitingPeriod || product.waitingPeriod || "";
   }else{
@@ -649,13 +648,14 @@ function addToBag(){
       key,
       id:product.id,
       name:product.name,
+      variantName:variant?.name || "",
       brand:product.brand || "",
       size:variant?.size || product.size || "",
       color:variant?.color || product.colorKey || "",
       price:effectivePrice(variant || product),
       qty,
       power,
-      image:variant?.images?.[0] || product.image || null,
+      image:variant?.images?.[0] || product.image || ((product.variants||[]).find(v=>v.images?.[0])?.images?.[0]) || null,
       stockStatus:variant?.stockStatus || product.stockStatus || "instock",
       waitingPeriod:variant?.waitingPeriod || product.waitingPeriod || ""
     });
