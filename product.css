@@ -604,3 +604,6 @@ img.image-load-failed{
 .price-current{font-weight:900}
 .discount-badge{display:inline-flex;align-items:center;border-radius:999px;padding:3px 8px;background:#fee2e2;color:#991b1b;font-size:11px;font-weight:800;line-height:1.2;white-space:nowrap}
 .discount-badge.compact{padding:2px 6px;font-size:10px}
+
+/* v67 product variants */
+.pd-variant-group{display:grid;gap:9px;margin-bottom:14px}.pd-variant-group:last-child{margin-bottom:0}.pd-variant-btn{min-width:54px}.pd-variant-btn[disabled]{opacity:.38;text-decoration:line-through;cursor:not-allowed}

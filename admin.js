@@ -598,6 +598,68 @@ function powersInput(){
 
 
 /* =========================
+   PRODUCT VARIANTS v67
+========================= */
+
+function variantRowTemplate(v={}){
+  const images = Array.isArray(v.images) ? v.images.filter(Boolean).slice(0,2) : [];
+  const stock = v.stockStatus || "instock";
+  return `
+    <div class="variant-row" data-image1="${esc(images[0]||"")}" data-image2="${esc(images[1]||"")}">
+      <label>Colour<input class="v-color" placeholder="e.g. Rose Pink" value="${esc(v.color||"")}"></label>
+      <label>Size<input class="v-size" placeholder="e.g. 5 ml / Small" value="${esc(v.size||"")}"></label>
+      <label>Regular Price (AED)<input class="v-price" type="number" min="0" step="1" placeholder="35" value="${v.price ?? ""}"></label>
+      <label>Discount Price<input class="v-discount" type="number" min="0" step="1" placeholder="Optional" value="${v.discountPrice ?? ""}"></label>
+      <label>Stock<select class="v-stock"><option value="instock" ${stock==="instock"?"selected":""}>In Stock</option><option value="preorder" ${stock==="preorder"?"selected":""}>Pre-order</option><option value="outofstock" ${stock==="outofstock"?"selected":""}>Out of Stock</option></select></label>
+      <label>Waiting period<input class="v-waiting" placeholder="2 weeks" value="${esc(v.waitingPeriod||"")}"></label>
+      <label>Variant photo 1<input class="v-file1" type="file" accept="image/jpeg,image/png,image/webp"><span class="variant-image-note">${images[0]?"Current photo saved":"Optional"}</span></label>
+      <label>Variant photo 2<input class="v-file2" type="file" accept="image/jpeg,image/png,image/webp"><span class="variant-image-note">${images[1]?"Current photo saved":"Optional"}</span></label>
+      <div class="variant-row-actions"><button type="button" class="secondary variant-remove">Remove Variant</button></div>
+    </div>`;
+}
+
+function addVariantRow(v={}){
+  const wrap = $("#variantRows");
+  wrap.insertAdjacentHTML("beforeend", variantRowTemplate(v));
+}
+
+function readVariants(){
+  return [...document.querySelectorAll(".variant-row")].map((row,index)=>{
+    const priceRaw=row.querySelector(".v-price").value.trim();
+    const discountRaw=row.querySelector(".v-discount").value.trim();
+    return {
+      color:row.querySelector(".v-color").value.trim(),
+      size:row.querySelector(".v-size").value.trim(),
+      price:priceRaw ? Number(priceRaw) : Number($("#pPrice").value||0),
+      discountPrice:discountRaw ? Number(discountRaw) : null,
+      stockStatus:row.querySelector(".v-stock").value,
+      waitingPeriod:row.querySelector(".v-stock").value === "preorder" ? (row.querySelector(".v-waiting").value.trim()||"2 weeks") : "",
+      images:[row.dataset.image1||"",row.dataset.image2||""].filter(Boolean),
+      _row:row,
+      _index:index
+    };
+  }).filter(v=>v.color || v.size);
+}
+
+async function uploadVariantImages(variants){
+  for(const v of variants){
+    const f1=v._row.querySelector(".v-file1").files?.[0];
+    const f2=v._row.querySelector(".v-file2").files?.[0];
+    if(f1){ v.images[0]=await uploadSignedCloudinary(f1); }
+    if(f2){ v.images[1]=await uploadSignedCloudinary(f2); }
+    v.images=v.images.filter(Boolean).slice(0,2);
+    delete v._row; delete v._index;
+  }
+  return variants;
+}
+
+$("#addVariantBtn")?.addEventListener("click",()=>addVariantRow());
+$("#variantRows")?.addEventListener("click",e=>{
+  const btn=e.target.closest(".variant-remove");
+  if(btn) btn.closest(".variant-row")?.remove();
+});
+
+/* =========================
    PRODUCT DATA
 ========================= */
 
@@ -660,6 +722,8 @@ function payload(){
 
     powers:powersInput(),
 
+    variants:readVariants().map(v=>{ const x={...v}; delete x._row; delete x._index; return x; }),
+
     imageUrl:$("#pImage").value.trim(),
 
     images:[
@@ -697,6 +761,8 @@ function resetForm(){
   $("#pWaiting").value="2 weeks";
 
   updateColorFieldVisibility();
+
+  $("#variantRows").innerHTML="";
 
   $("#pImage").value="";
   $("#pImage2").value="";
@@ -788,11 +854,22 @@ $("#productForm").addEventListener(
       );
     }
 
+    for(const v of readVariants()){
+      if(!v.color && !v.size){
+        return msg($("#formMessage"), "Each variant needs a colour or size.");
+      }
+      if(v.discountPrice !== null && (v.discountPrice <= 0 || v.discountPrice >= v.price)){
+        return msg($("#formMessage"), `Variant ${v._index+1}: discount price must be lower than regular price.`);
+      }
+    }
+
     $("#saveBtn").disabled=true;
 
     msg($("#formMessage"),"Saving…");
 
     try{
+
+      p.variants = await uploadVariantImages(readVariants());
 
       const imageFile=$("#pImageFile").files?.[0];
       if(imageFile){
@@ -1122,6 +1199,11 @@ async function editProduct(id){
     ? "Current product image 2. Choose a new file to replace it."
     : "No image 2 saved for this product.";
 
+
+  $("#variantRows").innerHTML="";
+  if(Array.isArray(p.variants)){
+    p.variants.forEach(v=>addVariantRow(v));
+  }
 
   $("#pDescription").value=
     p.description||

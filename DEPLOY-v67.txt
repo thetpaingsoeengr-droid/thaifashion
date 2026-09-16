@@ -1,0 +1,22 @@
+Thai Fashion Lenses v67 — Product Variants
+
+New:
+- Optional product variants in Admin.
+- Each variant supports Colour, Size, Regular Price, Discount Price, Stock, Waiting Period, and up to 2 Cloudinary photos.
+- Product detail lets customers choose Colour and Size.
+- Variant selection updates price, stock, waiting period, gallery photos and cart data.
+- Cart and WhatsApp order include selected Colour and Size.
+- Existing products without variants continue working unchanged.
+- Products with variants are sent to Product Detail before adding, so a customer must choose the exact variant.
+
+Retained:
+- v66.2 image visibility/security hardening
+- v65 compact powers
+- v64 category colour behavior
+- v63 discount pricing
+- v62 total product count
+- v61 return-position restoration
+
+Important:
+- Firestore rules file in this package uses the exact authorized Admin UID.
+- Variant feature is optional. Existing products do not need migration.

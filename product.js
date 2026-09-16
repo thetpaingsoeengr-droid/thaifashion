@@ -78,6 +78,7 @@ installSmartBackButton();
 
 let product = null;
 let selectedPower = null;
+let selectedVariantIndex = 0;
 let lang = localStorage.getItem("tfl_language") || "en";
 
 const text = {
@@ -279,6 +280,17 @@ function normalizeProduct(id,d){
   const legacyImage = String(d.imageUrl || d.imageURL || d.image || "").trim();
   if(!images.length && legacyImage) images.push(legacyImage);
 
+  const variants = Array.isArray(d.variants) ? d.variants.map((v,index)=>{
+    const vImages = Array.isArray(v?.images) ? v.images.map(x=>String(x||"").trim()).filter(Boolean).slice(0,2) : [];
+    const vPrice = Number(v?.price || d.price || 0);
+    const vDiscount = Number(v?.discountPrice || 0);
+    return {
+      index, color:String(v?.color||"").trim(), size:String(v?.size||"").trim(),
+      price:vPrice, discountPrice:vDiscount > 0 && vDiscount < vPrice ? vDiscount : null,
+      stockStatus:v?.stockStatus || "instock", waitingPeriod:String(v?.waitingPeriod||"").trim(), images:vImages
+    };
+  }).filter(v=>v.color || v.size) : [];
+
   return {
     id,
     name:d.name || "Unnamed Product",
@@ -298,7 +310,8 @@ function normalizeProduct(id,d){
     images,
     desc:d.desc || d.description || "",
     descMM:d.descMM || d.descriptionMM || "",
-    powers
+    powers,
+    variants
   };
 }
 
@@ -345,18 +358,53 @@ function applyLanguage(){
   }
 }
 
+function activeVariant(){
+  return Array.isArray(product?.variants) && product.variants.length ? product.variants[selectedVariantIndex] || product.variants[0] : null;
+}
+
+function selectVariantBy(color, size){
+  const variants=product?.variants||[];
+  let idx=variants.findIndex(v=>(color==null||v.color===color)&&(size==null||v.size===size));
+  if(idx<0 && color!=null) idx=variants.findIndex(v=>v.color===color);
+  if(idx<0 && size!=null) idx=variants.findIndex(v=>v.size===size);
+  if(idx>=0){ selectedVariantIndex=idx; renderProduct(); }
+}
+
+function renderVariantOptions(){
+  const variants=product?.variants||[];
+  const section=$("#pdVariantSection");
+  section.classList.toggle("hidden", !variants.length);
+  if(!variants.length) return;
+  if(selectedVariantIndex>=variants.length) selectedVariantIndex=0;
+  const active=activeVariant();
+  const colors=[...new Set(variants.map(v=>v.color).filter(Boolean))];
+  const colorWrap=$("#pdVariantColorWrap");
+  colorWrap.classList.toggle("hidden", !colors.length);
+  $("#pdVariantColors").innerHTML=colors.map(c=>`<button type="button" class="pd-power-btn pd-variant-btn ${active?.color===c?"active":""}" data-variant-color="${escapeHtml(c)}">${escapeHtml(c)}</button>`).join("");
+  const sizes=[...new Set(variants.filter(v=>!colors.length || v.color===active?.color).map(v=>v.size).filter(Boolean))];
+  const sizeWrap=$("#pdVariantSizeWrap");
+  sizeWrap.classList.toggle("hidden", !sizes.length);
+  $("#pdVariantSizes").innerHTML=sizes.map(sz=>{ const match=variants.find(v=>(!colors.length||v.color===active?.color)&&v.size===sz); return `<button type="button" class="pd-power-btn pd-variant-btn ${active?.size===sz?"active":""}" data-variant-size="${escapeHtml(sz)}" ${match?.stockStatus==="outofstock"?"disabled":""}>${escapeHtml(sz)}</button>`; }).join("");
+  document.querySelectorAll("[data-variant-color]").forEach(btn=>btn.addEventListener("click",()=>{ const c=btn.dataset.variantColor; const sameSize=variants.find(v=>v.color===c&&v.size===active?.size); selectVariantBy(c,sameSize?active?.size:null); }));
+  document.querySelectorAll("[data-variant-size]").forEach(btn=>btn.addEventListener("click",()=>selectVariantBy(colors.length?active?.color:null,btn.dataset.variantSize)));
+}
+
 function renderProduct(){
-  const isOut = product.stockStatus === "outofstock";
-  const isPre = product.stockStatus === "preorder";
+  const variant = activeVariant();
+  const displayProduct = variant ? {...product, ...variant} : product;
+  const isOut = displayProduct.stockStatus === "outofstock";
+  const isPre = displayProduct.stockStatus === "preorder";
 
   document.title = `${product.name} • Thai Fashion Lenses`;
   $("#pdName").textContent = lang === "mm" && product.nameMM ? product.nameMM : product.name;
   $("#pdCategory").textContent = product.category;
-  $("#pdPrice").innerHTML = priceMarkup(product);
+  $("#pdPrice").innerHTML = priceMarkup(displayProduct);
 
   const img = $("#pdImage");
-  if(product.image){
-    img.src = optimizeCloudinaryImage(product.image, 1200);
+  const displayImages = variant?.images?.length ? variant.images : product.images;
+  const displayImage = displayImages?.[0] || product.image;
+  if(displayImage){
+    img.src = optimizeCloudinaryImage(displayImage, 1200);
     img.alt = product.name;
   }else{
     img.removeAttribute("src");
@@ -364,7 +412,7 @@ function renderProduct(){
   }
 
   const thumbs = $("#pdThumbnails");
-  const galleryImages = Array.isArray(product.images) ? product.images : [];
+  const galleryImages = Array.isArray(displayImages) ? displayImages : [];
   thumbs.classList.toggle("hidden", galleryImages.length < 2);
   thumbs.innerHTML = galleryImages.map((url,index)=>`
     <button type="button"
@@ -389,7 +437,7 @@ function renderProduct(){
   badge.className = `pd-stock-badge ${isOut ? "outofstock" : isPre ? "preorder" : ""}`;
 
   $("#pdWait").classList.toggle("hidden", !isPre);
-  $("#pdWait").textContent = isPre ? `${t().wait}: ${product.waitingPeriod || "2 weeks"}` : "";
+  $("#pdWait").textContent = isPre ? `${t().wait}: ${displayProduct.waitingPeriod || "2 weeks"}` : "";
 
   const specs = [];
   if(product.brand) specs.push(["Brand", product.brand]);
@@ -399,13 +447,16 @@ function renderProduct(){
       formatColourName(product.colorKey)
     ]);
   }
-  if(product.size) specs.push([lang === "mm" ? "အရွယ်အစား" : "Size", product.size]);
+  if(variant?.color) specs.push([lang === "mm" ? "အရောင်" : "Colour", variant.color]);
+  if(variant?.size || product.size) specs.push([lang === "mm" ? "အရွယ်အစား" : "Size", variant?.size || product.size]);
 
   const specsEl = $("#pdSpecs");
   specsEl.classList.toggle("hidden", !specs.length);
   specsEl.innerHTML = specs.map(([label,value]) =>
     `<div class="pd-spec"><small>${escapeHtml(label)}</small><strong>${escapeHtml(value)}</strong></div>`
   ).join("");
+
+  renderVariantOptions();
 
   const hasPowers = Array.isArray(product.powers) && product.powers.length;
   $("#pdPowerSection").classList.toggle("hidden", !hasPowers);
@@ -567,11 +618,14 @@ function addSimpleProductToBag(p){
 }
 
 function addToBag(){
-  if(!product || product.stockStatus === "outofstock") return;
+  if(!product) return;
+  const variant=activeVariant();
+  if((variant?.stockStatus || product.stockStatus) === "outofstock") return;
 
   const qty = Math.max(1, parseInt($("#pdQty").value) || 1);
   const power = selectedPower;
-  const key = `${product.id}-${power || "na"}`;
+  const variantKey = variant ? `${variant.color||"na"}-${variant.size||"na"}` : "na";
+  const key = `${product.id}-${power || "na"}-${variantKey}`;
 
   let cart = [];
   try{
@@ -590,11 +644,12 @@ function addToBag(){
       id:product.id,
       name:product.name,
       brand:product.brand || "",
-      size:product.size || "",
-      price:effectivePrice(product),
+      size:variant?.size || product.size || "",
+      color:variant?.color || product.colorKey || "",
+      price:effectivePrice(variant || product),
       qty,
       power,
-      image:product.image || null
+      image:variant?.images?.[0] || product.image || null
     });
   }
 

@@ -1156,6 +1156,10 @@ function closeModal(){
 ========================================= */
 
 function addToCart(){
+  if(selectedProduct && Array.isArray(selectedProduct.variants) && selectedProduct.variants.length){
+    window.location.href = `product.html?id=${encodeURIComponent(selectedProduct.id)}`;
+    return;
+  }
   if(
     !selectedProduct ||
     selectedProduct.stockStatus === "outofstock"
@@ -1308,6 +1312,16 @@ function renderCart(){
 
             <div class="cart-meta">
 
+              ${
+                x.color
+                  ? `<span>Colour ${escapeHtml(x.color)}</span>`
+                  : ""
+              }
+              ${
+                x.size
+                  ? `<span>Size ${escapeHtml(x.size)}</span>`
+                  : ""
+              }
               ${
                 x.power
                   ? `<span>Power ${escapeHtml(x.power)}</span>`
@@ -1541,6 +1555,7 @@ function orderWhatsApp(){
         return (
           `${i+1}. ${x.name}` +
           `${brand ? ` | Brand: ${brand}` : ""}` +
+          `${x.color ? ` | Colour: ${x.color}` : ""}` +
           `${size ? ` | Size: ${size}` : ""}` +
           `${
             x.power

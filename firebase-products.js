@@ -330,7 +330,8 @@ function normalizeProduct(snap){
       d.descMM ||
       "",
 
-    powers
+    powers,
+    variants:Array.isArray(d.variants) ? d.variants : []
   };
 }
 

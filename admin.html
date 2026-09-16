@@ -6,7 +6,7 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Thai Fashion Lenses — Admin</title>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Noto+Sans+Myanmar:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="admin.css?v=66.1">
+  <link rel="stylesheet" href="admin.css?v=67">
 </head>
 <body>
   <main class="admin-shell">
@@ -113,6 +113,18 @@
 
           <input id="pImage" type="hidden">
           <input id="pImage2" type="hidden">
+
+          <section class="variant-editor span-2">
+            <div class="variant-editor-head">
+              <div>
+                <strong>Product Variants (Optional)</strong>
+                <small>Use for products with different colours/sizes. Each variant can have its own price, discount, stock and up to 2 photos.</small>
+              </div>
+              <button id="addVariantBtn" type="button" class="secondary">+ Add Variant</button>
+            </div>
+            <div id="variantRows" class="variant-rows"></div>
+          </section>
+
           <label class="span-2">English Description<textarea id="pDescription" rows="3"></textarea></label>
           <label class="span-2">Myanmar Description<textarea id="pDescriptionMM" rows="3"></textarea></label>
           <button type="submit" class="save-btn span-2" id="saveBtn">Save product</button>
@@ -130,6 +142,6 @@
       </section>
     </section>
   </main>
-  <script type="module" src="admin.js?v=66.1"></script>
+  <script type="module" src="admin.js?v=67"></script>
 </body>
 </html>
