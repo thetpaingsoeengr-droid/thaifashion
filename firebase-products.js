@@ -414,48 +414,86 @@ function baseConstraints(){
 
 
 /* =========================================
-   SERIES COLOUR FILTER HELPERS (v68.2)
-   Keep old colorKey products compatible while
-   allowing any named variant colour to match.
+   SERIES-AWARE FILTER HELPERS (v68.3)
+   Preserve legacy main-product filters and also
+   match named variant Colour + Power correctly.
 ========================================= */
 
-function productMatchesSelectedColor(product){
-  const wanted = String(activeFilters.color || "all").trim().toLowerCase();
-  if(wanted === "all") return true;
-
-  const main = String(product?.colorKey || "").trim().toLowerCase();
-  if(main === wanted) return true;
-
-  return (Array.isArray(product?.variants) ? product.variants : []).some(v =>
-    String(v?.color || v?.colorKey || v?.colour || "").trim().toLowerCase() === wanted
-  );
+function normFilterValue(value){
+  return String(value ?? "").trim().toLowerCase();
 }
 
-function hasSelectedColor(){
-  return activeFilters.category === "Contact Lenses" && activeFilters.color !== "all";
+function variantPowers(variant){
+  const raw = variant?.powers;
+  if(Array.isArray(raw)) return raw.map(normFilterValue).filter(Boolean);
+  if(typeof raw === "string"){
+    return raw.split(",").map(normFilterValue).filter(Boolean);
+  }
+  return [];
+}
+
+function productMainPowers(product){
+  const raw = product?.powers;
+  if(Array.isArray(raw)) return raw.map(normFilterValue).filter(Boolean);
+  if(typeof raw === "string"){
+    return raw.split(",").map(normFilterValue).filter(Boolean);
+  }
+  return [];
+}
+
+function variantColor(variant){
+  return normFilterValue(variant?.color || variant?.colorKey || variant?.colour);
+}
+
+function productMatchesActiveFilters(product){
+  const wantedColor = normFilterValue(activeFilters.color || "all");
+  const wantedPower = normFilterValue(activeFilters.power || "");
+  const needColor = wantedColor !== "all";
+  const needPower = Boolean(wantedPower);
+
+  if(!needColor && !needPower) return true;
+
+  const mainColor = normFilterValue(product?.colorKey);
+  const mainPowerList = productMainPowers(product);
+  const variants = Array.isArray(product?.variants) ? product.variants : [];
+
+  // Legacy / non-variant product keeps the original behaviour.
+  const mainMatchesColor = !needColor || mainColor === wantedColor;
+  const mainMatchesPower = !needPower || mainPowerList.includes(wantedPower);
+  if(mainMatchesColor && mainMatchesPower && (mainColor || mainPowerList.length || !variants.length)){
+    return true;
+  }
+
+  // For a series, Colour + Power must match the SAME variant when both are selected.
+  return variants.some(variant => {
+    const colorOK = !needColor || variantColor(variant) === wantedColor;
+    const powerOK = !needPower || variantPowers(variant).includes(wantedPower);
+    return colorOK && powerOK;
+  });
+}
+
+function needsSeriesAwareFiltering(){
+  return activeFilters.category === "Contact Lenses" &&
+    (activeFilters.color !== "all" || Boolean(activeFilters.power));
 }
 
 /*
-  Firestore cannot combine two array-contains fields in one query.
-  When Colour is selected, fetch the category/power candidates first,
-  then apply the series colour match locally. This preserves:
-  - old products using colorKey
-  - new series using variant colours
-  - power + colour combinations
+  Firestore cannot safely express the legacy main fields + nested variant
+  alternatives as one paginated query. For Contact Lens Colour/Power filters,
+  fetch that category and apply the compatibility filter locally.
+  Normal category browsing still uses the original paginated Firestore query.
 */
-async function loadColorFilteredProducts(){
-  const constraints = [
-    where("category", "==", activeFilters.category)
-  ];
+async function loadSeriesAwareFilteredProducts(){
+  const snapshot = await getDocs(
+    query(
+      collection(db, "products"),
+      where("category", "==", activeFilters.category)
+    )
+  );
 
-  if(activeFilters.power){
-    constraints.push(where("powers", "array-contains", activeFilters.power));
-  }
-
-  const snapshot = await getDocs(query(collection(db, "products"), ...constraints));
   const matched = snapshot.docs
     .map(normalizeProduct)
-    .filter(productMatchesSelectedColor);
+    .filter(productMatchesActiveFilters);
 
   loadedProducts = matched;
   lastVisible = null;
@@ -584,8 +622,8 @@ async function loadProducts(){
 
   try{
 
-    if(hasSelectedColor()){
-      await loadColorFilteredProducts();
+    if(needsSeriesAwareFiltering()){
+      await loadSeriesAwareFilteredProducts();
       return;
     }
 
@@ -734,8 +772,8 @@ async function loadFreshFilter(){
 
   try{
 
-    if(hasSelectedColor()){
-      await loadColorFilteredProducts();
+    if(needsSeriesAwareFiltering()){
+      await loadSeriesAwareFilteredProducts();
       return;
     }
 

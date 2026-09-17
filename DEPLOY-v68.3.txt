@@ -1,0 +1,3 @@
+v68.3 Filter Compatibility Fix
+Replace firebase-products.js only.
+Fixes legacy Colour/Power filters and named-series variant Colour/Power filters.
