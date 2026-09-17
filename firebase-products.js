@@ -396,21 +396,6 @@ function baseConstraints(){
 
   if(
     activeFilters.category === "Contact Lenses" &&
-    activeFilters.color !== "all"
-  ){
-
-    constraints.push(
-      where(
-        "searchColors",
-        "array-contains",
-        activeFilters.color
-      )
-    );
-  }
-
-
-  if(
-    activeFilters.category === "Contact Lenses" &&
     activeFilters.power
   ){
 
@@ -427,6 +412,58 @@ function baseConstraints(){
   return constraints;
 }
 
+
+/* =========================================
+   SERIES COLOUR FILTER HELPERS (v68.2)
+   Keep old colorKey products compatible while
+   allowing any named variant colour to match.
+========================================= */
+
+function productMatchesSelectedColor(product){
+  const wanted = String(activeFilters.color || "all").trim().toLowerCase();
+  if(wanted === "all") return true;
+
+  const main = String(product?.colorKey || "").trim().toLowerCase();
+  if(main === wanted) return true;
+
+  return (Array.isArray(product?.variants) ? product.variants : []).some(v =>
+    String(v?.color || v?.colorKey || v?.colour || "").trim().toLowerCase() === wanted
+  );
+}
+
+function hasSelectedColor(){
+  return activeFilters.category === "Contact Lenses" && activeFilters.color !== "all";
+}
+
+/*
+  Firestore cannot combine two array-contains fields in one query.
+  When Colour is selected, fetch the category/power candidates first,
+  then apply the series colour match locally. This preserves:
+  - old products using colorKey
+  - new series using variant colours
+  - power + colour combinations
+*/
+async function loadColorFilteredProducts(){
+  const constraints = [
+    where("category", "==", activeFilters.category)
+  ];
+
+  if(activeFilters.power){
+    constraints.push(where("powers", "array-contains", activeFilters.power));
+  }
+
+  const snapshot = await getDocs(query(collection(db, "products"), ...constraints));
+  const matched = snapshot.docs
+    .map(normalizeProduct)
+    .filter(productMatchesSelectedColor);
+
+  loadedProducts = matched;
+  lastVisible = null;
+  hasMore = false;
+  updateWebsiteTotalCount(matched.length);
+  updateWebsite();
+  saveFilterCache(matched.length);
+}
 
 /* =========================================
    COUNT QUERY
@@ -546,6 +583,11 @@ async function loadProducts(){
 
 
   try{
+
+    if(hasSelectedColor()){
+      await loadColorFilteredProducts();
+      return;
+    }
 
     const snapshot =
       await getDocs(
@@ -691,6 +733,11 @@ async function loadFreshFilter(){
 
 
   try{
+
+    if(hasSelectedColor()){
+      await loadColorFilteredProducts();
+      return;
+    }
 
     /*
       Firestore count and first 11 docs are independent,
