@@ -401,8 +401,8 @@ function baseConstraints(){
 
     constraints.push(
       where(
-        "colorKey",
-        "==",
+        "searchColors",
+        "array-contains",
         activeFilters.color
       )
     );
